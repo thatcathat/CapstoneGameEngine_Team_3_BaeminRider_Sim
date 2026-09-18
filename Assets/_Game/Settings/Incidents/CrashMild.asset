@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bdb2ac680ba012438d76abd3d642c6d, type: 3}
+  m_Name: CrashMild
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.CrashIncidentDefinition
+  requiresOrder: 1
+  requiresFood: 0
+  warningSeconds: 0.8
+  horizontalImpulse: 6
+  upwardImpulse: 3
+  recoverySeconds: 1.5

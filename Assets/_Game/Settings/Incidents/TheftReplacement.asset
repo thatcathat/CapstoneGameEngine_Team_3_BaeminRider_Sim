@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b05b62fa131f2d47b73943256b7e6a6, type: 3}
+  m_Name: TheftReplacement
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.TheftIncidentDefinition
+  requiresOrder: 1
+  requiresFood: 1
+  kindCooldownSeconds: 35
+  kindMaxPerDay: 4
+  recoveryMode: 1
+  thiefPrefab: {fileID: 2868945105848139873, guid: d96d5fa4c66e71149a6948e3a36e624e, type: 3}
+  thiefSpeed: 3.6
+  escapeSeconds: 18

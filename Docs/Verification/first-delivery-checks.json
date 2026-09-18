@@ -1,0 +1,9 @@
+{
+    "passed": false,
+    "error": "System.Exception: Accept is reachable by UI raycast\r\n  at DeliveryRider.Editor.PrototypePlayChecks.Check (System.Boolean condition, System.String description) [0x0001a] in C:\\Users\\kim66\\Desktop\\CGE_T3_BR\\Assets\\_Game\\Editor\\PrototypePlayChecks.cs:117 \r\n  at DeliveryRider.Editor.PrototypePlayChecks.Click (System.String name) [0x00053] in C:\\Users\\kim66\\Desktop\\CGE_T3_BR\\Assets\\_Game\\Editor\\PrototypePlayChecks.cs:128 \r\n  at DeliveryRider.Editor.PrototypePlayChecks.Tick () [0x000fb] in C:\\Users\\kim66\\Desktop\\CGE_T3_BR\\Assets\\_Game\\Editor\\PrototypePlayChecks.cs:63 ",
+    "checks": [
+        "StartButton is reachable by UI raycast",
+        "Title button loads GameScene",
+        "Fresh game has an available order"
+    ]
+}
