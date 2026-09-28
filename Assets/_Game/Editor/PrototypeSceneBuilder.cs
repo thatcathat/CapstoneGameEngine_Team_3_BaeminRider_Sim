@@ -98,8 +98,13 @@ namespace DeliveryRider.Editor
             StackText(stack, "걸어서 출발하고, 부딪혀 전달하세요.", 17, Cream, 26);
             var start = StackButton(stack, "StartButton", "배달 시작", Teal, Navy);
             var quit = StackButton(stack, "QuitButton", "게임 종료", new Color32(38, 60, 70, 255), Cream);
-            var menu = new GameObject("SceneMenu").AddComponent<SceneMenu>();
-            Ref(menu, "startButton", start); Ref(menu, "quitButton", quit);
+            // 1. 타이틀 씬의 UI를 담당할 TitleUI 스크립트를 Canvas에 부착하고 버튼 참조를 연결합니다.
+            var titleUI = canvas.gameObject.AddComponent<TitleUI>();
+            Ref(titleUI, "startButton", start);
+            Ref(titleUI, "quitButton", quit);
+
+            // 2. 씬 전환을 전담할 GameManager 오브젝트를 만들고 SceneController 싱글턴을 부착합니다.
+            new GameObject("GameManager").AddComponent<SceneController>();
             TextAt(canvas.transform, "Edition", "FIRST DELIVERY\n작은 동네, 첫 번째 출근", 24, Navy, new Vector2(0.66f, 0.82f), new Vector2(0.96f, 0.96f));
             TextAt(canvas.transform, "Footer", "3인칭 배달 시뮬레이터  /  PROTOTYPE 01", 15, new Color32(160, 185, 187, 255), new Vector2(0.055f, 0.035f), new Vector2(0.46f, 0.08f));
             EditorSceneManager.SaveScene(scene, TitlePath);
