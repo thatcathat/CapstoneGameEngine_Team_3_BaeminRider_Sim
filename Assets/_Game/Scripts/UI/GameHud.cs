@@ -26,7 +26,15 @@ namespace DeliveryRider
         {
             accept.onClick.AddListener(session.AcceptOrder);
             resume.onClick.AddListener(session.TogglePause);
-            title.onClick.AddListener(session.BackToTitle);
+
+            // 기존 코드: title.onClick.AddListener(session.BackToTitle);
+            // 변경된 코드: 일시정지(시간 정지)를 풀고 SceneController를 통해 타이틀 씬으로 이동
+            title.onClick.AddListener(() =>
+            {
+                Time.timeScale = 1f; // 일시정지 상태에서 나갈 경우를 대비해 시간 흐름 정상화
+                SceneController.Instance.NextScene(ESceneType.Title);
+            });
+
             candidateLabels = new TMP_Text[candidateButtons.Length];
             for (int i = 0; i < candidateButtons.Length; i++)
             {

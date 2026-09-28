@@ -29,8 +29,20 @@ namespace DeliveryRider
         {
             previousPage.onClick.AddListener(() => ChangePage(-1));
             nextPage.onClick.AddListener(() => ChangePage(1));
-            backToTitle.onClick.AddListener(session.BackToTitle);
-            replay.onClick.AddListener(session.ReplayDay);
+
+            // 수정된 부분: 삭제된 session.BackToTitle 대신 SceneController를 직접 호출합니다.
+            backToTitle.onClick.AddListener(() =>
+            {
+                Time.timeScale = 1f; // 정산 화면에서 멈춘 시간을 다시 흐르게 만듭니다.
+                SceneController.Instance.NextScene(ESceneType.Title);
+            });
+
+            // 수정된 부분: 다시 하기 버튼 역시 여기서 직접 씬을 전환하는 것이 구조상 훨씬 깔끔합니다.
+            replay.onClick.AddListener(() =>
+            {
+                Time.timeScale = 1f;
+                SceneController.Instance.NextScene(ESceneType.GameScene);
+            });
         }
         private void OnEnable() { session.Changed += Refresh; Refresh(); }
         private void OnDisable() => session.Changed -= Refresh;

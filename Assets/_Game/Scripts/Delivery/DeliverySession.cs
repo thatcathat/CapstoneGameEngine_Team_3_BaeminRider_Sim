@@ -237,22 +237,18 @@ namespace DeliveryRider
             else TogglePause();
         }
 
-        public void BackToTitle()
-        {
-            if (leavingScene) return;
-            leavingScene = true;
-            Time.timeScale = 1f;
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-            SceneManager.LoadSceneAsync("TitleScene");
-        }
 
         public void ReplayDay()
         {
             if (!IsSettled || leavingScene) return;
             leavingScene = true;
+
+            // 타임스케일 정상화 (정산 화면에서 시간이 멈춰있을 수 있으므로)
             Time.timeScale = 1f;
-            SceneManager.LoadSceneAsync("GameScene");
+
+            // 기존 방식: SceneManager.LoadSceneAsync("GameScene");
+            // 변경된 방식: 전역 매니저에게 씬 전환 위임
+            SceneController.Instance.NextScene(ESceneType.GameScene);
         }
 
         private void Notify()
