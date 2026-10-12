@@ -15,20 +15,16 @@ namespace DeliveryRider
         }
         [SerializeField] private IncidentDirector director;
         [SerializeField] private Entry[] events = Array.Empty<Entry>();
-        [SerializeField, Range(0f, 1f)] private float chance = 1f;
-        [SerializeField, Min(0f)] private float cooldownSeconds = 20f;
-        [SerializeField, Min(1)] private int maxPerDay = 3;
         [SerializeField] private Transform impactDirection;
-        [SerializeField] private bool allowZone = true;
+        [SerializeField] private Transform actorSpawn;
         [SerializeField] private bool allowTimed;
         [SerializeField, Min(0.1f)] private float timedRange = 6f;
         [SerializeField] private Transform thiefSpawn;
         [SerializeField] private Transform[] escapeRoute = Array.Empty<Transform>();
         private readonly HashSet<Collider> occupants = new HashSet<Collider>();
         private BoxCollider volume;
-        private double availableAt;
-        private int count;
         public Transform ThiefSpawn => thiefSpawn;
+        public Transform ActorSpawn => actorSpawn != null ? actorSpawn : transform;
         public Transform[] EscapeRoute => escapeRoute;
         public bool HasEscapeRoute
         {
@@ -50,14 +46,15 @@ namespace DeliveryRider
             if (director == null || body == null || body.GetComponent<RiderMotor>() != director.Rider) return;
             bool first = occupants.Count == 0;
             occupants.Add(other);
-            if (first && allowZone) TryActivate(false);
+            if (first) TryActivate(false);
         }
 
         public bool IsCandidate(bool timed)
         {
-            if (!isActiveAndEnabled || director == null || !director.CanRequest || count >= maxPerDay || Time.timeAsDouble < availableAt) return false;
+            if (!isActiveAndEnabled || director == null || !director.CanRequest) return false;
+            // Scheduled events do not interrupt a player-triggered incident.
+            if (timed && director.IsActive) return false;
             if (timed && (!allowTimed || (director.Rider.transform.position - transform.position).sqrMagnitude > timedRange * timedRange)) return false;
-            if (!timed && !allowZone) return false;
             foreach (var entry in events)
                 if (Eligible(entry, timed)) return true;
             return false;
@@ -68,12 +65,16 @@ namespace DeliveryRider
         public bool TryActivate(bool timed)
         {
             if (!IsCandidate(timed)) return false;
-            // One roll per entry, including failed rolls. Staying inside never retries.
-            if (UnityEngine.Random.value >= chance) return false;
+            var selected = SelectEvent(timed);
+            return selected != null && director.TryStart(selected, this);
+        }
+
+        private IncidentDefinition SelectEvent(bool timed)
+        {
             float total = 0f;
             foreach (var entry in events)
                 if (Eligible(entry, timed)) total += entry.weight;
-            if (total <= 0f) return false;
+            if (total <= 0f) return null;
             float roll = UnityEngine.Random.value * total;
             IncidentDefinition selected = null;
             foreach (var entry in events)
@@ -83,10 +84,7 @@ namespace DeliveryRider
                 roll -= entry.weight;
                 if (roll <= 0f) break;
             }
-            if (!director.TryStart(selected, this)) return false;
-            count++;
-            availableAt = Time.timeAsDouble + cooldownSeconds;
-            return true;
+            return selected;
         }
         private void OnTriggerExit(Collider other) => occupants.Remove(other);
         public bool Contains(Vector3 point)

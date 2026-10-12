@@ -67,13 +67,18 @@ namespace DeliveryRider.Editor
         {
             string path = "Assets/_Game/Settings/Incidents/" + name + ".asset";
             var definition = AssetDatabase.LoadAssetAtPath<CrashIncidentDefinition>(path);
-            if (definition != null) return definition;
+            if (definition != null)
+            {
+                IncidentActorContentInstaller.Configure(definition);
+                return definition;
+            }
             definition = ScriptableObject.CreateInstance<CrashIncidentDefinition>();
             var data = new SerializedObject(definition);
             data.FindProperty("horizontalImpulse").floatValue = horizontal;
             data.FindProperty("upwardImpulse").floatValue = upward;
             data.FindProperty("recoverySeconds").floatValue = recovery;
             data.ApplyModifiedPropertiesWithoutUndo();
+            IncidentActorContentInstaller.Configure(definition);
             AssetDatabase.CreateAsset(definition, path);
             return definition;
         }

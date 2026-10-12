@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace DeliveryRider
@@ -9,23 +8,17 @@ namespace DeliveryRider
     {
         [SerializeField] private DeliverySession session;
         [SerializeField] private RiderMotor rider;
-        [SerializeField, Min(0f)] private float protectionSeconds = 8f;
-        [SerializeField, Min(1)] private int maxIncidentsPerDay = 8;
-        private readonly Dictionary<Type, int> kindCounts = new Dictionary<Type, int>();
-        private readonly Dictionary<Type, double> kindAvailableAt = new Dictionary<Type, double>();
-        private int startedCount;
         private bool cancelling;
         private Coroutine routine;
         private IEnumerator activeExecution;
-        private IncidentDefinition activeDefinition;
-        private double availableAt;
+        private IncidentActor activeActor;
+        private FoodThief spawnedThief;
         public bool IsActive { get; private set; }
         public string Notice { get; private set; } = "";
         public RiderMotor Rider => rider;
         public DeliverySession Session => session;
         public event Action Changed;
-        public bool CanRequest => isActiveAndEnabled && !IsActive && !session.IsRecoveringFood &&
-            session.CanMove && startedCount < maxIncidentsPerDay && Time.timeAsDouble >= availableAt;
+        public bool CanRequest => isActiveAndEnabled && !cancelling && !session.IsPaused && !session.IsSettled;
 
         private void OnEnable() => session.Changed += OnSessionChanged;
         private void OnDisable()
@@ -35,34 +28,39 @@ namespace DeliveryRider
         }
         private void OnSessionChanged()
         {
-            if (!cancelling && (session.IsSettled || (IsActive && !activeDefinition.CanContinue(session)))) Cancel();
+            if (!cancelling && session.IsSettled) Cancel();
         }
         public bool IsEligible(IncidentDefinition definition)
         {
-            if (definition == null || !definition.CanStart(session)) return false;
-            var kind = definition.GetType();
-            return (!kindCounts.TryGetValue(kind, out int count) || count < definition.KindMaxPerDay) &&
-                (!kindAvailableAt.TryGetValue(kind, out double next) || Time.timeAsDouble >= next);
+            return definition != null && definition.CanStart(session);
         }
         public bool TryStart(IncidentDefinition definition, IncidentTrigger source)
         {
             if (!CanRequest || !IsEligible(definition) || source == null) return false;
+            if (IsActive) Cancel();
             IsActive = true;
-            activeDefinition = definition;
-            startedCount++;
-            var kind = definition.GetType();
-            kindCounts.TryGetValue(kind, out int count);
-            kindCounts[kind] = count + 1;
-            routine = StartCoroutine(Run(definition, source));
+            var startedRoutine = StartCoroutine(Run(definition, source));
+            if (IsActive) routine = startedRoutine;
             return true;
         }
         private IEnumerator Run(IncidentDefinition definition, IncidentTrigger source)
         {
-            // Drive the event enumerator here so failures always release player control.
-            activeExecution = definition.Execute(this, source);
             try
             {
-                while (activeExecution.MoveNext()) yield return activeExecution.Current;
+                // The director creates objects; the spawned actor starts their behavior.
+                var spawn = source.ActorSpawn;
+                activeActor = Instantiate(definition.ActorPrefab, spawn.position, spawn.rotation, transform);
+                if (definition is TheftIncidentDefinition theft &&
+                    theft.RecoveryMode == TheftRecoveryMode.ChaseThenReplacement)
+                {
+                    if (theft.ThiefPrefab == null || !source.HasEscapeRoute)
+                        throw new InvalidOperationException("Theft incident requires a thief prefab and escape route.");
+                    spawnedThief = Instantiate(theft.ThiefPrefab, source.ThiefSpawn.position, source.ThiefSpawn.rotation, activeActor.transform);
+                    ((TheftIncidentActor)activeActor).SetThief(spawnedThief);
+                }
+                activeExecution = activeActor.Execute(this, source, definition);
+                while (activeActor != null && activeActor.isActiveAndEnabled && activeExecution.MoveNext())
+                    yield return activeExecution.Current;
             }
             finally
             {
@@ -90,13 +88,20 @@ namespace DeliveryRider
         {
             routine = null;
             if (rider != null) rider.EndCrash();
-            if (IsActive)
+            if (spawnedThief != null)
             {
-                availableAt = Time.timeAsDouble + protectionSeconds;
-                kindAvailableAt[activeDefinition.GetType()] = Time.timeAsDouble + activeDefinition.KindCooldownSeconds;
+                if (session != null && session.IsRecoveringFood) session.RequireReplacement(spawnedThief.transform);
+                spawnedThief.gameObject.SetActive(false);
+                Destroy(spawnedThief.gameObject);
+                spawnedThief = null;
+            }
+            if (activeActor != null)
+            {
+                activeActor.gameObject.SetActive(false);
+                Destroy(activeActor.gameObject);
+                activeActor = null;
             }
             IsActive = false;
-            activeDefinition = null;
             SetNotice("");
         }
     }

@@ -98,14 +98,17 @@ namespace DeliveryRider.Editor
         {
             string path = "Assets/_Game/Settings/Incidents/" + name + ".asset";
             var existing = AssetDatabase.LoadAssetAtPath<TheftIncidentDefinition>(path);
-            if (existing != null) return existing;
+            if (existing != null)
+            {
+                IncidentActorContentInstaller.Configure(existing);
+                return existing;
+            }
             var definition = ScriptableObject.CreateInstance<TheftIncidentDefinition>();
             var data = new SerializedObject(definition);
             data.FindProperty("recoveryMode").enumValueIndex = (int)mode;
             data.FindProperty("thiefPrefab").objectReferenceValue = prefab;
-            data.FindProperty("requiresFood").boolValue = true;
-            data.FindProperty("kindCooldownSeconds").floatValue = 35f;
             data.ApplyModifiedPropertiesWithoutUndo();
+            IncidentActorContentInstaller.Configure(definition);
             AssetDatabase.CreateAsset(definition, path);
             return definition;
         }
@@ -123,7 +126,6 @@ namespace DeliveryRider.Editor
             var spawnPoint = new GameObject("ThiefSpawn").transform;
             spawnPoint.SetParent(go.transform, false); spawnPoint.position = spawn;
             var data = new SerializedObject(trigger);
-            data.FindProperty("allowZone").boolValue = zone;
             data.FindProperty("allowTimed").boolValue = timed;
             data.FindProperty("thiefSpawn").objectReferenceValue = spawnPoint;
             var entries = data.FindProperty("events"); entries.arraySize = 1;

@@ -36,9 +36,9 @@ namespace DeliveryRider.Editor
             var roots = scene.GetRootGameObjects();
             var session = roots.SelectMany(r => r.GetComponentsInChildren<DeliverySession>(true)).Single();
             var hud = roots.SelectMany(r => r.GetComponentsInChildren<GameHud>(true)).Single();
-            var pickup0 = roots.Single(r => r.name == "RestaurantPickup");
-            var customer0 = roots.Single(r => r.name == "Customer");
-            var marker0 = roots.Single(r => r.name == "PickupMarker");
+            var pickup0 = FindSceneObject(scene, "RestaurantPickup");
+            var customer0 = FindSceneObject(scene, "Customer");
+            var marker0 = FindSceneObject(scene, "PickupMarker");
             var orderCard = hud.transform.Find("OrderCard") as RectTransform;
             if (orderCard == null) throw new InvalidOperationException("Existing OrderCard is required.");
             var bodyText = orderCard.Find("Body").GetComponent<TMP_Text>();
@@ -155,7 +155,7 @@ namespace DeliveryRider.Editor
 
         private static GameObject CloneIfMissing(Scene scene, GameObject template, string name, Vector3 position)
         {
-            var existing = scene.GetRootGameObjects().FirstOrDefault(r => r.name == name);
+            var existing = FindSceneObject(scene, name);
             if (existing != null) return existing;
             var created = UnityEngine.Object.Instantiate(template);
             created.name = name; created.transform.position = position;
@@ -166,6 +166,8 @@ namespace DeliveryRider.Editor
         private static void SetWorldLabel(GameObject root, string text, TMP_FontAsset font)
         {
             var label = root.GetComponentInChildren<TMP_Text>(true);
+            if (label == null && root.transform.parent != null && root.transform.parent.name.StartsWith("Spot_"))
+                label = root.transform.parent.GetComponentInChildren<TMP_Text>(true);
             if (label == null) throw new InvalidOperationException("Missing label: " + root.name);
             label.text = text; label.font = font; label.rectTransform.sizeDelta = new Vector2(8, 1.5f);
             EditorUtility.SetDirty(label);
@@ -173,7 +175,7 @@ namespace DeliveryRider.Editor
 
         private static void AddCounter(Scene scene, string name, Vector3 position, Color color)
         {
-            if (scene.GetRootGameObjects().Any(r => r.name == name)) return;
+            if (FindSceneObject(scene, name) != null) return;
             string path = "Assets/_Game/Settings/Materials/" + name + ".mat";
             var material = AssetDatabase.LoadAssetAtPath<Material>(path);
             if (material == null)
@@ -185,6 +187,10 @@ namespace DeliveryRider.Editor
             counter.transform.position = position; counter.transform.localScale = new Vector3(1.4f, 1.2f, 3.2f);
             counter.GetComponent<Renderer>().sharedMaterial = material;
         }
+
+        internal static GameObject FindSceneObject(Scene scene, string name) => scene.GetRootGameObjects()
+            .SelectMany(root => root.GetComponentsInChildren<Transform>(true))
+            .Where(t => t.name == name).Select(t => t.gameObject).SingleOrDefault();
 
         private static void SetRect(RectTransform rect, Vector2 min, Vector2 max)
         {

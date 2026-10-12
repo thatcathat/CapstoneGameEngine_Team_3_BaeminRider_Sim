@@ -12,8 +12,8 @@ namespace DeliveryRider.Editor
 {
     public static class PrototypeSceneBuilder
     {
-        public const string TitlePath = "Assets/_Game/Scenes/TitleScene.unity";
-        public const string GamePath = "Assets/_Game/Scenes/GameScene.unity";
+        public const string TitlePath = "Assets/Scenes/TitleScene.unity";
+        public const string GamePath = "Assets/Scenes/GameScene.unity";
         private const string FontPath = "Assets/_Game/Art/Fonts/PrototypeKoreanRegular.asset";
         private static TMP_FontAsset font;
         private static readonly Color Navy = new Color32(19, 39, 48, 255);

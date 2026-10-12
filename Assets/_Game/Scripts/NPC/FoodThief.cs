@@ -11,11 +11,15 @@ namespace DeliveryRider
         private int waypoint;
         private float speed;
         private double expiresAt;
+        private bool carryingFood;
         public bool Finished { get; private set; }
         private void Awake() => body = GetComponent<Rigidbody>();
-        public void Initialize(DeliverySession owner, Transform[] points, float moveSpeed, float lifetime)
+        public void Initialize(DeliverySession owner, Transform[] points, float moveSpeed, float lifetime, bool hasStolenFood = true)
         {
             session = owner;
+            carryingFood = hasStolenFood;
+            var bag = transform.Find("StolenFood");
+            if (bag != null) bag.gameObject.SetActive(carryingFood);
             speed = Mathf.Max(0.1f, moveSpeed);
             expiresAt = Time.timeAsDouble + Mathf.Max(1f, lifetime);
             route = new Vector3[points.Length];
@@ -24,7 +28,7 @@ namespace DeliveryRider
         private void Update()
         {
             if (Finished || session == null) return;
-            if (session.IsSettled || !session.IsChasingFood || session.Target != transform ||
+            if (session.IsSettled || (carryingFood && (!session.IsChasingFood || session.Target != transform)) ||
                 Time.timeAsDouble >= expiresAt || transform.position.y < -3f ||
                 (transform.position - session.Player.position).sqrMagnitude > 3600f) Escape();
         }
@@ -49,7 +53,7 @@ namespace DeliveryRider
         {
             if (Finished || session == null || collision.rigidbody == null) return;
             if (collision.rigidbody.GetComponent<RiderMotor>() == null) return;
-            if (!session.TryRecoverFood(transform)) return;
+            if (carryingFood && !session.TryRecoverFood(transform)) return;
             Finished = true;
             gameObject.SetActive(false);
         }

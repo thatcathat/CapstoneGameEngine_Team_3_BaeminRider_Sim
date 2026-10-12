@@ -10,6 +10,7 @@ namespace DeliveryRider
         GameScene
     }
 
+    [DefaultExecutionOrder(-200)]
     public sealed class SceneController : MonoBehaviour
     {
         public static SceneController Instance { get; private set; }
@@ -26,15 +27,32 @@ namespace DeliveryRider
             }
 
             Instance = this;
+            UpdateCurrentScene(gameObject.scene.name);
             DontDestroyOnLoad(gameObject);
         }
 
-        private void OnEnable() => SceneManager.sceneLoaded += OnSceneLoaded;
+        private void OnEnable()
+        {
+            if (Instance == this) SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
         private void OnDisable() => SceneManager.sceneLoaded -= OnSceneLoaded;
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            loading = false; // 씬 로드가 끝나면 로딩 상태 해제
+            loading = false;
+            UpdateCurrentScene(scene.name);
+        }
+
+        private void UpdateCurrentScene(string sceneName)
+        {
+            if (sceneName == "GameScene") currentScene = ESceneType.GameScene;
+            else if (sceneName == "TitleScene") currentScene = ESceneType.Title;
         }
 
         public void NextScene(ESceneType nextScene)
