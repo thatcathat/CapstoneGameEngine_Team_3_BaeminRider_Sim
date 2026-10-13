@@ -18,6 +18,8 @@ namespace DeliveryRider
         [SerializeField] private Transform impactDirection;
         [SerializeField] private Transform actorSpawn;
         [SerializeField] private bool allowTimed;
+        [SerializeField] private bool preserveActiveIncident;
+        [SerializeField] private bool deferWhileMapOpen;
         [SerializeField, Min(0.1f)] private float timedRange = 6f;
         [SerializeField] private Transform thiefSpawn;
         [SerializeField] private Transform[] escapeRoute = Array.Empty<Transform>();
@@ -52,6 +54,7 @@ namespace DeliveryRider
         public bool IsCandidate(bool timed)
         {
             if (!isActiveAndEnabled || director == null || !director.CanRequest) return false;
+            if (preserveActiveIncident && director.IsActive || deferWhileMapOpen && director.Session.IsMapOpen) return false;
             // Scheduled events do not interrupt a player-triggered incident.
             if (timed && director.IsActive) return false;
             if (timed && (!allowTimed || (director.Rider.transform.position - transform.position).sqrMagnitude > timedRange * timedRange)) return false;

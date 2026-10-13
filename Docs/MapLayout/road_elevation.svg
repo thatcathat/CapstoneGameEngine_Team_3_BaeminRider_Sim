@@ -1,0 +1,198 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="1120" viewBox="0 0 1700 1120">
+<rect width="100%" height="100%" fill="#f7f8fa"/>
+<text x="45" y="59" font-family="Malgun Gothic,sans-serif" font-size="34" fill="#283443">4구역 도로 · 고도 배치 초안</text>
+<text x="45" y="98" font-family="Malgun Gothic,sans-serif" font-size="20" fill="#283443">HTML 원본 좌표 | 큰길 10개 · 골목 12개 | 높이는 게임용 제안이며 실제 지형이 아닙니다</text>
+<polygon points="68.1625,533.284 258.3655,374.69050000000004 374.1955,277.288 490.6885,416.8105 564.3985,504.9895 447.9055,602.392 374.8585,514.213 180.034,677.428 117.517,645.175" fill="#f9ecd4"/>
+<polygon points="374.1955,277.288 532.1455,145.0 591.367,145.0 601.234,184.4875 620.9875,296.35900000000004 688.126,250.96300000000002 761.836,339.142 844.75,438.5335 715.7575,545.803 667.066,418.117 564.3985,504.9895 490.6885,416.8105" fill="#dbe8f5"/>
+<polygon points="180.034,677.428 374.8585,514.213 447.9055,602.392 529.5129999999999,700.4575 649.2819999999999,843.9385 517.0135,942.6475 397.22499999999997,809.716 324.841,706.3855" fill="#dfeee1"/>
+<polygon points="447.9055,602.392 564.3985,504.9895 667.066,418.117 715.7575,545.803 844.75,438.5335 977.0379999999999,597.79 799.9975000000001,730.741 649.2819999999999,843.9385 529.5129999999999,700.4575" fill="#f3e1ec"/>
+<polyline points="68.16,533.28 258.37,374.69 374.20,277.29 532.15,145.00" fill="none" stroke="#ffffff" stroke-width="24.5" stroke-linejoin="round"/>
+<polyline points="68.16,533.28 258.37,374.69" fill="none" stroke="#9f626b" stroke-width="19.5" stroke-linejoin="round"/>
+<polyline points="258.37,374.69 374.20,277.29" fill="none" stroke="#b4595e" stroke-width="19.5" stroke-linejoin="round"/>
+<polyline points="374.20,277.29 532.15,145.00" fill="none" stroke="#b4595e" stroke-width="19.5" stroke-linejoin="round"/>
+<text x="379.1955" y="295.288" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">G</text>
+<polyline points="180.03,677.43 374.86,514.21 490.69,416.81 620.99,296.36 688.13,250.96" fill="none" stroke="#ffffff" stroke-width="20.6" stroke-linejoin="round"/>
+<polyline points="180.03,677.43 374.86,514.21" fill="none" stroke="#737587" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="374.86,514.21 490.69,416.81" fill="none" stroke="#956772" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="490.69,416.81 620.99,296.36" fill="none" stroke="#b15a60" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="620.99,296.36 688.13,250.96" fill="none" stroke="#b4595e" stroke-width="15.6" stroke-linejoin="round"/>
+<text x="495.6885" y="434.8105" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">B1</text>
+<polyline points="324.84,706.39 447.91,602.39 564.40,504.99 667.07,418.12 761.84,339.14" fill="none" stroke="#ffffff" stroke-width="20.6" stroke-linejoin="round"/>
+<polyline points="324.84,706.39 447.91,602.39" fill="none" stroke="#5f7e94" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="447.91,602.39 564.40,504.99" fill="none" stroke="#797383" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="564.40,504.99 667.07,418.12" fill="none" stroke="#916874" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="667.07,418.12 761.84,339.14" fill="none" stroke="#a65f67" stroke-width="15.6" stroke-linejoin="round"/>
+<text x="569.3985" y="522.9895" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">B2</text>
+<polyline points="397.22,809.72 529.51,700.46 715.76,545.80 844.75,438.53" fill="none" stroke="#ffffff" stroke-width="20.6" stroke-linejoin="round"/>
+<polyline points="397.22,809.72 529.51,700.46" fill="none" stroke="#4689a4" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="529.51,700.46 715.76,545.80" fill="none" stroke="#627d92" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="715.76,545.80 844.75,438.53" fill="none" stroke="#846e7d" stroke-width="15.6" stroke-linejoin="round"/>
+<text x="720.7575" y="563.803" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">B3</text>
+<polyline points="517.01,942.65 649.28,843.94 800.00,730.74 977.04,597.79" fill="none" stroke="#ffffff" stroke-width="20.6" stroke-linejoin="round"/>
+<polyline points="517.01,942.65 649.28,843.94" fill="none" stroke="#4689a4" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="649.28,843.94 800.00,730.74" fill="none" stroke="#4689a4" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="800.00,730.74 977.04,597.79" fill="none" stroke="#4f859e" stroke-width="15.6" stroke-linejoin="round"/>
+<text x="804.9975000000001" y="748.741" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">B6</text>
+<polyline points="258.37,374.69 374.86,514.21 447.91,602.39 529.51,700.46 649.28,843.94" fill="none" stroke="#ffffff" stroke-width="20.6" stroke-linejoin="round"/>
+<polyline points="258.37,374.69 374.86,514.21" fill="none" stroke="#9e636c" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="374.86,514.21 447.91,602.39" fill="none" stroke="#7a7283" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="447.91,602.39 529.51,700.46" fill="none" stroke="#5d7f95" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="529.51,700.46 649.28,843.94" fill="none" stroke="#4689a4" stroke-width="15.6" stroke-linejoin="round"/>
+<text x="452.9055" y="620.392" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">A1</text>
+<polyline points="374.20,277.29 490.69,416.81 564.40,504.99" fill="none" stroke="#ffffff" stroke-width="20.6" stroke-linejoin="round"/>
+<polyline points="374.20,277.29 490.69,416.81" fill="none" stroke="#b4595e" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="490.69,416.81 564.40,504.99" fill="none" stroke="#936773" stroke-width="15.6" stroke-linejoin="round"/>
+<text x="495.6885" y="434.8105" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">A2</text>
+<polyline points="591.37,145.00 601.23,184.49 620.99,296.36 667.07,418.12 715.76,545.80 800.00,730.74" fill="none" stroke="#ffffff" stroke-width="24.5" stroke-linejoin="round"/>
+<polyline points="591.37,145.00 601.23,184.49" fill="none" stroke="#b4595e" stroke-width="19.5" stroke-linejoin="round"/>
+<polyline points="601.23,184.49 620.99,296.36" fill="none" stroke="#b4595e" stroke-width="19.5" stroke-linejoin="round"/>
+<polyline points="620.99,296.36 667.07,418.12" fill="none" stroke="#ae5b62" stroke-width="19.5" stroke-linejoin="round"/>
+<polyline points="667.07,418.12 715.76,545.80" fill="none" stroke="#896c79" stroke-width="19.5" stroke-linejoin="round"/>
+<polyline points="715.76,545.80 800.00,730.74" fill="none" stroke="#5a8097" stroke-width="19.5" stroke-linejoin="round"/>
+<text x="672.066" y="436.117" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">A3</text>
+<polyline points="688.13,250.96 761.84,339.14 844.75,438.53 977.04,597.79" fill="none" stroke="#ffffff" stroke-width="20.6" stroke-linejoin="round"/>
+<polyline points="688.13,250.96 761.84,339.14" fill="none" stroke="#b4595e" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="761.84,339.14 844.75,438.53" fill="none" stroke="#a1616a" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="844.75,438.53 977.04,597.79" fill="none" stroke="#787384" stroke-width="15.6" stroke-linejoin="round"/>
+<text x="849.75" y="456.5335" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">A4</text>
+<polyline points="68.16,533.28 117.52,645.17 180.03,677.43 324.84,706.39 397.22,809.72 517.01,942.65" fill="none" stroke="#ffffff" stroke-width="20.6" stroke-linejoin="round"/>
+<polyline points="68.16,533.28 117.52,645.17" fill="none" stroke="#7a7283" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="117.52,645.17 180.03,677.43" fill="none" stroke="#647c91" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="180.03,677.43 324.84,706.39" fill="none" stroke="#588199" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="324.84,706.39 397.22,809.72" fill="none" stroke="#4689a4" stroke-width="15.6" stroke-linejoin="round"/>
+<polyline points="397.22,809.72 517.01,942.65" fill="none" stroke="#4689a4" stroke-width="15.6" stroke-linejoin="round"/>
+<text x="329.841" y="724.3855" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">W</text>
+<polyline points="222.13,404.90 241.11,474.45 201.83,573.71 220.81,643.26" fill="none" stroke="#ffffff" stroke-width="13.775" stroke-linejoin="round"/>
+<polyline points="222.13,404.90 241.11,474.45" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<polyline points="241.11,474.45 201.83,573.71" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<polyline points="201.83,573.71 220.81,643.26" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<text x="206.83499999999998" y="591.7075" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">L1</text>
+<polyline points="262.81,370.95 486.22,420.55" fill="none" stroke="#ffffff" stroke-width="13.775" stroke-linejoin="round"/>
+<polyline points="262.81,370.95 486.22,420.55" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<text x="379.51725" y="413.7505" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">L2</text>
+<polyline points="468.40,435.53 470.31,583.67" fill="none" stroke="#ffffff" stroke-width="13.775" stroke-linejoin="round"/>
+<polyline points="468.40,435.53 470.31,583.67" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<text x="474.3555" y="527.60125" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">L3</text>
+<polyline points="487.00,182.79 529.77,380.68" fill="none" stroke="#ffffff" stroke-width="13.775" stroke-linejoin="round"/>
+<polyline points="487.00,182.79 529.77,380.68" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<text x="513.3847499999999" y="299.73400000000004" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">L4</text>
+<polyline points="495.02,412.79 662.60,421.90" fill="none" stroke="#ffffff" stroke-width="13.775" stroke-linejoin="round"/>
+<polyline points="495.02,412.79 662.60,421.90" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<text x="583.809" y="435.34675000000004" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">L5</text>
+<polyline points="739.25,357.96 759.89,401.37 721.82,480.20 742.45,523.61" fill="none" stroke="#ffffff" stroke-width="13.775" stroke-linejoin="round"/>
+<polyline points="739.25,357.96 759.89,401.37" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<polyline points="759.89,401.37 721.82,480.20" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<polyline points="721.82,480.20 742.45,523.61" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<text x="726.8219999999999" y="498.205" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">L6</text>
+<polyline points="220.81,643.26 324.39,668.93 421.52,624.68" fill="none" stroke="#ffffff" stroke-width="13.775" stroke-linejoin="round"/>
+<polyline points="220.81,643.26 324.39,668.93" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<polyline points="324.39,668.93 421.52,624.68" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<text x="329.3925" y="686.926" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">L7</text>
+<polyline points="421.52,624.68 387.96,706.56 424.60,787.10" fill="none" stroke="#ffffff" stroke-width="13.775" stroke-linejoin="round"/>
+<polyline points="421.52,624.68 387.96,706.56" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<polyline points="387.96,706.56 424.60,787.10" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<text x="392.9625" y="724.561" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">L8</text>
+<polyline points="488.45,734.37 554.80,914.45" fill="none" stroke="#ffffff" stroke-width="13.775" stroke-linejoin="round"/>
+<polyline points="488.45,734.37 554.80,914.45" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<text x="526.62525" y="842.4092499999999" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">L9</text>
+<polyline points="470.31,583.67 693.04,564.66" fill="none" stroke="#ffffff" stroke-width="13.775" stroke-linejoin="round"/>
+<polyline points="470.31,583.67 693.04,564.66" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<text x="586.6754999999999" y="592.16575" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">L10</text>
+<polyline points="679.41,575.97 655.07,699.15 677.54,822.70" fill="none" stroke="#ffffff" stroke-width="13.775" stroke-linejoin="round"/>
+<polyline points="679.41,575.97 655.07,699.15" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<polyline points="655.07,699.15 677.54,822.70" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<text x="660.0735" y="717.151" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">L11</text>
+<polyline points="742.45,523.61 857.25,543.52 939.75,625.77" fill="none" stroke="#ffffff" stroke-width="13.775" stroke-linejoin="round"/>
+<polyline points="742.45,523.61 857.25,543.52" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<polyline points="857.25,543.52 939.75,625.77" fill="none" stroke="#d89924" stroke-width="8.775" stroke-linejoin="round"/>
+<text x="862.2495" y="561.5215000000001" font-family="Malgun Gothic,sans-serif" font-size="15" fill="#283443">L12</text>
+<circle cx="307.9399599999999" cy="424.936735" r="3" fill="#566775"/>
+<circle cx="185.34463" cy="665.3389749999999" r="3" fill="#566775"/>
+<circle cx="520.3197250000001" cy="534.21688" r="3" fill="#566775"/>
+<circle cx="159.19162" cy="467.5339" r="3" fill="#566775"/>
+<circle cx="312.19212999999996" cy="559.063975" r="3" fill="#566775"/>
+<circle cx="459.89254" cy="389.047765" r="3" fill="#566775"/>
+<circle cx="377.21254" cy="290.026765" r="3" fill="#566775"/>
+<circle cx="82.913665" cy="552.23644" r="3" fill="#566775"/>
+<circle cx="560.5451050000001" cy="344.26426000000004" r="3" fill="#566775"/>
+<circle cx="832.1175099999999" cy="441.425935" r="3" fill="#566775"/>
+<circle cx="586.62772" cy="158.182" r="3" fill="#566775"/>
+<circle cx="386.19345999999996" cy="282.528235" r="3" fill="#566775"/>
+<circle cx="716.806795" cy="294.397105" r="3" fill="#566775"/>
+<circle cx="718.81354" cy="531.9080799999999" r="3" fill="#566775"/>
+<circle cx="591.858985" cy="474.08161" r="3" fill="#566775"/>
+<circle cx="678.5850399999999" cy="426.45207999999997" r="3" fill="#566775"/>
+<circle cx="346.07065" cy="726.50677" r="3" fill="#566775"/>
+<circle cx="637.30354" cy="838.717765" r="3" fill="#566775"/>
+<circle cx="447.941965" cy="857.26051" r="3" fill="#566775"/>
+<circle cx="346.88887" cy="545.256025" r="3" fill="#566775"/>
+<circle cx="197.38236999999998" cy="670.524025" r="3" fill="#566775"/>
+<circle cx="532.51054" cy="713.176765" r="3" fill="#566775"/>
+<circle cx="450.81919" cy="615.045745" r="3" fill="#566775"/>
+<circle cx="513.617965" cy="930.1515099999999" r="3" fill="#566775"/>
+<circle cx="783.2665000000001" cy="712.8361000000001" r="3" fill="#566775"/>
+<circle cx="459.81181" cy="607.561255" r="3" fill="#566775"/>
+<circle cx="839.59849" cy="450.422065" r="3" fill="#566775"/>
+<circle cx="635.120515" cy="452.80789" r="3" fill="#566775"/>
+<circle cx="578.91196" cy="750.5087349999999" r="3" fill="#566775"/>
+<circle cx="964.9715949999999" cy="592.421065" r="3" fill="#566775"/>
+<circle cx="734.887" cy="568.9924000000001" r="3" fill="#566775"/>
+<circle cx="630.25702" cy="609.201595" r="3" fill="#566775"/>
+<circle cx="397.80843999999996" cy="487.25191" r="6" fill="#182c41"/>
+<circle cx="136.55212" cy="486.4099" r="6" fill="#182c41"/>
+<circle cx="501.03988" cy="181.22397999999998" r="6" fill="#182c41"/>
+<circle cx="685.88233" cy="394.82502999999997" r="6" fill="#182c41"/>
+<circle cx="274.40737" cy="605.998525" r="6" fill="#182c41"/>
+<circle cx="356.92708" cy="301.97812" r="6" fill="#182c41"/>
+<circle cx="800.97601" cy="467.321935" r="6" fill="#182c41"/>
+<circle cx="448.23621999999995" cy="759.98515" r="6" fill="#182c41"/>
+<circle cx="570.201115" cy="895.64431" r="6" fill="#182c41"/>
+<circle cx="559.181275" cy="516.96562" r="6" fill="#182c41"/>
+<circle cx="754.3870000000001" cy="649.4221" r="6" fill="#182c41"/>
+<circle cx="908.285095" cy="524.171065" r="6" fill="#182c41"/>
+<rect x="286.5695" y="468.1411666666667" width="150" height="35" fill="white"/>
+<text x="291.5695" y="492.1411666666667" font-family="Malgun Gothic,sans-serif" font-size="22" fill="#283443">A / 7.7m</text>
+<rect x="588.046" y="293.20775000000003" width="150" height="35" fill="white"/>
+<text x="593.046" y="317.20775000000003" font-family="Malgun Gothic,sans-serif" font-size="22" fill="#283443">B / 12.0m</text>
+<rect x="394.58406249999996" y="687.64725" width="150" height="35" fill="white"/>
+<text x="399.58406249999996" y="711.64725" font-family="Malgun Gothic,sans-serif" font-size="22" fill="#283443">C / 0.4m</text>
+<rect x="655.4119999999999" y="561.0846666666666" width="150" height="35" fill="white"/>
+<text x="660.4119999999999" y="585.0846666666666" font-family="Malgun Gothic,sans-serif" font-size="22" fill="#283443">D / 3.6m</text>
+<circle cx="450.833035" cy="877.94299" r="8" fill="#d63546"/>
+<text x="430.833035" y="907.94299" font-family="Malgun Gothic,sans-serif" font-size="18" fill="#283443">집</text>
+<polyline points="65.00,1015.00 260.00,1015.00" fill="none" stroke="#283443" stroke-width="3" stroke-linejoin="round"/>
+<text x="115" y="1036" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">100m</text>
+<text x="320" y="1018" font-family="Malgun Gothic,sans-serif" font-size="18" fill="#283443">큰 점: 가게 12 / 작은 점: 배달 문 32 / 빨강: 집</text>
+<text x="320" y="1052" font-family="Malgun Gothic,sans-serif" font-size="18" fill="#283443">상단이 높은 지형 / 골목은 차량 진입 제외</text>
+<text x="1050" y="159" font-family="Malgun Gothic,sans-serif" font-size="24" fill="#283443">도로별 길이와 최대 경사</text>
+<text x="1050" y="194" font-family="Malgun Gothic,sans-serif" font-size="17" fill="#283443">ID       길이       경사     차량</text>
+<text x="1050" y="225" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">G        310.3m     3.5%    가능</text>
+<text x="1050" y="250" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">B1       340.5m     3.8%    가능</text>
+<text x="1050" y="275" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">B2       292.7m     3.5%    가능</text>
+<text x="1050" y="300" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">B3       298.2m     3.5%    가능</text>
+<text x="1050" y="325" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">B6       294.8m     3.2%    가능</text>
+<text x="1050" y="350" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">A1       313.2m     5.1%    가능</text>
+<text x="1050" y="375" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">A2       152.1m     5.1%    가능</text>
+<text x="1050" y="400" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">A3       320.2m     6.0%    가능</text>
+<text x="1050" y="425" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">A4       231.5m     5.1%    가능</text>
+<text x="1050" y="450" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">W        331.0m     5.9%    가능</text>
+<text x="1050" y="475" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">L1       128.7m     6.1%    제외</text>
+<text x="1050" y="500" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">L2       117.4m     1.9%    제외</text>
+<text x="1050" y="525" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">L3        76.0m     6.2%    제외</text>
+<text x="1050" y="550" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">L4       103.8m     6.2%    제외</text>
+<text x="1050" y="575" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">L5        86.1m     0.9%    제외</text>
+<text x="1050" y="600" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">L6        94.2m     5.8%    제외</text>
+<text x="1050" y="625" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">L7       109.5m     2.0%    제외</text>
+<text x="1050" y="650" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">L8        90.8m     5.9%    제외</text>
+<text x="1050" y="675" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">L9        98.4m     0.0%    제외</text>
+<text x="1050" y="700" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">L10      114.6m     0.0%    제외</text>
+<text x="1050" y="725" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">L11      128.8m     6.2%    제외</text>
+<text x="1050" y="750" font-family="Malgun Gothic,sans-serif" font-size="16" fill="#283443">L12      119.5m     4.8%    제외</text>
+<text x="1050" y="804" font-family="Malgun Gothic,sans-serif" font-size="18" fill="#283443">높이 0~12m · 기본면 최대 경사 6.20%</text>
+<text x="1050" y="845" font-family="Malgun Gothic,sans-serif" font-size="21" fill="#283443">다음 지형 제작에서 확인할 것</text>
+<text x="1050" y="884" font-family="Malgun Gothic,sans-serif" font-size="17" fill="#283443">• 교차로 평탄화 뒤 연결부 경사 재계산</text>
+<text x="1050" y="918" font-family="Malgun Gothic,sans-serif" font-size="17" fill="#283443">• 보도·가게 입구 높이와 연석 연결</text>
+<text x="1050" y="952" font-family="Malgun Gothic,sans-serif" font-size="17" fill="#283443">• 도로 폭과 별도 보행 공간 확보</text>
+<text x="1050" y="986" font-family="Malgun Gothic,sans-serif" font-size="17" fill="#283443">• 내리막 제동 거리와 골목 시야 확보</text>
+<text x="45" y="1097" font-family="Malgun Gothic,sans-serif" font-size="17" fill="#283443">연결 확인: 1358/1358 노드 · 모든 가게/배달 문 연결 | 물리 통행 검증 전</text>
+</svg>

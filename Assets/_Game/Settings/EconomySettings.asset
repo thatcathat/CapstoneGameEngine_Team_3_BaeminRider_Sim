@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d665fa8017453f54e9387c190487e0d7, type: 3}
+  m_Name: EconomySettings
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.DeliveryEconomySettings
+  runSpeed: 6
+  limitRatio: 1.5
+  limitPadding: 25
+  limitRounding: 5
+  minimumDistance: 300
+  rewardTiers:
+  - maximumDistance: 350
+    reward: 3000
+    label: "\uAC00\uAE4C\uC6C0"
+  - maximumDistance: 470
+    reward: 4500
+    label: "\uC911\uAC04"
+  - maximumDistance: 100000
+    reward: 5500
+    label: "\uBA40\uB9AC"
+  lateRatio: 0.6
+  customerNames:
+  - "\uBBFC\uC9C0"
+  - "\uC11C\uC900"
+  - "\uD558\uC740"
+  - "\uB3C4\uC724"
+  - "\uC9C0\uC544"
+  - "\uC2DC\uC6B0"
+  - "\uC720\uB098"
+  - "\uC900\uD638"
+  - "\uC218\uC544"
+  - "\uD604\uC6B0"
+  foodNames:
+  - "\uB5A1\uBCF6\uC774"
+  - "\uCE58\uD0A8"
+  - "\uC9DC\uC7A5\uBA74"
+  - "\uAE40\uBC25"
+  - "\uACF1\uCC3D"
+  - "\uD584\uBC84\uAC70"
+  - "\uD53C\uC790"
+  - "\uAD6D\uBC25"

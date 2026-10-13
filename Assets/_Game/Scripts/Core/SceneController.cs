@@ -13,10 +13,30 @@ namespace DeliveryRider
     [DefaultExecutionOrder(-200)]
     public sealed class SceneController : MonoBehaviour
     {
+        // The four-district map is the main game scene; the legacy GameScene is kept for reference only.
+        private const string GameSceneName = "FourDistrictPrototype";
         public static SceneController Instance { get; private set; }
 
         private bool loading;
         public ESceneType currentScene { get; set; } = ESceneType.Title;
+        // Kept across scene loads; the game scene creates a fresh run when it is played directly.
+        public RunProgress Progress { get; set; }
+
+        public void StartNewGame(int startDay, long startingDebt)
+        {
+            RunProgress.DeleteSave();
+            Progress = new RunProgress(startDay, startingDebt);
+            NextScene(ESceneType.GameScene);
+        }
+
+        public bool ContinueGame()
+        {
+            var saved = RunProgress.Load();
+            if (saved == null) return false;
+            Progress = saved;
+            NextScene(ESceneType.GameScene);
+            return true;
+        }
 
         private void Awake()
         {
@@ -51,7 +71,7 @@ namespace DeliveryRider
 
         private void UpdateCurrentScene(string sceneName)
         {
-            if (sceneName == "GameScene") currentScene = ESceneType.GameScene;
+            if (sceneName == GameSceneName || sceneName == "GameScene") currentScene = ESceneType.GameScene;
             else if (sceneName == "TitleScene") currentScene = ESceneType.Title;
         }
 
@@ -63,7 +83,7 @@ namespace DeliveryRider
             string sceneName = nextScene switch
             {
                 ESceneType.Title => "TitleScene",
-                ESceneType.GameScene => "GameScene",
+                ESceneType.GameScene => GameSceneName,
                 _ => "TitleScene"
             };
 

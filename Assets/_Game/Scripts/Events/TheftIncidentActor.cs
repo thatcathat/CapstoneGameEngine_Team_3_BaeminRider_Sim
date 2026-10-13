@@ -18,7 +18,7 @@ namespace DeliveryRider
                 if (thief != null)
                     thief.Initialize(session, source.EscapeRoute, settings.ThiefSpeed, settings.EscapeSeconds, stolen);
                 director.SetNotice(!stolen ? "도난 시도! 보유한 음식이 없습니다" :
-                    thief != null ? "음식 도난! 보라색 도둑에게 부딪혀 회수하세요" : "음식을 잃었습니다! 음식점에서 다시 받아주세요");
+                    thief != null ? "음식 도난! 보라색 도둑을 주먹으로 쳐서 회수하세요" : "음식을 잃었습니다! 음식점에서 다시 받아주세요");
                 if (!stolen && thief == null)
                 {
                     yield return new WaitForSeconds(1f);

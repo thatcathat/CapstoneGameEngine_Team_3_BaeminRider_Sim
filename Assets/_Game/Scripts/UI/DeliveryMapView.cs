@@ -24,11 +24,15 @@ namespace DeliveryRider
         private static readonly Color Teal = new Color32(40, 197, 177, 255);
         private UnityEngine.UI.Image activeCustomerImage;
         private int displayedActiveNumber = -1;
+        private TMP_Text[] pickupLabels;
+        private readonly Transform[] shownShops = new Transform[3];
 
         private void Awake()
         {
             closeButton.onClick.AddListener(session.ToggleMap);
             activeCustomerImage = activeCustomerMarker.GetComponent<UnityEngine.UI.Image>();
+            pickupLabels = new TMP_Text[pickupMarkers.Length];
+            for (int i = 0; i < pickupMarkers.Length; i++) pickupLabels[i] = pickupMarkers[i].GetComponentInChildren<TMP_Text>(true);
         }
 
         private void LateUpdate()
@@ -38,26 +42,31 @@ namespace DeliveryRider
             playerMarker.localRotation = Quaternion.Euler(0, 0, -session.Player.eulerAngles.y);
             for (int i = 0; i < candidateMarkers.Length; i++)
             {
-                bool exists = i < session.Candidates.Count;
+                bool exists = session.IsCallOpen && i < session.Candidates.Count;
                 candidateTethers[i].gameObject.SetActive(exists);
                 if (!exists) continue;
-                var customer = session.Candidates[i].Route.Customer.transform;
+                var customer = session.Candidates[i].DestinationPoint;
                 int count = 0, index = 0;
                 for (int j = 0; j < session.Candidates.Count; j++)
-                    if (session.Candidates[j].Route.Customer.transform == customer) { if (j < i) index++; count++; }
+                    if (session.Candidates[j].DestinationPoint == customer) { if (j < i) index++; count++; }
                 var actual = Point(customer.position);
                 var displayed = Clamp(actual + Vector2.right * ((index - (count - 1) * 0.5f) * 66f), 35f);
                 candidateMarkers[i].anchoredPosition = displayed;
                 Line(candidateTethers[i], actual, displayed);
             }
-            var shown = session.ActiveOrder ?? session.SelectedOrder;
-            for (int i = 0; i < pickupPoints.Length; i++)
+            var shown = session.ActiveOrder ?? (session.IsCallOpen ? session.SelectedOrder : null);
+            if (session.RouteTable == null)
             {
-                pickupMarkers[i].rectTransform.anchoredPosition = Point(pickupPoints[i].position);
-                bool selected = shown != null && shown.Route.PickupPoint == pickupPoints[i];
-                pickupMarkers[i].color = selected ? Gold : new Color32(216, 210, 188, 255);
-                pickupMarkers[i].rectTransform.localScale = Vector3.one * (selected ? 1.12f : 1f);
+                // Legacy fixed map: three restaurants always shown.
+                for (int i = 0; i < pickupPoints.Length; i++)
+                {
+                    pickupMarkers[i].rectTransform.anchoredPosition = Point(pickupPoints[i].position);
+                    bool selected = shown != null && shown.PickupPoint == pickupPoints[i];
+                    pickupMarkers[i].color = selected ? Gold : new Color32(216, 210, 188, 255);
+                    pickupMarkers[i].rectTransform.localScale = Vector3.one * (selected ? 1.12f : 1f);
+                }
             }
+            else ShowCallShops(shown);
             bool active = session.ActiveOrder != null;
             if (thiefMarker != null)
             {
@@ -67,7 +76,7 @@ namespace DeliveryRider
             activeCustomerMarker.gameObject.SetActive(active);
             if (active)
             {
-                activeCustomerMarker.anchoredPosition = Clamp(Point(session.ActiveOrder.Route.Customer.transform.position), 35f);
+                activeCustomerMarker.anchoredPosition = Clamp(Point(session.ActiveOrder.Recipient.transform.position), 35f);
                 if (displayedActiveNumber != session.ActiveOrder.Number)
                 {
                     displayedActiveNumber = session.ActiveOrder.Number;
@@ -86,10 +95,40 @@ namespace DeliveryRider
             }
             if (shown == null) return;
             var player = Point(session.Player.position);
-            var pickup = Point(shown.Route.PickupPoint.position);
-            var destination = Point(shown.Route.Customer.transform.position);
+            var pickup = Point(shown.PickupPoint.position);
+            var destination = Point(session.ActiveOrder == shown ? shown.Recipient.transform.position : shown.DestinationPoint.position);
             if (session.Stage != DeliveryStage.Carrying) Line(pickupConnection, player, pickup);
             Line(deliveryConnection, session.Stage == DeliveryStage.Carrying ? player : pickup, destination);
+        }
+
+        // Generated calls: only the shops involved in the open calls or the active order are drawn.
+        private void ShowCallShops(DeliveryOrderOffer shown)
+        {
+            int count = 0;
+            if (session.ActiveOrder != null) shownShops[count++] = session.ActiveOrder.PickupPoint;
+            else if (session.IsCallOpen)
+                foreach (var offer in session.Candidates)
+                    if (count < shownShops.Length && System.Array.IndexOf(shownShops, offer.PickupPoint, 0, count) < 0) shownShops[count++] = offer.PickupPoint;
+            for (int i = 0; i < pickupMarkers.Length; i++)
+            {
+                bool visible = i < count;
+                if (pickupMarkers[i].gameObject.activeSelf != visible) pickupMarkers[i].gameObject.SetActive(visible);
+                if (!visible) continue;
+                pickupMarkers[i].rectTransform.anchoredPosition = Point(shownShops[i].position);
+                bool selected = shown != null && shown.PickupPoint == shownShops[i];
+                pickupMarkers[i].color = selected ? Gold : new Color32(216, 210, 188, 255);
+                pickupMarkers[i].rectTransform.localScale = Vector3.one * (selected ? 1.12f : 1f);
+                string name = NameOf(shownShops[i]);
+                if (pickupLabels[i] != null && pickupLabels[i].text != name) pickupLabels[i].text = name;
+            }
+        }
+
+        private string NameOf(Transform shop)
+        {
+            if (session.ActiveOrder != null && session.ActiveOrder.PickupPoint == shop) return session.ActiveOrder.RestaurantName;
+            foreach (var offer in session.Candidates)
+                if (offer.PickupPoint == shop) return offer.RestaurantName;
+            return shop.name;
         }
 
         private Vector2 Point(Vector3 world)

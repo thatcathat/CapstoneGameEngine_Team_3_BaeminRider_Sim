@@ -12,18 +12,36 @@ namespace DeliveryRider
     {
         [SerializeField] private Transform player;
         [SerializeField] private DeliveryOrderRoute[] orderRoutes = Array.Empty<DeliveryOrderRoute>();
-        [SerializeField, Range(1, 3)] private int candidateCount = 3;
+        [SerializeField, Range(1, 3)] private int candidateCount = 2;
+        [Tooltip("The day clock starts once the player walks this far from the start point. 0 starts it immediately.")]
+        [SerializeField, Min(0f)] private float homeLeaveDistance = 6f;
         [SerializeField] private GameObject foodBag;
         [SerializeField] private float pickupRange = 2.8f;
         [SerializeField] private DeliveryDaySettings daySettings;
+        [Header("Generated calls (leave empty to use the fixed order routes)")]
+        [SerializeField] private DeliveryRouteTable routeTable;
+        [SerializeField] private DeliveryEconomySettings economy;
+        [Tooltip("Pickup points in route table shop order.")]
+        [SerializeField] private Transform[] shopPoints = Array.Empty<Transform>();
+        [Tooltip("Recipient stand points in route table door order.")]
+        [SerializeField] private Transform[] doorPoints = Array.Empty<Transform>();
+        [SerializeField] private DeliveryResident recipient;
+        [SerializeField, Min(0f)] private float recipientHeight = 1.08f;
+        [SerializeField] private string startZone = "C";
         public event Action Changed;
         public DeliveryStage Stage { get; private set; }
         public bool IsPaused { get; private set; }
-        public bool IsMapOpen { get; private set; } = true;
+        // The call screen shares the map panel; IsMapOpen means that panel is shown in either mode.
+        public bool IsMapOpen => mapOpen || IsCallOpen;
+        public bool IsCallOpen { get; private set; }
+        private bool mapOpen;
         public Transform Player => player;
         public int CompletedCount { get; private set; }
         public WorkDayPhase DayPhase { get; private set; }
+        // Today's earnings; carried cash and debt live in Progress.
         public long Cash { get; private set; }
+        public RunProgress Progress { get; private set; }
+        public DeliveryEconomySettings Economy => economy;
         public int OnTimeCount { get; private set; }
         public int LateCount => CompletedCount - OnTimeCount;
         public DeliveryResult LastResult { get; private set; }
@@ -31,18 +49,24 @@ namespace DeliveryRider
         private readonly List<DeliveryResult> results = new List<DeliveryResult>();
         public IReadOnlyList<DeliveryResult> Results => results;
         private double dayStartedAt;
+        private Vector3 homePosition;
+        public bool HasDayStarted { get; private set; }
         private double dayDuration;
-        private double orderAcceptedTime;
+        private double pickedUpTime;
         private double orderDeadline;
+        private double activeTimeLimit;
+        // The delivery clock starts at the first pickup; re-pickups after theft keep it running.
+        public bool HasPickedUp { get; private set; }
         private int activeOnTimeReward;
         private int activeLateReward;
         private bool leavingScene;
         public bool IsSettled => DayPhase == WorkDayPhase.Settlement;
-        public bool IsDayClosed => DayPhase != WorkDayPhase.Working || Time.timeAsDouble >= dayStartedAt + dayDuration;
-        public double DayRemainingSeconds => Math.Max(0d, dayStartedAt + dayDuration - Time.timeAsDouble);
-        public double OrderRemainingSeconds => ActiveOrder == null ? 0d : Math.Max(0d, orderDeadline - Time.timeAsDouble);
-        public double OrderOverdueSeconds => ActiveOrder == null ? 0d : Math.Max(0d, Time.timeAsDouble - orderDeadline);
-        public bool IsOrderLate => ActiveOrder != null && Time.timeAsDouble > orderDeadline;
+        public bool IsDayClosed => DayPhase != WorkDayPhase.Working || HasDayStarted && Time.timeAsDouble >= dayStartedAt + dayDuration;
+        public double DayRemainingSeconds => HasDayStarted ? Math.Max(0d, dayStartedAt + dayDuration - Time.timeAsDouble) : dayDuration;
+        public double DayProgress => dayDuration <= 0d ? 1d : 1d - DayRemainingSeconds / dayDuration;
+        public double OrderRemainingSeconds => ActiveOrder == null ? 0d : HasPickedUp ? Math.Max(0d, orderDeadline - Time.timeAsDouble) : activeTimeLimit;
+        public double OrderOverdueSeconds => ActiveOrder == null || !HasPickedUp ? 0d : Math.Max(0d, Time.timeAsDouble - orderDeadline);
+        public bool IsOrderLate => ActiveOrder != null && HasPickedUp && Time.timeAsDouble > orderDeadline;
         private readonly List<DeliveryOrderOffer> candidates = new List<DeliveryOrderOffer>();
         private int nextRoute;
         private int nextOrderNumber = 1;
@@ -51,29 +75,52 @@ namespace DeliveryRider
         public DeliveryOrderOffer ActiveOrder { get; private set; }
         public DeliveryOrderOffer LastCompletedOrder { get; private set; }
         public float AcceptedAt { get; private set; }
-        public bool CanChooseOrder => !IsPaused && !IsDayClosed && ActiveOrder == null && (Stage == DeliveryStage.Available || Stage == DeliveryStage.Complete);
+        public bool CanOpenCall => !IsPaused && !IsSettled && !IsDayClosed && ActiveOrder == null && (Stage == DeliveryStage.Available || Stage == DeliveryStage.Complete);
+        public bool CanChooseOrder => IsCallOpen && CanOpenCall;
         private RiderMotor rider;
+        // Calls come from the zone where the last delivery ended and never send the rider straight back.
+        public string CurrentZone { get; private set; }
+        private string previousZone;
+        private readonly HashSet<int> usedDoors = new HashSet<int>();
+        private readonly List<string> zonePool = new List<string>(4);
+        private readonly List<int> doorPool = new List<int>(32);
+        public DeliveryRouteTable RouteTable => routeTable;
+        private bool UsesGeneratedCalls => routeTable != null && routeTable.IsValid && economy != null && recipient != null
+            && shopPoints.Length == routeTable.ShopCount && doorPoints.Length == routeTable.DoorCount;
         private Transform recoveryTarget;
         private bool awaitingThief;
         public bool IsRecoveringFood => Stage == DeliveryStage.FoodLost;
         public bool IsChasingFood => IsRecoveringFood && recoveryTarget != null;
         public bool CanMove => !IsPaused && !IsMapOpen && !IsSettled && (rider == null || !rider.IsRecovering);
         public Transform Target => ActiveOrder == null ? null : IsChasingFood ? recoveryTarget :
-            Stage == DeliveryStage.Pickup || IsRecoveringFood ? ActiveOrder.Route.PickupPoint : ActiveOrder.Route.Customer.transform;
+            Stage == DeliveryStage.Pickup || IsRecoveringFood ? ActiveOrder.PickupPoint : ActiveOrder.Recipient.transform;
         public float TargetDistance => Target == null ? 0f : Vector3.Distance(player.position, Target.position);
         public bool CanPickup => (Stage == DeliveryStage.Pickup || (IsRecoveringFood && !IsChasingFood)) && CanMove && ActiveOrder != null
-            && Vector3.Distance(player.position, ActiveOrder.Route.PickupPoint.position) <= pickupRange;
+            && Vector3.Distance(player.position, ActiveOrder.PickupPoint.position) <= pickupRange;
 
         private void Awake()
         {
             rider = player.GetComponent<RiderMotor>();
-            dayStartedAt = Time.timeAsDouble;
+            var controller = SceneController.Instance;
+            Progress = controller != null ? controller.Progress : null;
+            if (Progress == null)
+            {
+                // Playing the game scene directly starts a fresh day-1 run.
+                Progress = new RunProgress(1, economy != null ? economy.StartingDebt : 0);
+                if (controller != null) controller.Progress = Progress;
+            }
+            if (Progress.HasInline && economy != null && rider != null)
+                rider.EquipInline(economy.InlineSpeedMultiplier, economy.InlineAccelerationMultiplier);
+            homePosition = player.position;
+            CurrentZone = startZone;
             dayDuration = daySettings != null ? daySettings.DurationSeconds : 300d;
+            if (homeLeaveDistance <= 0f) StartDay();
             FillCandidates(); SelectedOrder = candidates.Count > 0 ? candidates[0] : null;
         }
-        private void Start() { Time.timeScale = 1f; Notify(); }
+        private void Start() { ApplyTimeScale(); Notify(); }
         private void Update()
         {
+            if (!HasDayStarted && (player.position - homePosition).sqrMagnitude >= homeLeaveDistance * homeLeaveDistance) StartDay();
             RefreshDayPhase();
             if (IsRecoveringFood && awaitingThief && (recoveryTarget == null || !recoveryTarget.gameObject.activeInHierarchy))
                 RequireReplacement(recoveryTarget);
@@ -108,6 +155,13 @@ namespace DeliveryRider
             Notify();
         }
 
+        private void StartDay()
+        {
+            HasDayStarted = true;
+            dayStartedAt = Time.timeAsDouble;
+            Notify();
+        }
+
         // Called by both Update and entry points, preventing frame-order races at closing time.
         private void RefreshDayPhase()
         {
@@ -123,12 +177,14 @@ namespace DeliveryRider
         {
             if (IsSettled) return;
             DayPhase = WorkDayPhase.Settlement;
-            SettlementElapsedSeconds = Time.timeAsDouble - dayStartedAt;
+            SettlementElapsedSeconds = HasDayStarted ? Time.timeAsDouble - dayStartedAt : 0d;
+            Progress.CloseDay(Cash, CompletedCount, economy != null ? economy.LivingCost : 0);
             IsPaused = false;
-            IsMapOpen = false;
+            IsCallOpen = false;
+            mapOpen = false;
             candidates.Clear();
             SelectedOrder = null;
-            Time.timeScale = 0f;
+            ApplyTimeScale();
         }
 
         public void SelectCandidate(int index)
@@ -144,18 +200,22 @@ namespace DeliveryRider
         public bool TryAcceptOrder(DeliveryOrderOffer offer)
         {
             RefreshDayPhase();
-            if (!CanChooseOrder || offer == null || !offer.Route.IsValid || !candidates.Contains(offer)) return false;
+            if (!CanChooseOrder || offer == null || !offer.IsValid || !candidates.Contains(offer)) return false;
             ActiveOrder = offer;
             candidates.Remove(offer);
             SelectedOrder = null;
             AcceptedAt = Time.time;
-            orderAcceptedTime = Time.timeAsDouble;
-            orderDeadline = orderAcceptedTime + Math.Max(1d, offer.Definition.TimeLimitSeconds);
-            activeOnTimeReward = Mathf.Max(0, offer.Definition.OnTimeReward);
-            activeLateReward = Mathf.Max(0, offer.Definition.LateReward);
-            ActiveOrder.Route.Customer.ReturnHome();
+            HasPickedUp = false;
+            activeTimeLimit = Math.Max(1d, offer.TimeLimitSeconds);
+            activeOnTimeReward = Mathf.Max(0, offer.OnTimeReward);
+            activeLateReward = Mathf.Max(0, offer.LateReward);
+            if (offer.MovesRecipient)
+                offer.Recipient.AssignHome(offer.DestinationPoint.position + Vector3.up * recipientHeight, offer.DestinationPoint.rotation);
+            else offer.Recipient.ReturnHome();
             Stage = DeliveryStage.Pickup;
-            IsMapOpen = false;
+            IsCallOpen = false;
+            mapOpen = false;
+            ApplyTimeScale();
             Notify();
             return true;
         }
@@ -166,6 +226,12 @@ namespace DeliveryRider
             if (!CanPickup) return false;
             recoveryTarget = null;
             awaitingThief = false;
+            if (!HasPickedUp)
+            {
+                HasPickedUp = true;
+                pickedUpTime = Time.timeAsDouble;
+                orderDeadline = pickedUpTime + activeTimeLimit;
+            }
             Stage = DeliveryStage.Carrying;
             Notify();
             return true;
@@ -174,11 +240,17 @@ namespace DeliveryRider
         public bool TryDeliver(DeliveryResident recipient)
         {
             RefreshDayPhase();
-            if (!CanMove || Stage != DeliveryStage.Carrying || ActiveOrder == null || recipient != ActiveOrder.Route.Customer) return false;
+            if (!CanMove || Stage != DeliveryStage.Carrying || ActiveOrder == null || recipient != ActiveOrder.Recipient) return false;
             bool late = IsOrderLate;
             int reward = late ? activeLateReward : activeOnTimeReward;
-            var result = new DeliveryResult(ActiveOrder, Time.timeAsDouble - orderAcceptedTime, late, reward);
+            var result = new DeliveryResult(ActiveOrder, Time.timeAsDouble - pickedUpTime, late, reward);
             LastCompletedOrder = ActiveOrder;
+            if (ActiveOrder.DoorIndex >= 0)
+            {
+                usedDoors.Add(ActiveOrder.DoorIndex);
+                previousZone = ActiveOrder.PickupZone;
+                CurrentZone = ActiveOrder.DestinationZone;
+            }
             ActiveOrder = null;
             Stage = DeliveryStage.Complete;
             CompletedCount++;
@@ -189,9 +261,9 @@ namespace DeliveryRider
             if (IsDayClosed) EnterSettlement();
             else
             {
+                // The call screen is opened manually so the flying recipient stays in view.
                 FillCandidates();
                 SelectedOrder = candidates.Count > 0 ? candidates[0] : null;
-                IsMapOpen = true;
             }
             Notify();
             return true;
@@ -199,7 +271,9 @@ namespace DeliveryRider
 
         private void FillCandidates()
         {
-            if (IsDayClosed || orderRoutes == null || orderRoutes.Length == 0) return;
+            if (IsDayClosed) return;
+            if (UsesGeneratedCalls) { FillGeneratedCandidates(); return; }
+            if (orderRoutes == null || orderRoutes.Length == 0) return;
             // Round-robin offers make route replacement visible and avoid duplicates in the current list.
             int attempts = 0;
             while (candidates.Count < candidateCount && attempts < orderRoutes.Length)
@@ -208,10 +282,68 @@ namespace DeliveryRider
                 nextRoute = (nextRoute + 1) % orderRoutes.Length;
                 attempts++;
                 if (route == null || !route.IsValid) continue;
-                if (ActiveOrder != null && ActiveOrder.Definition == route.Definition) continue;
-                if (candidates.Exists(offer => offer.Definition == route.Definition)) continue;
+                if (ActiveOrder != null && ActiveOrder.Route == route) continue;
+                if (candidates.Exists(offer => offer.Route == route)) continue;
                 candidates.Add(new DeliveryOrderOffer(nextOrderNumber++, route));
             }
+        }
+
+        // Mirrors the v5.2 trial: nearest shop in the current zone, one call per other zone
+        // (not the zone the rider just came from), doors not reused within the day, main-road distance pricing.
+        private void FillGeneratedCandidates()
+        {
+            if (candidates.Count > 0) return;
+            int shop = NearestShop(CurrentZone);
+            if (shop < 0) return;
+            zonePool.Clear();
+            for (int i = 0; i < routeTable.DoorCount; i++)
+            {
+                string zone = routeTable.DoorZone(i);
+                if (zone != CurrentZone && zone != previousZone && !zonePool.Contains(zone)) zonePool.Add(zone);
+            }
+            while (zonePool.Count > candidateCount) zonePool.RemoveAt(UnityEngine.Random.Range(0, zonePool.Count));
+            foreach (string zone in zonePool)
+            {
+                int door = PickDoor(shop, zone);
+                if (door < 0) continue;
+                float distance = routeTable.ShopToDoor(shop, door);
+                var tier = economy.Tier(distance);
+                candidates.Add(new DeliveryOrderOffer(nextOrderNumber++, shopPoints[shop], recipient, doorPoints[door],
+                    routeTable.ShopName(shop), economy.RandomCustomer(), economy.RandomFood(), tier.reward, economy.LateReward(tier.reward),
+                    economy.TimeLimit(distance), distance, tier.label, routeTable.ShopZone(shop), zone, shop, door));
+            }
+        }
+
+        private int NearestShop(string zone)
+        {
+            int best = -1;
+            float bestDistance = float.PositiveInfinity;
+            for (int i = 0; i < routeTable.ShopCount; i++)
+            {
+                if (routeTable.ShopZone(i) != zone || shopPoints[i] == null) continue;
+                float distance = (shopPoints[i].position - player.position).sqrMagnitude;
+                if (distance < bestDistance) { bestDistance = distance; best = i; }
+            }
+            return best;
+        }
+
+        private int PickDoor(int shop, string zone)
+        {
+            doorPool.Clear();
+            for (int pass = 0; pass < 2 && doorPool.Count == 0; pass++)
+                for (int i = 0; i < routeTable.DoorCount; i++)
+                    if (routeTable.DoorZone(i) == zone && doorPoints[i] != null && (pass == 1 || !usedDoors.Contains(i))) doorPool.Add(i);
+            if (doorPool.Count == 0) return -1;
+            doorPool.RemoveAll(i => routeTable.ShopToDoor(shop, i) < economy.MinimumDistance);
+            if (doorPool.Count == 0)
+            {
+                // Every door is too close: fall back to the two farthest, as the trial build does.
+                for (int i = 0; i < routeTable.DoorCount; i++)
+                    if (routeTable.DoorZone(i) == zone && doorPoints[i] != null) doorPool.Add(i);
+                doorPool.Sort((a, c) => routeTable.ShopToDoor(shop, c).CompareTo(routeTable.ShopToDoor(shop, a)));
+                if (doorPool.Count > 2) doorPool.RemoveRange(2, doorPool.Count - 2);
+            }
+            return doorPool[UnityEngine.Random.Range(0, doorPool.Count)];
         }
 
         public void TogglePause()
@@ -219,36 +351,96 @@ namespace DeliveryRider
             RefreshDayPhase();
             if (IsSettled) return;
             IsPaused = !IsPaused;
-            Time.timeScale = IsPaused ? 0f : 1f;
+            ApplyTimeScale();
             Notify();
         }
 
+        // The map keeps the day running; only the call screen stops time.
         public void ToggleMap()
         {
             RefreshDayPhase();
             if (IsPaused || IsSettled) return;
-            IsMapOpen = !IsMapOpen;
+            if (IsCallOpen) { CloseCall(); return; }
+            mapOpen = !mapOpen;
             Notify();
+        }
+
+        public bool OpenCall()
+        {
+            RefreshDayPhase();
+            if (IsCallOpen || !CanOpenCall) return false;
+            if (candidates.Count == 0) FillCandidates();
+            if (candidates.Count == 0) return false;
+            if (SelectedOrder == null || !candidates.Contains(SelectedOrder)) SelectedOrder = candidates[0];
+            IsCallOpen = true;
+            mapOpen = false;
+            ApplyTimeScale();
+            Notify();
+            return true;
+        }
+
+        public void CloseCall()
+        {
+            if (!IsCallOpen) return;
+            IsCallOpen = false;
+            ApplyTimeScale();
+            Notify();
+        }
+
+        // Key 1 opens the call screen; inside it, keys 1 and 2 accept that slot.
+        public void HandleCallKey(int slot)
+        {
+            if (IsPaused || IsSettled) return;
+            if (!IsCallOpen) { if (slot == 0) OpenCall(); return; }
+            if (slot >= 0 && slot < candidates.Count) TryAcceptOrder(candidates[slot]);
         }
 
         public void HandleEscape()
         {
-            if (!IsPaused && IsMapOpen) ToggleMap();
+            if (IsPaused) TogglePause();
+            else if (IsCallOpen) CloseCall();
+            else if (mapOpen) ToggleMap();
             else TogglePause();
         }
 
+        private void ApplyTimeScale() => Time.timeScale = IsPaused || IsCallOpen || IsSettled ? 0f : 1f;
 
-        public void ReplayDay()
+
+        // Settlement actions. RunProgress applies the money rules; the session is the only caller.
+        public bool CanBuyInline => economy != null && Progress.CanBuyInline(economy.InlinePrice, economy.InlineSaleDay);
+
+        public bool TryBuyInline()
+        {
+            if (!IsSettled || !CanBuyInline || !Progress.TryBuyInline(economy.InlinePrice, economy.InlineSaleDay)) return false;
+            Notify();
+            return true;
+        }
+
+        public bool TryRepayDebt()
+        {
+            if (!IsSettled || !Progress.TryRepay()) return false;
+            RunProgress.DeleteSave();
+            Notify();
+            return true;
+        }
+
+        // Closing the settlement screen always saves the start of the next day, whether the player continues or quits.
+        public void ContinueToNextDay() => LeaveSettlement(ESceneType.GameScene);
+        public void SaveAndLeaveToTitle() => LeaveSettlement(ESceneType.Title);
+
+        private void LeaveSettlement(ESceneType destination)
         {
             if (!IsSettled || leavingScene) return;
             leavingScene = true;
-
-            // ≈∏¿”Ω∫ƒ…¿œ ¡§ªÛ»≠ (¡§ªÍ »≠∏Èø°º≠ Ω√∞£¿Ã ∏ÿ√Á¿÷¿ª ºˆ ¿÷¿∏π«∑Œ)
+            if (!Progress.IsEnded)
+            {
+                Progress.StartNextDay();
+                Progress.Save();
+            }
+            else if (SceneController.Instance != null) SceneController.Instance.Progress = null;
+            // Ï†ïÏÇ∞ ÌôîÎ©¥ÏóêÏÑú Î©àÏ∂ò ÏãúÍ∞ÑÏùÑ Îã§Ïãú ÌùêÎ•¥Í≤å Ìïú Îí§ Ï†ÑÏó≠ Îß§ÎãàÏ†ÄÏóêÍ≤å Ïî¨ Ï†ÑÌôòÏùÑ Îß°Í∏¥Îã§.
             Time.timeScale = 1f;
-
-            // ±‚¡∏ πÊΩƒ: SceneManager.LoadSceneAsync("GameScene");
-            // ∫Ø∞Êµ» πÊΩƒ: ¿¸ø™ ∏≈¥œ¿˙ø°∞‘ æ¿ ¿¸»Ø ¿ß¿”
-            SceneController.Instance.NextScene(ESceneType.GameScene);
+            SceneController.Instance.NextScene(Progress.IsEnded ? ESceneType.Title : destination);
         }
 
         private void Notify()

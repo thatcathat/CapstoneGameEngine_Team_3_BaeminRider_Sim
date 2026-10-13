@@ -13,8 +13,8 @@ namespace DeliveryRider
         public DeliveryResult(DeliveryOrderOffer order, double durationSeconds, bool wasLate, int reward)
         {
             Number = order.Number;
-            Restaurant = order.Definition.RestaurantName;
-            Customer = order.Definition.CustomerName;
+            Restaurant = order.RestaurantName;
+            Customer = order.CustomerName;
             DurationSeconds = durationSeconds;
             WasLate = wasLate;
             Reward = reward;

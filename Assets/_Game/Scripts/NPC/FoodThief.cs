@@ -3,7 +3,7 @@ using UnityEngine;
 namespace DeliveryRider
 {
     [RequireComponent(typeof(Rigidbody))]
-    public sealed class FoodThief : MonoBehaviour
+    public sealed class FoodThief : MonoBehaviour, IPunchable
     {
         private Rigidbody body;
         private DeliverySession session;
@@ -18,6 +18,9 @@ namespace DeliveryRider
         {
             session = owner;
             carryingFood = hasStolenFood;
+            // A thief may be reused by a hazard slot, so every run starts from the first waypoint.
+            Finished = false;
+            waypoint = 0;
             var bag = transform.Find("StolenFood");
             if (bag != null) bag.gameObject.SetActive(carryingFood);
             speed = Mathf.Max(0.1f, moveSpeed);
@@ -47,15 +50,14 @@ namespace DeliveryRider
             body.linearVelocity = new Vector3(direction.x * speed, body.linearVelocity.y, direction.z * speed);
             body.MoveRotation(Quaternion.LookRotation(direction));
         }
-        private void OnCollisionEnter(Collision collision) => TryCatch(collision);
-        private void OnCollisionStay(Collision collision) => TryCatch(collision);
-        private void TryCatch(Collision collision)
+        // The thief is caught by a punch, not by running into it.
+        public bool ReceivePunch(Vector3 direction)
         {
-            if (Finished || session == null || collision.rigidbody == null) return;
-            if (collision.rigidbody.GetComponent<RiderMotor>() == null) return;
-            if (carryingFood && !session.TryRecoverFood(transform)) return;
+            if (Finished || session == null) return false;
+            if (carryingFood && !session.TryRecoverFood(transform)) return false;
             Finished = true;
             gameObject.SetActive(false);
+            return true;
         }
         private void Escape()
         {

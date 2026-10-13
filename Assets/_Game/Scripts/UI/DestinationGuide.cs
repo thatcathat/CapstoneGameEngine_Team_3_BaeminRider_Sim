@@ -47,7 +47,7 @@ namespace DeliveryRider
                 distanceLabel.text = (session.IsChasingFood ? "도둑" : session.IsRecoveringFood ? "재수령" : pickup ? "수령" : "전달") + $" {meters}m";
                 ring.startColor = ring.endColor = color;
                 beaconLabel.color = color;
-                beaconLabel.text = session.IsChasingFood ? "부딪혀서 음식 회수" : session.IsRecoveringFood ? "여기서 음식 다시 받기" : pickup ? "여기서 음식 수령" : "이 고객에게 전달";
+                beaconLabel.text = session.IsChasingFood ? "주먹으로 쳐서 음식 회수" : session.IsRecoveringFood ? "여기서 음식 다시 받기" : pickup ? "여기서 음식 수령" : "주먹으로 쳐서 전달";
                 previousMeters = meters; previousStage = session.Stage;
                 previousChasing = session.IsChasingFood;
             }
