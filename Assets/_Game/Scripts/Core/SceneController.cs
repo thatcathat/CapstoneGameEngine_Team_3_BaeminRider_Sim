@@ -13,7 +13,7 @@ namespace DeliveryRider
     [DefaultExecutionOrder(-200)]
     public sealed class SceneController : MonoBehaviour
     {
-        // The four-district map is the main game scene; the legacy GameScene is kept for reference only.
+        // The four-district map is the game scene.
         private const string GameSceneName = "FourDistrictPrototype";
         public static SceneController Instance { get; private set; }
 
@@ -71,7 +71,7 @@ namespace DeliveryRider
 
         private void UpdateCurrentScene(string sceneName)
         {
-            if (sceneName == GameSceneName || sceneName == "GameScene") currentScene = ESceneType.GameScene;
+            if (sceneName == GameSceneName) currentScene = ESceneType.GameScene;
             else if (sceneName == "TitleScene") currentScene = ESceneType.Title;
         }
 

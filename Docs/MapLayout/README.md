@@ -27,3 +27,4 @@
 2026-10-14 후속 제작에서 평탄화와 경사 제한을 적용한 `FourDistrictPrototype`을 생성했다. 이 문서의 0~12m 배치도는 초기안으로 보존하며, 실제 생성 결과는 [4구역 지형 구현](../4구역_지형_구현.md)과 `district_geometry.json`, `district_surface.png`를 기준으로 한다. 현재 지형 높이차는 약 5.433m, 최대 경사는 6.8%다.
 
 - 거리표: `python Tools/build_route_table.py <배달_체험판_3D.html 경로>` → `route_table.json`(가게×문, 문×문 큰길 기준 거리). Unity에는 `Delivery Rider → Apply Zone Calls (M3)`로 가져온다.
+- 지면 색 텍스처: `python Tools/build_ground_texture.py <배달_체험판_3D.html 경로>` → `district_ground.png`(도로를 그리지 않은 구역 색만). 지형 `Ground.mat`에 쓰고, 지도 UI는 기존 `district_surface.png`를 쓴다.

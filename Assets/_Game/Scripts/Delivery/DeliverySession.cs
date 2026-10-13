@@ -11,14 +11,13 @@ namespace DeliveryRider
     public sealed class DeliverySession : MonoBehaviour
     {
         [SerializeField] private Transform player;
-        [SerializeField] private DeliveryOrderRoute[] orderRoutes = Array.Empty<DeliveryOrderRoute>();
         [SerializeField, Range(1, 3)] private int candidateCount = 2;
         [Tooltip("The day clock starts once the player walks this far from the start point. 0 starts it immediately.")]
         [SerializeField, Min(0f)] private float homeLeaveDistance = 6f;
         [SerializeField] private GameObject foodBag;
         [SerializeField] private float pickupRange = 2.8f;
         [SerializeField] private DeliveryDaySettings daySettings;
-        [Header("Generated calls (leave empty to use the fixed order routes)")]
+        [Header("Calls")]
         [SerializeField] private DeliveryRouteTable routeTable;
         [SerializeField] private DeliveryEconomySettings economy;
         [Tooltip("Pickup points in route table shop order.")]
@@ -68,7 +67,6 @@ namespace DeliveryRider
         public double OrderOverdueSeconds => ActiveOrder == null || !HasPickedUp ? 0d : Math.Max(0d, Time.timeAsDouble - orderDeadline);
         public bool IsOrderLate => ActiveOrder != null && HasPickedUp && Time.timeAsDouble > orderDeadline;
         private readonly List<DeliveryOrderOffer> candidates = new List<DeliveryOrderOffer>();
-        private int nextRoute;
         private int nextOrderNumber = 1;
         public IReadOnlyList<DeliveryOrderOffer> Candidates => candidates;
         public DeliveryOrderOffer SelectedOrder { get; private set; }
@@ -209,9 +207,7 @@ namespace DeliveryRider
             activeTimeLimit = Math.Max(1d, offer.TimeLimitSeconds);
             activeOnTimeReward = Mathf.Max(0, offer.OnTimeReward);
             activeLateReward = Mathf.Max(0, offer.LateReward);
-            if (offer.MovesRecipient)
-                offer.Recipient.AssignHome(offer.DestinationPoint.position + Vector3.up * recipientHeight, offer.DestinationPoint.rotation);
-            else offer.Recipient.ReturnHome();
+            offer.Recipient.AssignHome(offer.DestinationPoint.position + Vector3.up * recipientHeight, offer.DestinationPoint.rotation);
             Stage = DeliveryStage.Pickup;
             IsCallOpen = false;
             mapOpen = false;
@@ -272,20 +268,12 @@ namespace DeliveryRider
         private void FillCandidates()
         {
             if (IsDayClosed) return;
-            if (UsesGeneratedCalls) { FillGeneratedCandidates(); return; }
-            if (orderRoutes == null || orderRoutes.Length == 0) return;
-            // Round-robin offers make route replacement visible and avoid duplicates in the current list.
-            int attempts = 0;
-            while (candidates.Count < candidateCount && attempts < orderRoutes.Length)
+            if (!UsesGeneratedCalls)
             {
-                var route = orderRoutes[nextRoute];
-                nextRoute = (nextRoute + 1) % orderRoutes.Length;
-                attempts++;
-                if (route == null || !route.IsValid) continue;
-                if (ActiveOrder != null && ActiveOrder.Route == route) continue;
-                if (candidates.Exists(offer => offer.Route == route)) continue;
-                candidates.Add(new DeliveryOrderOffer(nextOrderNumber++, route));
+                Debug.LogError("DeliverySession needs a route table, economy settings, recipient and matching shop/door points.", this);
+                return;
             }
+            FillGeneratedCandidates();
         }
 
         // Mirrors the v5.2 trial: nearest shop in the current zone, one call per other zone

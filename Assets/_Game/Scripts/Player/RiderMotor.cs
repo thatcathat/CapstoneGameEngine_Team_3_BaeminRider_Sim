@@ -33,7 +33,6 @@ namespace DeliveryRider
         public event System.Action<UnityEngine.Object> HazardHit;
         private readonly RaycastHit[] groundHits = new RaycastHit[16];
         private CapsuleCollider capsule;
-        private bool incidentCrash;
         private float trafficRecoveryUntil;
         private float nextTrafficHitAt;
         private bool trafficRecoveryActive;
@@ -73,33 +72,13 @@ namespace DeliveryRider
             speed *= Mathf.Max(1f, speedMultiplier);
             acceleration *= Mathf.Clamp(accelerationMultiplier, 0.1f, 1f);
         }
-        public bool IsRecovering => incidentCrash || trafficRecoveryActive;
+        public bool IsRecovering => trafficRecoveryActive;
 
-        public void BeginCrash(Vector3 impulse)
-        {
-            slipOwner = null;
-            lastHazard = null;
-            hazardChainCount = 0;
-            incidentCrash = true;
-            trafficRecoveryActive = false;
-            movement = Vector2.zero;
-            body.linearVelocity = Vector3.zero;
-            body.AddForce(impulse, ForceMode.VelocityChange);
-        }
-
-        public void EndCrash()
-        {
-            if (!incidentCrash) return;
-            incidentCrash = false;
-            body.linearVelocity = Vector3.zero;
-            body.angularVelocity = Vector3.zero;
-        }
-
-        // Traffic never starts/cancels an IncidentDirector event or changes food ownership.
+        // Traffic never changes food ownership.
         public bool TryTrafficCrash(Vector3 impulse, float recoverySeconds)
             => TryContactCrash(impulse, recoverySeconds);
 
-        // Contact hazards share a short recovery without owning/cancelling an IncidentDirector event.
+        // Contact hazards share a short recovery.
         public bool TryContactCrash(Vector3 impulse, float recoverySeconds)
         {
             if (session == null || !session.CanMove || IsRecovering || Time.time < nextTrafficHitAt) return false;
@@ -139,7 +118,7 @@ namespace DeliveryRider
 
         private bool AcceptHazard(UnityEngine.Object source)
         {
-            if (source == null || session == null || session.IsPaused || session.IsMapOpen || session.IsSettled || incidentCrash) return false;
+            if (source == null || session == null || session.IsPaused || session.IsMapOpen || session.IsSettled) return false;
             bool chain = lastHazard != null && lastHazard != source && Time.time - lastHazardHitAt <= 8;
             if (Time.time - lastHazardHitAt < 0.35f) return false;
             if (!chain && (IsRecovering || Time.time < nextTrafficHitAt)) return false;
@@ -243,7 +222,7 @@ namespace DeliveryRider
             {
                 body.position = spawn;
                 body.linearVelocity = body.angularVelocity = Vector3.zero;
-                incidentCrash = trafficRecoveryActive = false;
+                trafficRecoveryActive = false;
                 slipOwner = null;
                 return;
             }

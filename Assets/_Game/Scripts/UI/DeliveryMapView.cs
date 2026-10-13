@@ -12,7 +12,6 @@ namespace DeliveryRider
         [SerializeField] private RectTransform playerMarker;
         [SerializeField] private RectTransform[] candidateMarkers;
         [SerializeField] private RectTransform[] candidateTethers;
-        [SerializeField] private Transform[] pickupPoints;
         [SerializeField] private UnityEngine.UI.Image[] pickupMarkers;
         [SerializeField] private RectTransform activeCustomerMarker;
         [SerializeField] private TMP_Text activeCustomerLabel;
@@ -55,18 +54,7 @@ namespace DeliveryRider
                 Line(candidateTethers[i], actual, displayed);
             }
             var shown = session.ActiveOrder ?? (session.IsCallOpen ? session.SelectedOrder : null);
-            if (session.RouteTable == null)
-            {
-                // Legacy fixed map: three restaurants always shown.
-                for (int i = 0; i < pickupPoints.Length; i++)
-                {
-                    pickupMarkers[i].rectTransform.anchoredPosition = Point(pickupPoints[i].position);
-                    bool selected = shown != null && shown.PickupPoint == pickupPoints[i];
-                    pickupMarkers[i].color = selected ? Gold : new Color32(216, 210, 188, 255);
-                    pickupMarkers[i].rectTransform.localScale = Vector3.one * (selected ? 1.12f : 1f);
-                }
-            }
-            else ShowCallShops(shown);
+            ShowCallShops(shown);
             bool active = session.ActiveOrder != null;
             if (thiefMarker != null)
             {
@@ -101,7 +89,7 @@ namespace DeliveryRider
             Line(deliveryConnection, session.Stage == DeliveryStage.Carrying ? player : pickup, destination);
         }
 
-        // Generated calls: only the shops involved in the open calls or the active order are drawn.
+        // Only the shops involved in the open calls or the active order are drawn.
         private void ShowCallShops(DeliveryOrderOffer shown)
         {
             int count = 0;

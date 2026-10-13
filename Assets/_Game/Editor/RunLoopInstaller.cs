@@ -14,7 +14,7 @@ namespace DeliveryRider.Editor
     public static class RunLoopInstaller
     {
         private const string GameScenePath = "Assets/_Game/Scenes/FourDistrictPrototype.unity";
-        private const string TitleScenePath = "Assets/Scenes/TitleScene.unity";
+        private const string TitleScenePath = "Assets/_Game/Scenes/TitleScene.unity";
         private const string EconomyAssetPath = "Assets/_Game/Settings/EconomySettings.asset";
 
         [MenuItem("Delivery Rider/Apply Run Loop (M4)")]

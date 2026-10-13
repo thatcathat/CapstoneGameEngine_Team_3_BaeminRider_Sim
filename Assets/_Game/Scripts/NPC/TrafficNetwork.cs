@@ -1,0 +1,231 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace DeliveryRider
+{
+    // One drivable path: a lane along a road edge, or a turn connector inside a junction.
+    [Serializable]
+    public sealed class TrafficPath
+    {
+        public Vector3[] points = Array.Empty<Vector3>();
+        public float[] cumulative = Array.Empty<float>();
+        public float length;
+        [Tooltip("Junction this connector belongs to, or -1 for a lane.")]
+        public int junction = -1;
+        [Tooltip("Speed cap on this path (turns are slower).")]
+        public float speedLimit = 100f;
+        public int[] next = Array.Empty<int>();
+        public float[] nextWeights = Array.Empty<float>();
+        public bool IsConnector => junction >= 0;
+    }
+
+    [Serializable]
+    public sealed class TrafficJunctionData
+    {
+        public Vector3 center;
+    }
+
+    // Road traffic for the four-district map: lanes and junction connectors baked from the road splines
+    // (Delivery Rider -> Apply Traffic Network), vehicles spawned at start. Junctions are reserved so crossing
+    // flows never meet; cars entering from the same lane through the same connector may follow each other in.
+    public sealed class TrafficNetwork : MonoBehaviour
+    {
+        [Serializable]
+        public struct VehicleKind
+        {
+            public TrafficCar prefab;
+            [Min(0f)] public float share;
+            public Color[] colors;
+        }
+
+        [SerializeField] private DeliverySession session;
+        [SerializeField] private TrafficPath[] paths = Array.Empty<TrafficPath>();
+        [SerializeField] private TrafficJunctionData[] junctions = Array.Empty<TrafficJunctionData>();
+        [Header("Spawning (test values)")]
+        [SerializeField] private VehicleKind[] kinds = Array.Empty<VehicleKind>();
+        [SerializeField, Min(0)] private int vehicleCount = 50;
+        [SerializeField, Min(4f)] private float minimumSpacing = 14f;
+        [SerializeField] private int seed = 7;
+
+        private sealed class JunctionState
+        {
+            public readonly List<TrafficCar> occupants = new List<TrafficCar>();
+            public readonly List<TrafficCar> waiting = new List<TrafficCar>();
+        }
+
+        private List<TrafficCar>[] occupants;
+        private JunctionState[] states;
+        private readonly List<TrafficCar> cars = new List<TrafficCar>();
+
+        public DeliverySession Session => session;
+        public int PathCount => paths.Length;
+        public int JunctionCount => junctions.Length;
+        public TrafficPath Path(int index) => paths[index];
+        public IReadOnlyList<TrafficCar> Cars => cars;
+
+        public void Configure(DeliverySession deliverySession, TrafficPath[] bakedPaths, TrafficJunctionData[] bakedJunctions, VehicleKind[] vehicleKinds)
+        {
+            session = deliverySession;
+            paths = bakedPaths;
+            junctions = bakedJunctions;
+            kinds = vehicleKinds;
+        }
+
+        private void Awake()
+        {
+            occupants = new List<TrafficCar>[paths.Length];
+            for (int i = 0; i < occupants.Length; i++) occupants[i] = new List<TrafficCar>();
+            states = new JunctionState[junctions.Length];
+            for (int i = 0; i < states.Length; i++) states[i] = new JunctionState();
+        }
+
+        private void Start() => Spawn();
+
+        // Cars go on lanes only, weighted by lane length, at least minimumSpacing apart.
+        private void Spawn()
+        {
+            var random = new System.Random(seed);
+            var lanes = new List<int>();
+            float total = 0f;
+            for (int i = 0; i < paths.Length; i++)
+                if (!paths[i].IsConnector && paths[i].length > 12f) { lanes.Add(i); total += paths[i].length; }
+            float shareTotal = 0f;
+            foreach (var kind in kinds) if (kind.prefab != null) shareTotal += kind.share;
+            if (lanes.Count == 0 || shareTotal <= 0f) return;
+
+            int attempts = 0;
+            while (cars.Count < vehicleCount && attempts++ < vehicleCount * 40)
+            {
+                float pick = (float)random.NextDouble() * total;
+                int lane = lanes[lanes.Count - 1];
+                foreach (int candidate in lanes) { if (pick < paths[candidate].length) { lane = candidate; break; } pick -= paths[candidate].length; }
+                var kind = PickKind(random, shareTotal);
+                float half = kind.prefab.Length * 0.5f;
+                float distance = half + 2f + (float)random.NextDouble() * Mathf.Max(0f, paths[lane].length - kind.prefab.Length - 4f);
+                bool clear = true;
+                foreach (var other in occupants[lane])
+                    if (Mathf.Abs(other.Distance - distance) < minimumSpacing + (other.Length + kind.prefab.Length) * 0.5f) { clear = false; break; }
+                if (!clear) continue;
+
+                var car = Instantiate(kind.prefab, transform);
+                car.name = kind.prefab.name + "_" + cars.Count;
+                if (kind.colors != null && kind.colors.Length > 0) car.Paint(kind.colors[random.Next(kind.colors.Length)]);
+                car.Initialize(this, lane, distance, random.Next());
+                cars.Add(car);
+            }
+        }
+
+        private VehicleKind PickKind(System.Random random, float shareTotal)
+        {
+            float pick = (float)random.NextDouble() * shareTotal;
+            foreach (var kind in kinds)
+            {
+                if (kind.prefab == null) continue;
+                if (pick < kind.share) return kind;
+                pick -= kind.share;
+            }
+            return kinds[0];
+        }
+
+        public void Sample(int path, float distance, out Vector3 position, out Vector3 forward)
+        {
+            var p = paths[path];
+            var points = p.points;
+            distance = Mathf.Clamp(distance, 0f, p.length);
+            int i = Array.BinarySearch(p.cumulative, distance);
+            if (i < 0) i = ~i - 1;
+            i = Mathf.Clamp(i, 0, points.Length - 2);
+            float span = p.cumulative[i + 1] - p.cumulative[i];
+            position = Vector3.Lerp(points[i], points[i + 1], span > 0f ? (distance - p.cumulative[i]) / span : 0f);
+            forward = points[i + 1] - points[i];
+            forward = forward.sqrMagnitude > 1e-6f ? forward.normalized : Vector3.forward;
+        }
+
+        public int ChooseNext(int path, System.Random random)
+        {
+            var p = paths[path];
+            if (p.next.Length == 0) return -1;
+            float total = 0f;
+            for (int i = 0; i < p.next.Length; i++) total += i < p.nextWeights.Length ? p.nextWeights[i] : 1f;
+            float pick = (float)random.NextDouble() * total;
+            for (int i = 0; i < p.next.Length; i++)
+            {
+                pick -= i < p.nextWeights.Length ? p.nextWeights[i] : 1f;
+                if (pick <= 0f) return p.next[i];
+            }
+            return p.next[p.next.Length - 1];
+        }
+
+        public void Enter(TrafficCar car, int path) { if (path >= 0) occupants[path].Add(car); }
+        public void Leave(TrafficCar car, int path) { if (path >= 0) occupants[path].Remove(car); }
+
+        // Free space from the car's front bumper to the rear of the nearest car ahead along its planned paths.
+        public float GapAhead(TrafficCar car, float lookAhead)
+        {
+            float best = lookAhead;
+            float offset = 0f;
+            int path = car.PathIndex;
+            float from = car.Distance;
+            for (int step = 0; step < 3 && path >= 0 && offset < lookAhead; step++)
+            {
+                foreach (var other in occupants[path])
+                {
+                    if (other == car) continue;
+                    float ahead = offset + other.Distance - from;
+                    if (ahead <= 0f) continue;
+                    float gap = ahead - (other.Length + car.Length) * 0.5f;
+                    if (gap < best) best = gap;
+                }
+                offset += paths[path].length - from;
+                from = 0f;
+                path = step == 0 ? car.NextIndex : (paths[path].next.Length == 1 ? paths[path].next[0] : -1);
+            }
+            return best;
+        }
+
+        // Room at the start of a lane, so a car never stops inside a junction waiting for space.
+        public float FreeEntry(int lane)
+        {
+            float free = paths[lane].length;
+            foreach (var other in occupants[lane]) free = Mathf.Min(free, other.Distance - other.Length * 0.5f);
+            return free;
+        }
+
+        // A junction admits one connector at a time (several cars may follow on that same connector), first come first served.
+        public bool TryEnterJunction(int junction, TrafficCar car, int connector)
+        {
+            var state = states[junction];
+            state.occupants.RemoveAll(c => c == null || !c.isActiveAndEnabled);
+            state.waiting.RemoveAll(c => c == null || !c.isActiveAndEnabled);
+            if (state.occupants.Contains(car)) return true;
+            if (!state.waiting.Contains(car)) state.waiting.Add(car);
+            bool sameFlow = state.occupants.Count > 0 && state.occupants.TrueForAll(c => c.NextIndex == connector || c.PathIndex == connector);
+            bool othersWaiting = state.waiting.Exists(c => c != car && c.NextIndex != connector);
+            bool grant = state.occupants.Count == 0 ? state.waiting[0] == car : sameFlow && !othersWaiting;
+            if (!grant) return false;
+            state.waiting.Remove(car);
+            state.occupants.Add(car);
+            return true;
+        }
+
+        public void LeaveJunction(int junction, TrafficCar car)
+        {
+            if (junction < 0 || junction >= states.Length) return;
+            states[junction].occupants.Remove(car);
+            states[junction].waiting.Remove(car);
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            for (int i = 0; i < paths.Length; i++)
+            {
+                Gizmos.color = paths[i].IsConnector ? Color.yellow : Color.cyan;
+                var points = paths[i].points;
+                for (int k = 1; k < points.Length; k++) Gizmos.DrawLine(points[k - 1] + Vector3.up * 0.3f, points[k] + Vector3.up * 0.3f);
+            }
+            Gizmos.color = Color.magenta;
+            foreach (var junction in junctions) Gizmos.DrawWireSphere(junction.center, 2f);
+        }
+    }
+}
