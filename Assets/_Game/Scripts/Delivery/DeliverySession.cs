@@ -434,8 +434,9 @@ namespace DeliveryRider
         private void Notify()
         {
             foodBag.SetActive(Stage == DeliveryStage.Carrying);
-            Cursor.lockState = CanMove ? CursorLockMode.Locked : CursorLockMode.None;
-            Cursor.visible = !CanMove;
+            bool canLook = !IsPaused && !IsMapOpen && !IsSettled;
+            Cursor.lockState = canLook ? CursorLockMode.Locked : CursorLockMode.None;
+            Cursor.visible = !canLook;
             Changed?.Invoke();
         }
 

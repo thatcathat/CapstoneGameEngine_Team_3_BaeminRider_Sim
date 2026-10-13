@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 namespace DeliveryRider
 {
     [RequireComponent(typeof(Rigidbody))]
-    public sealed class RiderMotor : MonoBehaviour
+    public sealed partial class RiderMotor : MonoBehaviour
     {
         [SerializeField] private Transform view;
         [SerializeField] private DeliverySession session;
@@ -16,6 +16,8 @@ namespace DeliveryRider
         [SerializeField, Range(0, 60)] private float maximumSlope = 35;
         [SerializeField] private LayerMask groundMask = 1;
         [SerializeField, Min(0.05f)] private float groundReach = 0.3f;
+        [Tooltip("Close support tolerance; groundReach is reserved for following a road already being walked on.")]
+        [SerializeField, Min(0.001f)] private float groundContactTolerance = 0.03f;
         [SerializeField, Min(1)] private float safeFallDepth = 6;
         [Header("Punch and jump (test values)")]
         [SerializeField, Min(0.05f)] private float punchCooldown = 0.35f;
@@ -28,7 +30,10 @@ namespace DeliveryRider
         private readonly System.Collections.Generic.List<IPunchable> punched = new System.Collections.Generic.List<IPunchable>(8);
         private float nextPunchAt;
         private bool jumpQueued;
+        private bool normalJumpActive;
         public event System.Action Punched;
+        public event System.Action<float> ContactImpact;
+        public event System.Action SafePositionRestored;
         // Raised when an authored hazard actually hits (crash or slip); used for chain ignition.
         public event System.Action<UnityEngine.Object> HazardHit;
         private readonly RaycastHit[] groundHits = new RaycastHit[16];
@@ -43,8 +48,8 @@ namespace DeliveryRider
         [SerializeField, Min(0.1f)] private float slipMaximumSpeed = 8;
         private UnityEngine.Object slipOwner;
         private float slipUntil;
-        private float contactFailsafeUntil;
         private bool groundedForHazards;
+        private Vector3 lastGroundPoint;
         public bool IsGroundedForHazards => groundedForHazards;
         public bool IsSlipping => slipOwner != null && Time.time < slipUntil;
         public int HazardChainCount => Time.time - lastHazardHitAt <= 8 ? hazardChainCount : 0;
@@ -61,6 +66,11 @@ namespace DeliveryRider
         private Vector2 movement;
         private Vector3 spawn;
         public Vector2 Look => session.CanMove ? look.ReadValue<Vector2>() : Vector2.zero;
+        public bool CanLook => session != null && !session.IsPaused && !session.IsMapOpen && !session.IsSettled;
+        public bool CameraFrozen => session == null || session.IsPaused || session.IsCallOpen || session.IsSettled;
+        public Vector2 CameraLook => CanLook ? look.ReadValue<Vector2>() : Vector2.zero;
+        public float HorizontalSpeed => body == null ? 0f : Vector3.ProjectOnPlane(body.linearVelocity, Vector3.up).magnitude;
+        public Vector3 Velocity => body == null ? Vector3.zero : body.linearVelocity;
         public float Speed => speed;
         public bool HasInline { get; private set; }
 
@@ -101,6 +111,7 @@ namespace DeliveryRider
         {
             if (!groundedForHazards || !AcceptHazard(source)) return false;
             trafficRecoveryActive = false;
+            SetReactionState(RiderReactionState.Sliding);
             slipOwner = source;
             slipUntil = Time.time + Mathf.Max(0.1f, duration);
             var horizontal = Vector3.ProjectOnPlane(body.linearVelocity, Vector3.up);
@@ -113,7 +124,9 @@ namespace DeliveryRider
 
         public void CancelSlip(UnityEngine.Object source)
         {
-            if (slipOwner == source) slipOwner = null;
+            if (slipOwner != source) return;
+            slipOwner = null;
+            if (ReactionState == RiderReactionState.Sliding) SetReactionState(RiderReactionState.Normal);
         }
 
         private bool AcceptHazard(UnityEngine.Object source)
@@ -134,11 +147,12 @@ namespace DeliveryRider
             groundedForHazards = false;
             trafficRecoveryActive = true;
             trafficRecoveryUntil = Time.time + Mathf.Max(0.1f, recoverySeconds);
-            contactFailsafeUntil = trafficRecoveryUntil + 6;
             nextTrafficHitAt = trafficRecoveryUntil + 1;
             movement = Vector2.zero;
             body.linearVelocity = Vector3.zero;
             body.AddForce(impulse, ForceMode.VelocityChange);
+            BeginFlight(impulse);
+            ContactImpact?.Invoke(impulse.magnitude);
         }
 
         private void Awake()
@@ -146,6 +160,7 @@ namespace DeliveryRider
             body = GetComponent<Rigidbody>();
             capsule = GetComponent<CapsuleCollider>();
             spawn = transform.position;
+            safeRecovery = GetComponent<RiderSafeRecovery>();
             gameplay = new InputActionMap("Gameplay");
             move = gameplay.AddAction("Move", InputActionType.Value);
             move.AddCompositeBinding("2DVector").With("Up", "<Keyboard>/w")
@@ -158,10 +173,11 @@ namespace DeliveryRider
             punch = gameplay.AddAction("Punch", InputActionType.Button, "<Keyboard>/f");
             punch.AddBinding("<Mouse>/leftButton");
             jump = gameplay.AddAction("Jump", InputActionType.Button, "<Keyboard>/space");
+            recover = gameplay.AddAction("Recover", InputActionType.Button, "<Keyboard>/r");
         }
 
         private void OnEnable() => gameplay.Enable();
-        private void OnDisable() { gameplay.Disable(); movement = Vector2.zero; slipOwner = null; trafficRecoveryActive = false; }
+        private void OnDisable() { gameplay.Disable(); movement = Vector2.zero; ResetReaction(); }
         private void OnDestroy() => gameplay.Dispose();
 
         private void Update()
@@ -172,13 +188,16 @@ namespace DeliveryRider
                 trafficRecoveryActive = false;
                 groundedForHazards = false;
                 body.linearVelocity = body.angularVelocity = Vector3.zero;
+                ResetReaction();
             }
-            else if (session.IsMapOpen) slipOwner = null;
+            else if (session.IsMapOpen && IsSlipping) CancelSlip(slipOwner);
             if (pause.WasPressedThisFrame()) session.HandleEscape();
             else if (callFirst.WasPressedThisFrame()) session.HandleCallKey(0);
             else if (callSecond.WasPressedThisFrame()) session.HandleCallKey(1);
             else if (map.WasPressedThisFrame()) session.ToggleMap();
             movement = session.CanMove ? Vector2.ClampMagnitude(move.ReadValue<Vector2>(), 1f) : Vector2.zero;
+            airMovement = CanLook ? Vector2.ClampMagnitude(move.ReadValue<Vector2>(), 1f) : Vector2.zero;
+            if (CanLook && recover.WasPressedThisFrame()) RestoreSafePosition();
             if (session.CanPickup) session.TryPickup();
             if (session.CanMove && punch.WasPressedThisFrame()) TryPunch();
             if (session.CanMove && jump.WasPressedThisFrame()) jumpQueued = true;
@@ -209,28 +228,21 @@ namespace DeliveryRider
 
         private void FixedUpdate()
         {
-            groundedForHazards = body.linearVelocity.y <= 0.5f && TryGround(out _, false);
-            if (trafficRecoveryActive && Time.time >= trafficRecoveryUntil && (groundedForHazards || Time.time >= contactFailsafeUntil))
-            {
-                trafficRecoveryActive = false;
-                nextTrafficHitAt = Mathf.Max(nextTrafficHitAt, Time.time + 1);
-                body.linearVelocity = Vector3.zero;
-                body.angularVelocity = Vector3.zero;
-            }
+            bool wasGrounded = groundedForHazards;
+            groundedForHazards = TryGround(out var supportNormal, false) && Vector3.Dot(body.linearVelocity, supportNormal) <= 0.5f;
+            // Only keep an already grounded walk attached to a descending road.
+            // A descending jump must retain gravity until close support is actually reached.
+            if (!groundedForHazards && wasGrounded && !normalJumpActive && followSlopes
+                && ReactionState == RiderReactionState.Normal)
+                groundedForHazards = TryGround(out _, true);
+            if (normalJumpActive && groundedForHazards && body.linearVelocity.y <= 0f) normalJumpActive = false;
             bool belowSafeGround = followSlopes && body.position.y < spawn.y - safeFallDepth;
             if (body.position.y < recoveryHeight || belowSafeGround)
             {
-                body.position = spawn;
-                body.linearVelocity = body.angularVelocity = Vector3.zero;
-                trafficRecoveryActive = false;
-                slipOwner = null;
+                RestoreSafePosition();
                 return;
             }
-            // Map input restrictions must not cancel the physical accident impulse.
-            if (IsRecovering && !session.IsSettled)
-            {
-                return;
-            }
+            if (TickReaction()) return;
             var forward = Vector3.ProjectOnPlane(view.forward, Vector3.up).normalized;
             var right = Vector3.ProjectOnPlane(view.right, Vector3.up).normalized;
             var direction = session.CanMove ? forward * movement.y + right * movement.x : Vector3.zero;
@@ -247,47 +259,55 @@ namespace DeliveryRider
                     drift = Vector3.ClampMagnitude(drift, slipMaximumSpeed);
                     body.linearVelocity = Vector3.ProjectOnPlane(drift, slipNormal).normalized * drift.magnitude;
                     body.AddForce(-Physics.gravity, ForceMode.Acceleration);
-                    spawn = body.position;
                 }
                 else
                 {
                     drift = Vector3.ClampMagnitude(drift, slipMaximumSpeed);
                     body.linearVelocity = new Vector3(drift.x, current.y, drift.z);
                 }
+                collisionVelocity = body.linearVelocity;
                 return;
             }
             var horizontal = session.CanMove ? Vector3.MoveTowards(new Vector3(current.x, 0f, current.z), direction * speed, acceleration * Time.fixedDeltaTime) : Vector3.zero;
-            if (jumping) body.linearVelocity = new Vector3(horizontal.x, jumpSpeed, horizontal.z);
-            else if (followSlopes && current.y <= 1f && TryGround(out var normal))
+            if (jumping)
+            {
+                normalJumpActive = true;
+                groundedForHazards = false;
+                body.linearVelocity = new Vector3(horizontal.x, jumpSpeed, horizontal.z);
+            }
+            else if (followSlopes && groundedForHazards && TryGround(out var normal))
             {
                 var tangent = Vector3.ProjectOnPlane(horizontal, normal).normalized * horizontal.magnitude;
                 body.linearVelocity = tangent;
                 // Cancel gravity only while grounded; airborne accident impulses remain untouched.
                 body.AddForce(-Physics.gravity, ForceMode.Acceleration);
-                if (session.CanMove) spawn = body.position;
+                if (session.CanMove && (safeRecovery == null || safeRecovery.IsSafe(body.position))) spawn = body.position;
             }
             else body.linearVelocity = new Vector3(horizontal.x, current.y, horizontal.z);
             if (direction.sqrMagnitude > 0.01f)
                 body.MoveRotation(Quaternion.Slerp(body.rotation, Quaternion.LookRotation(direction), turnSpeed * Time.fixedDeltaTime));
         }
 
-        private bool TryGround(out Vector3 normal, bool snap = true)
+        private bool TryGround(out Vector3 normal, bool snap = true, float supportTolerance = -1f)
         {
             normal = Vector3.up;
             if (capsule == null) return false;
             var bounds = capsule.bounds;
             float radius = Mathf.Min(bounds.extents.x, bounds.extents.z) * 0.85f;
             var origin = new Vector3(bounds.center.x, bounds.min.y + radius + 0.1f, bounds.center.z);
+            float reach = snap ? groundReach : supportTolerance >= 0f ? supportTolerance : groundContactTolerance;
             int count = Physics.SphereCastNonAlloc(origin, radius, Vector3.down, groundHits,
-                groundReach + 0.1f, groundMask, QueryTriggerInteraction.Ignore);
+                reach + 0.1f, groundMask, QueryTriggerInteraction.Ignore);
             float nearest = float.PositiveInfinity;
             bool found = false;
             for (int i = 0; i < count; i++)
             {
                 var hit = groundHits[i];
-                if (hit.rigidbody != null || hit.normal.y < Mathf.Cos(maximumSlope * Mathf.Deg2Rad) || hit.distance >= nearest) continue;
+                if (hit.rigidbody != null || hit.transform == transform || hit.transform.IsChildOf(transform)
+                    || hit.normal.y < Mathf.Cos(maximumSlope * Mathf.Deg2Rad) || hit.distance >= nearest) continue;
                 nearest = hit.distance;
                 normal = hit.normal;
+                lastGroundPoint = hit.point;
                 found = true;
             }
             // Closing a small ground gap follows a descending road without cancelling a launch.
