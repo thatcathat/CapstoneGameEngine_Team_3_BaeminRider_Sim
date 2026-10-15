@@ -26,6 +26,9 @@ namespace DeliveryRider
         [SerializeField] private float punchLift = 3.5f;
         [SerializeField] private float minimumFlight = 0.5f;
         [SerializeField] private float returnTimeout = 6f;
+        [SerializeField, Min(0f)] private float getUpSeconds = 0.6f;
+        [Tooltip("Extra time allowed for walking back to the sidewalk before snapping there.")]
+        [SerializeField, Min(0f)] private float returnWalkSlack = 4f;
         [Header("Body knock and chain (test values)")]
         [Tooltip("Rider speed needed to bowl a walker over by running into them.")]
         [SerializeField, Min(0f)] private float knockMinimumSpeed = 4f;
@@ -52,6 +55,12 @@ namespace DeliveryRider
         private float sideOffset, avoidUntil, blockedSince = -1f;
         private int chainDepth;
         private Vector3 flightVelocity;
+        // After landing: get up where the flight ended, then walk to this sidewalk spot and join its path.
+        private bool returning;
+        private Vector3 returnFeet;
+        private int returnPath;
+        private float returnDistance, returnGiveUpAt, getUpStartedAt;
+        private Quaternion getUpFrom;
 
         private bool CanReact => network != null && !flying
             && (network.Session == null || !network.Session.IsPaused && !network.Session.IsSettled);
@@ -94,10 +103,11 @@ namespace DeliveryRider
                 // Velocity before this physics step, so a contact sees the speed the flight hit with.
                 flightVelocity = body.linearVelocity;
                 bool landed = Time.time - floorAt <= Time.fixedDeltaTime * 2f && body.linearVelocity.magnitude < 1.5f;
-                if (Time.time >= nextReturnAt && (Time.time - hitAt >= minimumFlight && landed
-                    || Time.time - hitAt >= returnTimeout || body.position.y < -8f)) ReturnToPath();
+                bool lost = Time.time - hitAt >= returnTimeout || body.position.y < -8f;
+                if (Time.time >= nextReturnAt && (Time.time - hitAt >= minimumFlight && landed || lost)) BeginReturn(lost);
                 return;
             }
+            if (returning) { WalkBack(); return; }
             if (Time.time < waitUntil) return;
             if (Time.time >= idleAt)
             {
@@ -225,6 +235,7 @@ namespace DeliveryRider
         private void Launch(Vector3 velocity, int depth)
         {
             flying = true; hitAt = Time.time; floorAt = float.NegativeInfinity;
+            returning = false;
             chainDepth = depth;
             blocked = false; blockedSince = -1f;
             body.isKinematic = false;
@@ -258,18 +269,81 @@ namespace DeliveryRider
                 if (collision.GetContact(i).normal.y > 0.7f) { floorAt = Time.time; break; }
         }
 
-        private void ReturnToPath()
+        // A landed pedestrian gets up on the spot and walks back to the nearest free sidewalk spot.
+        // Falling off the map or a flight that never settles still snaps straight back.
+        private void BeginReturn(bool snap)
         {
             nextReturnAt = Time.time + 0.5f;
             if (!network.FindReturn(body.position, this, out var route, out var along, out var feet)) return;
             body.linearVelocity = body.angularVelocity = Vector3.zero;
-            body.position = feet;
-            path = route; distance = along;
-            network.Sample(path, distance, out _, out var forward);
-            body.rotation = Quaternion.LookRotation(forward);
+            var fallen = visual != null ? visual.localRotation : restVisual;
             visualSpin = 0f;
             SetWalking();
-            waitUntil = Time.time + 0.5f;
+            returnPath = route; returnDistance = along; returnFeet = feet;
+            if (snap)
+            {
+                body.position = feet;
+                JoinPath();
+                return;
+            }
+            returning = true;
+            getUpStartedAt = Time.time;
+            getUpFrom = fallen;
+            if (visual != null) visual.localRotation = fallen;
+            var toward = Vector3.ProjectOnPlane(feet - body.position, Vector3.up);
+            if (toward.sqrMagnitude > 0.01f) body.rotation = Quaternion.LookRotation(toward);
+            returnGiveUpAt = Time.time + getUpSeconds + toward.magnitude / speed + returnWalkSlack;
+            blocked = false; nextObstacleAt = 0f;
+        }
+
+        private void WalkBack()
+        {
+            if (Time.time < getUpStartedAt + getUpSeconds) return;
+            var toward = Vector3.ProjectOnPlane(returnFeet - body.position, Vector3.up);
+            if (toward.sqrMagnitude <= 0.0144f) { JoinPath(); return; }
+            if (Time.time >= returnGiveUpAt)
+            {
+                body.position = returnFeet;
+                JoinPath();
+                return;
+            }
+            var direction = toward.normalized;
+            if (Time.time >= nextObstacleAt)
+            {
+                nextObstacleAt = Time.time + 0.1f;
+                blocked = Blocked(body.position, direction);
+            }
+            // Wait for whatever stands in the way; a lasting block ends in the snap above.
+            if (blocked) return;
+            var next = body.position + direction * Mathf.Min(speed * Time.fixedDeltaTime, toward.magnitude);
+            next.y = GroundHeight(next, body.position.y);
+            body.MovePosition(next);
+            body.MoveRotation(Quaternion.Slerp(body.rotation, Quaternion.LookRotation(direction), turnSpeed * Time.fixedDeltaTime));
+        }
+
+        // Off the sidewalk path the walker follows the terrain itself.
+        private float GroundHeight(Vector3 at, float fallback)
+        {
+            int count = Physics.RaycastNonAlloc(at + Vector3.up * 1.2f, Vector3.down, hits, 3f, obstacleMask, QueryTriggerInteraction.Ignore);
+            float nearest = float.PositiveInfinity, height = fallback;
+            for (int i = 0; i < count; i++)
+            {
+                var hit = hits[i];
+                if (hit.rigidbody != null || hit.normal.y < 0.7f || hit.distance >= nearest) continue;
+                nearest = hit.distance;
+                height = hit.point.y;
+            }
+            return height;
+        }
+
+        private void JoinPath()
+        {
+            returning = false;
+            path = returnPath; distance = returnDistance;
+            network.Sample(path, distance, out _, out var forward);
+            body.rotation = Quaternion.LookRotation(forward);
+            if (visual != null) visual.localRotation = restVisual;
+            waitUntil = Time.time + 0.3f;
             sideOffset = laneOffset; avoidUntil = 0f;
             blocked = false; blockedSince = -1f; nextObstacleAt = 0f;
         }
@@ -282,6 +356,8 @@ namespace DeliveryRider
                 visualSpin += 260f * Time.deltaTime;
                 visual.localRotation = Quaternion.Euler(visualSpin, 0f, 12f) * restVisual;
             }
+            else if (returning && Time.time < getUpStartedAt + getUpSeconds)
+                visual.localRotation = Quaternion.Slerp(getUpFrom, restVisual, (Time.time - getUpStartedAt) / Mathf.Max(0.01f, getUpSeconds));
             else visual.localRotation = restVisual * Quaternion.Euler(0f, 0f, !blocked && Time.time >= waitUntil ? Mathf.Sin(Time.time * speed * 5f) * 3f : 0f);
         }
     }
