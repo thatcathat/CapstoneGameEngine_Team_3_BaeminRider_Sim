@@ -41,6 +41,7 @@ namespace DeliveryRider
         private CapsuleCollider capsule;
         private float trafficRecoveryUntil;
         private float nextTrafficHitAt;
+        private float nextRelaunchAt;
         private bool trafficRecoveryActive;
         private UnityEngine.Object lastHazard;
         private float lastHazardHitAt = float.NegativeInfinity;
@@ -72,6 +73,8 @@ namespace DeliveryRider
         public Vector2 CameraLook => CanLook ? look.ReadValue<Vector2>() : Vector2.zero;
         public float HorizontalSpeed => body == null ? 0f : Vector3.ProjectOnPlane(body.linearVelocity, Vector3.up).magnitude;
         public Vector3 Velocity => body == null ? Vector3.zero : body.linearVelocity;
+        // Velocity before the latest contacts were solved; a hit uses it rather than the already-pushed velocity.
+        public Vector3 ContactVelocity => collisionVelocity;
         public float Speed => speed;
         public bool HasInline { get; private set; }
 
@@ -88,6 +91,18 @@ namespace DeliveryRider
         // Traffic never changes food ownership.
         public bool TryTrafficCrash(Vector3 impulse, float recoverySeconds)
             => TryContactCrash(impulse, recoverySeconds);
+
+        // A car that does not stop may hit the rider again while still down; each such hit relaunches
+        // instead of pushing the rider along. minimumInterval keeps one contact from relaunching every step.
+        public bool TryTrafficRelaunch(Vector3 velocity, float recoverySeconds, float minimumInterval)
+        {
+            if (session == null || session.IsPaused || session.IsMapOpen || session.IsSettled || Time.time < nextRelaunchAt) return false;
+            nextRelaunchAt = Time.time + minimumInterval;
+            lastHazard = null;
+            hazardChainCount = 0;
+            ApplyContactCrash(velocity, recoverySeconds);
+            return true;
+        }
 
         // Contact hazards share a short recovery.
         public bool TryContactCrash(Vector3 impulse, float recoverySeconds)
