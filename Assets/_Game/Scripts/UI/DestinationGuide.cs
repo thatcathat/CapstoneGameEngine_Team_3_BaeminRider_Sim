@@ -16,6 +16,7 @@ namespace DeliveryRider
         private int previousMeters = -1;
         private DeliveryStage previousStage;
         private bool previousChasing;
+        private readonly RaycastHit[] groundHits = new RaycastHit[8];
 
         private void LateUpdate()
         {
@@ -24,7 +25,7 @@ namespace DeliveryRider
             beacon.gameObject.SetActive(visible);
             indicator.gameObject.SetActive(visible && !session.IsMapOpen && !session.IsPaused);
             if (!visible) return;
-            beacon.position = new Vector3(target.position.x, 0.08f, target.position.z);
+            beacon.position = GroundBelow(target.position) + Vector3.up * 0.08f;
             var point = view.WorldToViewportPoint(target.position + Vector3.up * 2f);
             var direction = new Vector2(point.x - 0.5f, point.y - 0.5f);
             if (point.z < 0) direction = -direction;
@@ -51,6 +52,23 @@ namespace DeliveryRider
                 previousMeters = meters; previousStage = session.Stage;
                 previousChasing = session.IsChasingFood;
             }
+        }
+
+        // The map is hilly, so the beacon sits on the static ground under the target (the recipient, a thief or a
+        // shop point), skipping moving bodies such as the recipient and the thief themselves.
+        private Vector3 GroundBelow(Vector3 point)
+        {
+            int count = Physics.RaycastNonAlloc(point + Vector3.up * 2f, Vector3.down, groundHits, 30f, ~0, QueryTriggerInteraction.Ignore);
+            float nearest = float.PositiveInfinity;
+            var ground = point;
+            for (int i = 0; i < count; i++)
+            {
+                var hit = groundHits[i];
+                if (hit.rigidbody != null || hit.distance >= nearest || hit.transform.IsChildOf(beacon)) continue;
+                nearest = hit.distance;
+                ground = hit.point;
+            }
+            return ground;
         }
     }
 }
