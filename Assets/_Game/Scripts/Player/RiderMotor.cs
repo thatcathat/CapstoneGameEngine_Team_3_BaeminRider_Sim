@@ -37,6 +37,7 @@ namespace DeliveryRider
         // Raised when an authored hazard actually hits (crash or slip); used for chain ignition.
         public event System.Action<UnityEngine.Object> HazardHit;
         private readonly RaycastHit[] groundHits = new RaycastHit[16];
+        private readonly RaycastHit[] bodyHits = new RaycastHit[16];
         private CapsuleCollider capsule;
         private float trafficRecoveryUntil;
         private float nextTrafficHitAt;
@@ -259,6 +260,7 @@ namespace DeliveryRider
                 RestoreSafePosition();
                 return;
             }
+            KnockPedestriansAhead();
             if (TickReaction()) return;
             var forward = Vector3.ProjectOnPlane(view.forward, Vector3.up).normalized;
             var right = Vector3.ProjectOnPlane(view.right, Vector3.up).normalized;
@@ -303,6 +305,25 @@ namespace DeliveryRider
             else body.linearVelocity = new Vector3(horizontal.x, current.y, horizontal.z);
             if (direction.sqrMagnitude > 0.01f)
                 body.MoveRotation(Quaternion.Slerp(body.rotation, Quaternion.LookRotation(direction), turnSpeed * Time.fixedDeltaTime));
+        }
+
+        // Running or tumbling into walkers bowls them over before their solid contact can stop the rider.
+        // The pedestrian decides whether the speed is enough.
+        private void KnockPedestriansAhead()
+        {
+            var velocity = Vector3.ProjectOnPlane(body.linearVelocity, Vector3.up);
+            float travel = velocity.magnitude * Time.fixedDeltaTime;
+            if (travel < 0.01f) return;
+            var bounds = capsule.bounds;
+            float radius = Mathf.Min(bounds.extents.x, bounds.extents.z) * 0.9f;
+            var offset = Vector3.up * Mathf.Max(0f, bounds.extents.y - radius);
+            int count = Physics.CapsuleCastNonAlloc(bounds.center + offset, bounds.center - offset, radius, velocity.normalized,
+                bodyHits, travel + 0.15f, punchMask, QueryTriggerInteraction.Ignore);
+            for (int i = 0; i < count; i++)
+            {
+                var other = bodyHits[i].rigidbody;
+                if (other != null && other != body && other.TryGetComponent<TrafficPedestrian>(out var person)) person.TryBodyKnock(velocity);
+            }
         }
 
         private bool TryGround(out Vector3 normal, bool snap = true, float supportTolerance = -1f)
