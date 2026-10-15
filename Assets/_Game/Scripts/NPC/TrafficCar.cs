@@ -3,7 +3,7 @@ using UnityEngine;
 namespace DeliveryRider
 {
     // A road vehicle on the TrafficNetwork: follows lanes and junction connectors, keeps distance to the car ahead,
-    // waits for junction reservations and for room on the exit lane, and brakes for people or props in its lane.
+    // waits for junction reservations and for room on the exit lane, and brakes only for the rider in its lane.
     // Kinematic; hitting the rider knocks them away (same rule as the former pilot vans).
     [RequireComponent(typeof(Rigidbody), typeof(BoxCollider))]
     public sealed class TrafficCar : MonoBehaviour
@@ -99,11 +99,11 @@ namespace DeliveryRider
                 }
             }
 
-            // People, residents and props in the lane (other cars are handled above).
+            // Only the rider in the lane stops the car; props and other people are driven through (other cars are handled above).
             if (++scanFrame >= ObstacleScanInterval || speed < 0.5f)
             {
                 scanFrame = 0;
-                cachedObstacle = ObstacleDistance(Mathf.Min(14f, stopping + obstacleClearance + 4f));
+                cachedObstacle = RiderDistance(Mathf.Min(14f, stopping + obstacleClearance + 4f));
             }
             available = Mathf.Min(available, cachedObstacle - obstacleClearance);
 
@@ -144,13 +144,12 @@ namespace DeliveryRider
             }
         }
 
-        // Steps along the planned lane ahead and returns the distance to the first non-vehicle collider.
-        private float ObstacleDistance(float scan)
+        // Steps along the planned lane ahead and returns the distance to the rider, once the brake delay has passed.
+        private float RiderDistance(float scan)
         {
             var half = new Vector3(shape.size.x * 0.5f + 0.1f, shape.size.y * 0.5f, 0.6f);
-            float obstacleDistance = float.PositiveInfinity;
             float riderDistance = float.PositiveInfinity;
-            for (float d = 1f; d <= scan; d += 1f)
+            for (float d = 1f; d <= scan && float.IsPositiveInfinity(riderDistance); d += 1f)
             {
                 float along = Distance + Length * 0.5f + d;
                 int path = PathIndex;
@@ -159,39 +158,36 @@ namespace DeliveryRider
                 var rotation = Quaternion.LookRotation(forward, Vector3.up);
                 int count = Physics.OverlapBoxNonAlloc(p + Vector3.up * shape.center.y, half, hits, rotation, obstacleMask, QueryTriggerInteraction.Ignore);
                 for (int i = 0; i < count; i++)
-                {
-                    var hit = hits[i];
-                    if (hit.attachedRigidbody == body || hit is MeshCollider || hit.GetComponentInParent<TrafficCar>() != null) continue;
-                    if (hit.attachedRigidbody != null && hit.attachedRigidbody.TryGetComponent<RiderMotor>(out _))
-                        riderDistance = Mathf.Min(riderDistance, d);
-                    else
-                        obstacleDistance = Mathf.Min(obstacleDistance, d);
-                }
+                    if (IsRider(hits[i].attachedRigidbody)) { riderDistance = d; break; }
             }
-            // Delay only the rider response; other obstacles and junctions still stop the car normally.
-            if (float.IsPositiveInfinity(riderDistance)) riderDetectedAt = -1f;
-            else
-            {
-                if (riderDetectedAt < 0f) riderDetectedAt = Time.time;
-                bool mapOpen = network.Session != null && network.Session.IsMapOpen;
-                if (mapOpen || Time.time - riderDetectedAt >= riderBrakeDelay)
-                    obstacleDistance = Mathf.Min(obstacleDistance, riderDistance);
-            }
-            return obstacleDistance;
+            if (float.IsPositiveInfinity(riderDistance)) { riderDetectedAt = -1f; return riderDistance; }
+            if (riderDetectedAt < 0f) riderDetectedAt = Time.time;
+            bool mapOpen = network.Session != null && network.Session.IsMapOpen;
+            return mapOpen || Time.time - riderDetectedAt >= riderBrakeDelay ? riderDistance : float.PositiveInfinity;
         }
 
+        private static bool IsRider(Rigidbody other) => other != null && other.TryGetComponent<RiderMotor>(out _);
+
+        // Bumping props or other people never stops the car; only rider contact does.
         private void OnCollisionEnter(Collision collision)
         {
+            if (!IsRider(collision.rigidbody)) return;
             float impactSpeed = speed;
             riderDetectedAt = Time.time - riderBrakeDelay;
             speed = 0f;
             contactHoldUntil = Time.time + 0.5f;
-            if (impactSpeed < 1f || collision.rigidbody == null || !collision.rigidbody.TryGetComponent<RiderMotor>(out var rider)) return;
+            if (impactSpeed < 1f) return;
+            var rider = collision.rigidbody.GetComponent<RiderMotor>();
             var away = Vector3.ProjectOnPlane(rider.transform.position - body.position, Vector3.up).normalized;
             rider.TryTrafficCrash(away * Mathf.Min(impactSpeed, 4f) + Vector3.up * 2f, 1.1f);
         }
 
-        private void OnCollisionStay(Collision collision) { speed = 0f; contactHoldUntil = Time.time + 0.2f; }
+        private void OnCollisionStay(Collision collision)
+        {
+            if (!IsRider(collision.rigidbody)) return;
+            speed = 0f;
+            contactHoldUntil = Time.time + 0.2f;
+        }
 
         private void OnDisable()
         {
