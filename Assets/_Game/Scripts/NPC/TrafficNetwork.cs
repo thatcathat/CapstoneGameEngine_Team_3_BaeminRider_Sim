@@ -46,6 +46,10 @@ namespace DeliveryRider
         [SerializeField] private VehicleKind[] kinds = Array.Empty<VehicleKind>();
         [SerializeField, Min(0)] private int vehicleCount = 50;
         [SerializeField, Min(4f)] private float minimumSpacing = 14f;
+        [Tooltip("No car starts this close to the rider's start position.")]
+        [SerializeField, Min(0f)] private float playerClearance = 10f;
+        [Tooltip("Off: always use the seed below, to reproduce a layout.")]
+        [SerializeField] private bool randomEachRun = true;
         [SerializeField] private int seed = 7;
 
         private sealed class JunctionState
@@ -85,7 +89,7 @@ namespace DeliveryRider
         // Cars go on lanes only, weighted by lane length, at least minimumSpacing apart.
         private void Spawn()
         {
-            var random = new System.Random(seed);
+            var random = randomEachRun ? new System.Random() : new System.Random(seed);
             var lanes = new List<int>();
             float total = 0f;
             for (int i = 0; i < paths.Length; i++)
@@ -107,6 +111,9 @@ namespace DeliveryRider
                 foreach (var other in occupants[lane])
                     if (Mathf.Abs(other.Distance - distance) < minimumSpacing + (other.Length + kind.prefab.Length) * 0.5f) { clear = false; break; }
                 if (!clear) continue;
+                Sample(lane, distance, out var position, out _);
+                if (session != null && session.Player != null
+                    && (position - session.Player.position).sqrMagnitude < playerClearance * playerClearance) continue;
 
                 var car = Instantiate(kind.prefab, transform);
                 car.name = kind.prefab.name + "_" + cars.Count;

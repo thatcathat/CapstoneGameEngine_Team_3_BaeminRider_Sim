@@ -14,6 +14,8 @@ namespace DeliveryRider.Editor
         private const float SampleStep = 1f, RoadMargin = 0.7f, ConnectorReach = 6f, FeetLift = 0.06f;
         private static readonly Collider[] Obstacles = new Collider[64];
         private static readonly string[] CoatNames = { "Resident_0Coat", "Resident_1Coat", "Resident_2Coat", "CustomerCoat" };
+        private const string PrefabPath = "Assets/_Game/Prefabs/Traffic/Pedestrian.prefab";
+        private const string MaterialFolder = "Assets/_Game/Art/Materials";
 
         [MenuItem("Delivery Rider/Apply Pedestrian Network")]
         public static void Apply()
@@ -36,13 +38,22 @@ namespace DeliveryRider.Editor
             if (root != null && root.GetComponent<PedestrianNetwork>() == null) throw new InvalidOperationException("Pedestrians root is not owned by this installer.");
             if (root == null) { root = new GameObject("Pedestrians"); Undo.RegisterCreatedObjectUndo(root, "Add sidewalk traffic"); }
             var network = root.GetComponent<PedestrianNetwork>() ?? Undo.AddComponent<PedestrianNetwork>(root);
-            var residents = Spawn(root.transform, network, routes);
+            // Walkers are spawned at runtime now; drop the ones earlier versions placed in the scene.
+            int removed = 0;
+            foreach (var placed in root.GetComponentsInChildren<TrafficPedestrian>(true))
+            {
+                Undo.DestroyObjectImmediate(placed.gameObject);
+                removed++;
+            }
+            var prefab = CreatePrefab();
+            var coats = CoatNames.Select(name => AssetDatabase.LoadAssetAtPath<Material>(MaterialFolder + "/" + name + ".mat")).Where(m => m != null).ToArray();
             Undo.RecordObject(network, "Update pedestrian routes");
-            network.Configure(session, routes.ToArray(), residents.ToArray());
+            network.Configure(session, routes.ToArray(), prefab, coats);
             EditorUtility.SetDirty(network);
             EditorSceneManager.MarkSceneDirty(scene);
             if (!EditorSceneManager.SaveScene(scene)) throw new InvalidOperationException("Could not save pedestrian network.");
-            Debug.Log($"Pedestrians: {routes.Count(p => !p.connector)} directed sidewalk segments, {routes.Count(p => p.connector)} corner connectors, {residents.Count} NPCs. No road crossings. Play Mode not started.");
+            Debug.Log($"Pedestrians: {routes.Count(p => !p.connector)} directed sidewalk segments, {routes.Count(p => p.connector)} corner connectors, "
+                + $"{network.Population} walkers spawned at runtime from {PrefabPath} ({coats.Length} coats), {removed} scene walkers removed. No road crossings. Play Mode not started.");
         }
 
         private static void BakeSide(RoadPath road, int side, List<RoadPath> roads, RoadNetwork ground, List<PedestrianPath> routes)
@@ -136,55 +147,11 @@ namespace DeliveryRider.Editor
             return count < Obstacles.Length;
         }
 
-        private static List<TrafficPedestrian> Spawn(Transform root, PedestrianNetwork network, List<PedestrianPath> paths)
+        // One walker prefab; PedestrianNetwork picks a coat material per spawned walker.
+        private static TrafficPedestrian CreatePrefab()
         {
-            var residents = new List<TrafficPedestrian>();
-            var placed = new List<Vector3>();
-            var random = new System.Random(37);
-            var lanes = Enumerable.Range(0, paths.Count).Where(i => !paths[i].connector && paths[i].length > 6f).ToArray();
-            float total = lanes.Sum(i => paths[i].length);
-            int attempts = 0;
-            while (residents.Count < network.Population && lanes.Length > 0 && attempts++ < network.Population * 60)
-            {
-                float pick = (float)random.NextDouble() * total;
-                int lane = lanes[lanes.Length - 1];
-                foreach (int index in lanes) { if (pick < paths[index].length) { lane = index; break; } pick -= paths[index].length; }
-                float distance = 1f + (float)random.NextDouble() * (paths[lane].length - 2f);
-                Sample(paths[lane], distance, out var feet, out var forward);
-                feet += Vector3.Cross(Vector3.up, forward) * 0.35f;
-                if (placed.Any(p => (p - feet).sqrMagnitude < 9f)) continue;
-                string name = "Pedestrian_" + residents.Count.ToString("00");
-                var previous = root.Find(name);
-                var person = previous != null ? previous.GetComponent<TrafficPedestrian>() : null;
-                if (previous != null && person == null) throw new InvalidOperationException("Unexpected user object: " + name);
-                if (person == null) person = CreatePerson(name, root, residents.Count);
-                Undo.RecordObject(person.transform, "Place sidewalk NPC");
-                person.transform.SetPositionAndRotation(feet, Quaternion.LookRotation(forward));
-                person.gameObject.SetActive(true);
-                Undo.RecordObject(person, "Configure sidewalk NPC");
-                person.Configure(network, lane, distance, random.Next(), person.transform.Find("Visual"));
-                EditorUtility.SetDirty(person);
-                residents.Add(person); placed.Add(feet);
-            }
-            foreach (var other in root.GetComponentsInChildren<TrafficPedestrian>(true))
-                if (!residents.Contains(other)) other.gameObject.SetActive(false);
-            return residents;
-        }
-
-        private static void Sample(PedestrianPath path, float distance, out Vector3 feet, out Vector3 forward)
-        {
-            int i = Array.BinarySearch(path.cumulative, distance);
-            if (i < 0) i = ~i - 1;
-            i = Mathf.Clamp(i, 0, path.points.Length - 2);
-            feet = Vector3.Lerp(path.points[i], path.points[i + 1], (distance - path.cumulative[i]) / (path.cumulative[i + 1] - path.cumulative[i]));
-            forward = Vector3.ProjectOnPlane(path.points[i + 1] - path.points[i], Vector3.up).normalized;
-        }
-
-        private static TrafficPedestrian CreatePerson(string name, Transform parent, int index)
-        {
-            var go = new GameObject(name);
-            Undo.RegisterCreatedObjectUndo(go, "Add walking NPC");
-            go.transform.SetParent(parent, false);
+            if (!AssetDatabase.IsValidFolder("Assets/_Game/Prefabs/Traffic")) AssetDatabase.CreateFolder("Assets/_Game/Prefabs", "Traffic");
+            var go = new GameObject("Pedestrian");
             var body = go.AddComponent<Rigidbody>();
             body.isKinematic = true; body.useGravity = false; body.constraints = RigidbodyConstraints.FreezeRotation;
             body.interpolation = RigidbodyInterpolation.Interpolate;
@@ -193,19 +160,25 @@ namespace DeliveryRider.Editor
             shape.center = new Vector3(0f, 0.9f, 0f); shape.height = 1.8f; shape.radius = 0.28f;
             var visual = new GameObject("Visual").transform;
             visual.SetParent(go.transform, false);
-            Primitive("Body", PrimitiveType.Capsule, visual, new Vector3(0f, 0.75f, 0f), new Vector3(0.5f, 0.75f, 0.5f), CoatNames[index % CoatNames.Length]);
+            var coat = Primitive("Body", PrimitiveType.Capsule, visual, new Vector3(0f, 0.75f, 0f), new Vector3(0.5f, 0.75f, 0.5f), CoatNames[0]);
             Primitive("Head", PrimitiveType.Sphere, visual, new Vector3(0f, 1.65f, 0f), Vector3.one * 0.4f, "Skin");
             Primitive("Face", PrimitiveType.Cube, visual, new Vector3(0f, 1.65f, 0.18f), new Vector3(0.2f, 0.07f, 0.08f), "Face");
-            return go.AddComponent<TrafficPedestrian>();
+            go.AddComponent<TrafficPedestrian>().SetAppearance(visual, coat);
+            var prefab = PrefabUtility.SaveAsPrefabAsset(go, PrefabPath);
+            UnityEngine.Object.DestroyImmediate(go);
+            if (prefab == null) throw new InvalidOperationException("Could not save " + PrefabPath);
+            return prefab.GetComponent<TrafficPedestrian>();
         }
 
-        private static void Primitive(string name, PrimitiveType kind, Transform parent, Vector3 position, Vector3 scale, string material)
+        private static Renderer Primitive(string name, PrimitiveType kind, Transform parent, Vector3 position, Vector3 scale, string material)
         {
             var go = GameObject.CreatePrimitive(kind);
             go.name = name; go.transform.SetParent(parent, false);
             go.transform.localPosition = position; go.transform.localScale = scale;
             UnityEngine.Object.DestroyImmediate(go.GetComponent<Collider>());
-            go.GetComponent<Renderer>().sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Art/Materials/" + material + ".mat");
+            var renderer = go.GetComponent<Renderer>();
+            renderer.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>(MaterialFolder + "/" + material + ".mat");
+            return renderer;
         }
 
         private static void Validate(List<PedestrianPath> paths)

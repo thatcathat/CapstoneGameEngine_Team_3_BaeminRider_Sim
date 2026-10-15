@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DeliveryRider
@@ -16,25 +17,72 @@ namespace DeliveryRider
     }
 
     // Independent sidewalk traffic; no vehicle junction reservations or delivery recipient logic.
+    // Paths are baked by Delivery Rider -> Apply Pedestrian Network; walkers are spawned from the prefab at start.
     public sealed class PedestrianNetwork : MonoBehaviour
     {
         [SerializeField] private DeliverySession session;
         [SerializeField] private PedestrianPath[] paths = Array.Empty<PedestrianPath>();
-        [SerializeField] private TrafficPedestrian[] pedestrians = Array.Empty<TrafficPedestrian>();
+        [Header("Spawning (test values)")]
+        [SerializeField] private TrafficPedestrian prefab;
+        [SerializeField] private Material[] coats = Array.Empty<Material>();
         [SerializeField, Min(0.5f)] private float spawnSpacing = 3f;
         [SerializeField, Min(0)] private int population = 48;
+        [Tooltip("No walker starts this close to the rider's start position.")]
+        [SerializeField, Min(0f)] private float playerClearance = 10f;
+        [Tooltip("Off: always use the seed below, to reproduce a layout.")]
+        [SerializeField] private bool randomEachRun = true;
+        [SerializeField] private int seed = 37;
+        private const float LaneOffset = 0.35f;
+        private readonly List<TrafficPedestrian> pedestrians = new List<TrafficPedestrian>();
+        private readonly Collider[] spawnHits = new Collider[8];
         public DeliverySession Session => session;
         public int PathCount => paths.Length;
-        public int PedestrianCount => pedestrians.Length;
+        public int PedestrianCount => pedestrians.Count;
         public int Population => population;
-        private void Awake()
-        {
-            for (int i = 0; i < pedestrians.Length; i++)
-                if (pedestrians[i] != null) pedestrians[i].gameObject.SetActive(i < population);
-        }
         public PedestrianPath Path(int index) => paths[index];
-        public void Configure(DeliverySession owner, PedestrianPath[] routes, TrafficPedestrian[] residents)
-        { session = owner; paths = routes; pedestrians = residents; }
+        public void Configure(DeliverySession owner, PedestrianPath[] routes, TrafficPedestrian walker, Material[] coatMaterials)
+        { session = owner; paths = routes; prefab = walker; coats = coatMaterials; }
+
+        private void Start() => Spawn();
+
+        // Walkers go on sidewalk lanes, weighted by lane length, spaced apart and clear of solid props.
+        private void Spawn()
+        {
+            if (prefab == null) return;
+            var random = randomEachRun ? new System.Random() : new System.Random(seed);
+            var lanes = new List<int>();
+            float total = 0f;
+            for (int i = 0; i < paths.Length; i++)
+                if (!paths[i].connector && paths[i].length > 6f) { lanes.Add(i); total += paths[i].length; }
+            if (lanes.Count == 0) return;
+            var start = session != null && session.Player != null ? session.Player.position : (Vector3?)null;
+
+            int attempts = 0;
+            while (pedestrians.Count < population && attempts++ < population * 60)
+            {
+                float pick = (float)random.NextDouble() * total;
+                int lane = lanes[lanes.Count - 1];
+                foreach (int candidate in lanes) { if (pick < paths[candidate].length) { lane = candidate; break; } pick -= paths[candidate].length; }
+                float distance = 1f + (float)random.NextDouble() * (paths[lane].length - 2f);
+                Sample(lane, distance, out var feet, out var forward);
+                feet += Vector3.Cross(Vector3.up, forward) * Mathf.Min(LaneOffset, Mathf.Max(0f, paths[lane].halfWidth - 0.35f));
+                if (start.HasValue && (feet - start.Value).sqrMagnitude < playerClearance * playerClearance) continue;
+                if (!Free(feet, null) || !Clear(feet)) continue;
+
+                var walker = Instantiate(prefab, feet, Quaternion.LookRotation(forward), transform);
+                walker.name = prefab.name + "_" + pedestrians.Count;
+                walker.Initialize(this, lane, distance, random.Next(), coats.Length > 0 ? coats[random.Next(coats.Length)] : null);
+                pedestrians.Add(walker);
+            }
+        }
+
+        private bool Clear(Vector3 feet)
+        {
+            // Starts well above the feet so a sloped sidewalk does not count as an obstruction.
+            int count = Physics.OverlapCapsuleNonAlloc(feet + Vector3.up * 0.55f, feet + Vector3.up * 1.45f,
+                0.27f, spawnHits, ~0, QueryTriggerInteraction.Ignore);
+            return count == 0;
+        }
 
         public void Sample(int index, float distance, out Vector3 feet, out Vector3 forward)
         {
@@ -69,7 +117,7 @@ namespace DeliveryRider
                     float t = Mathf.Clamp01(Vector3.Dot(from - a, ab) / Mathf.Max(0.001f, ab.sqrMagnitude));
                     float along = Mathf.Lerp(path.cumulative[i], path.cumulative[i + 1], t);
                     Sample(p, along, out var position, out var direction);
-                    position += Vector3.Cross(Vector3.up, direction) * Mathf.Min(0.35f, path.halfWidth - 0.35f);
+                    position += Vector3.Cross(Vector3.up, direction) * Mathf.Min(LaneOffset, path.halfWidth - 0.35f);
                     float squared = (position - from).sqrMagnitude;
                     if (squared >= best || !Free(position, self) || !self.HasRoom(position)) continue;
                     best = squared; pathIndex = p; distance = along; feet = position;

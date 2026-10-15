@@ -2,14 +2,12 @@ using UnityEngine;
 
 namespace DeliveryRider
 {
+    // Sidewalk walker spawned from the pedestrian prefab by PedestrianNetwork at start (like TrafficCar).
     [RequireComponent(typeof(Rigidbody), typeof(CapsuleCollider))]
     public sealed class TrafficPedestrian : MonoBehaviour, IPunchable
     {
-        [SerializeField] private PedestrianNetwork network;
-        [SerializeField] private int startPath;
-        [SerializeField] private float startDistance;
-        [SerializeField] private int seed = 7;
         [SerializeField] private Transform visual;
+        [SerializeField] private Renderer coat;
         [Header("Walking (test values)")]
         [SerializeField] private Vector2 walkingSpeed = new Vector2(1.1f, 1.65f);
         [SerializeField, Min(0f)] private float laneOffset = 0.35f;
@@ -43,14 +41,24 @@ namespace DeliveryRider
         [SerializeField, Min(0f)] private float riderHitMinimumSpeed = 6f;
         private readonly RaycastHit[] hits = new RaycastHit[16];
         private readonly Collider[] overlaps = new Collider[16];
+        private PedestrianNetwork network;
         private Rigidbody body;
         private System.Random random;
         private int path;
         private float distance, speed, waitUntil, hitAt, nextReturnAt, idleAt, nextObstacleAt;
         private bool flying, blocked;
         private float floorAt = float.NegativeInfinity;
+        // The visual turns about the middle of the body, not the feet, and its centre is raised
+        // whenever needed so the turned body never sinks below the feet plane.
+        private const float BodyCenter = 0.9f;
+        private const float BodyTop = 1.85f;
+        private const float BodyThickness = 0.25f;
         private Quaternion restVisual;
-        private float visualSpin;
+        private Vector3 restVisualPosition;
+        private Quaternion pose = Quaternion.identity;
+        private float poseHeight = BodyCenter;
+        private float visualSpin, lieAngle;
+        private bool lying;
         // Signed sideways offset from the path centre; positive keeps right. Avoidance moves it across the sidewalk.
         private float sideOffset, avoidUntil, blockedSince = -1f;
         private int chainDepth;
@@ -65,18 +73,28 @@ namespace DeliveryRider
         private bool CanReact => network != null && !flying
             && (network.Session == null || !network.Session.IsPaused && !network.Session.IsSettled);
 
-        public void Configure(PedestrianNetwork owner, int route, float along, int randomSeed, Transform appearance)
-        { network = owner; startPath = route; startDistance = along; seed = randomSeed; visual = appearance; }
+        // Editor-time wiring for the prefab.
+        public void SetAppearance(Transform appearance, Renderer coatRenderer) { visual = appearance; coat = coatRenderer; }
+
         private void Awake()
         {
             body = GetComponent<Rigidbody>();
-            random = new System.Random(seed);
+            if (visual != null) { restVisual = visual.localRotation; restVisualPosition = visual.localPosition; }
+        }
+
+        // Called right after spawning; the walker stays still until then.
+        public void Initialize(PedestrianNetwork owner, int route, float along, int randomSeed, Material coatMaterial)
+        {
+            network = owner;
+            random = new System.Random(randomSeed);
             speed = Mathf.Lerp(walkingSpeed.x, walkingSpeed.y, (float)random.NextDouble());
-            path = startPath; distance = startDistance;
+            path = route; distance = along;
             sideOffset = laneOffset;
             idleAt = Time.time + 8f + (float)random.NextDouble() * 15f;
-            if (visual != null) restVisual = visual.localRotation;
+            if (coat != null && coatMaterial != null) coat.sharedMaterial = coatMaterial;
             SetWalking();
+            network.Sample(path, distance, out var feet, out var forward);
+            transform.SetPositionAndRotation(feet + Vector3.Cross(Vector3.up, forward) * Lane(network.Path(path)), Quaternion.LookRotation(forward));
         }
 
         private void SetWalking()
@@ -87,7 +105,6 @@ namespace DeliveryRider
             body.constraints = RigidbodyConstraints.FreezeRotation;
             body.interpolation = RigidbodyInterpolation.Interpolate;
             body.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-            if (visual != null) visual.localRotation = restVisual;
         }
 
         private void FixedUpdate()
@@ -238,6 +255,9 @@ namespace DeliveryRider
             returning = false;
             chainDepth = depth;
             blocked = false; blockedSince = -1f;
+            // Hit again while down: tumble on from the lying pose instead of popping upright.
+            visualSpin = lying ? lieAngle : 0f;
+            lying = false;
             body.isKinematic = false;
             body.useGravity = true;
             body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
@@ -276,8 +296,6 @@ namespace DeliveryRider
             nextReturnAt = Time.time + 0.5f;
             if (!network.FindReturn(body.position, this, out var route, out var along, out var feet)) return;
             body.linearVelocity = body.angularVelocity = Vector3.zero;
-            var fallen = visual != null ? visual.localRotation : restVisual;
-            visualSpin = 0f;
             SetWalking();
             returnPath = route; returnDistance = along; returnFeet = feet;
             if (snap)
@@ -288,10 +306,9 @@ namespace DeliveryRider
             }
             returning = true;
             getUpStartedAt = Time.time;
-            getUpFrom = fallen;
-            if (visual != null) visual.localRotation = fallen;
+            // Get up from the pose the fall ended in; the walk back turns the body toward the sidewalk.
+            getUpFrom = pose;
             var toward = Vector3.ProjectOnPlane(feet - body.position, Vector3.up);
-            if (toward.sqrMagnitude > 0.01f) body.rotation = Quaternion.LookRotation(toward);
             returnGiveUpAt = Time.time + getUpSeconds + toward.magnitude / speed + returnWalkSlack;
             blocked = false; nextObstacleAt = 0f;
         }
@@ -342,7 +359,8 @@ namespace DeliveryRider
             path = returnPath; distance = returnDistance;
             network.Sample(path, distance, out _, out var forward);
             body.rotation = Quaternion.LookRotation(forward);
-            if (visual != null) visual.localRotation = restVisual;
+            lying = false;
+            ApplyPose(Quaternion.identity, BodyCenter);
             waitUntil = Time.time + 0.3f;
             sideOffset = laneOffset; avoidUntil = 0f;
             blocked = false; blockedSince = -1f; nextObstacleAt = 0f;
@@ -353,12 +371,50 @@ namespace DeliveryRider
             if (visual == null || network == null || network.Session != null && (network.Session.IsPaused || network.Session.IsSettled)) return;
             if (flying)
             {
-                visualSpin += 260f * Time.deltaTime;
-                visual.localRotation = Quaternion.Euler(visualSpin, 0f, 12f) * restVisual;
+                // The first floor contact ends the tumble: settle face down or face up, whichever is nearer.
+                if (!lying && Time.time - hitAt >= 0.15f && Time.time - floorAt <= 0.1f)
+                {
+                    lying = true;
+                    lieAngle = Mathf.Repeat(visualSpin, 360f) < 180f ? 90f : 270f;
+                }
+                if (lying)
+                {
+                    var rotation = Quaternion.RotateTowards(pose, Quaternion.Euler(lieAngle, 0f, 0f), 540f * Time.deltaTime);
+                    float resting = RestingHeight(rotation);
+                    ApplyPose(rotation, Mathf.Max(resting, Mathf.MoveTowards(poseHeight, resting, 6f * Time.deltaTime)));
+                }
+                else
+                {
+                    visualSpin += 260f * Time.deltaTime;
+                    ApplyPose(Quaternion.Euler(visualSpin, 0f, 12f), BodyCenter);
+                }
             }
             else if (returning && Time.time < getUpStartedAt + getUpSeconds)
-                visual.localRotation = Quaternion.Slerp(getUpFrom, restVisual, (Time.time - getUpStartedAt) / Mathf.Max(0.01f, getUpSeconds));
-            else visual.localRotation = restVisual * Quaternion.Euler(0f, 0f, !blocked && Time.time >= waitUntil ? Mathf.Sin(Time.time * speed * 5f) * 3f : 0f);
+            {
+                var rotation = Quaternion.Slerp(getUpFrom, Quaternion.identity, (Time.time - getUpStartedAt) / Mathf.Max(0.01f, getUpSeconds));
+                ApplyPose(rotation, RestingHeight(rotation));
+            }
+            else
+            {
+                if (poseHeight != BodyCenter || pose != Quaternion.identity) ApplyPose(Quaternion.identity, BodyCenter);
+                visual.localRotation = restVisual * Quaternion.Euler(0f, 0f, !blocked && Time.time >= waitUntil ? Mathf.Sin(Time.time * speed * 5f) * 3f : 0f);
+            }
+        }
+
+        private void ApplyPose(Quaternion rotation, float centerHeight)
+        {
+            pose = rotation;
+            poseHeight = centerHeight;
+            if (visual == null) return;
+            visual.localRotation = rotation * restVisual;
+            visual.localPosition = restVisualPosition + Vector3.up * centerHeight - rotation * (Vector3.up * BodyCenter);
+        }
+
+        // Lowest body-centre height that keeps the turned body (feet to head top) above the feet plane.
+        private static float RestingHeight(Quaternion rotation)
+        {
+            float up = (rotation * Vector3.up).y;
+            return Mathf.Max(0f, BodyCenter * up, (BodyCenter - BodyTop) * up) + BodyThickness * Mathf.Sqrt(Mathf.Max(0f, 1f - up * up));
         }
     }
 }
