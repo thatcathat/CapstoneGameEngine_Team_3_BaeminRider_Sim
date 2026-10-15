@@ -3,12 +3,16 @@ using UnityEngine;
 namespace DeliveryRider
 {
     // A reusable wave of solid, dynamic melons. Contact disables control; physics supplies the push.
+    // The wave starts when the rider nears the melons themselves and rolls along the road toward the rider.
     public sealed class RollingMelonHazard : MonoBehaviour
     {
         private enum Phase { Ready, Rolling, Spent }
         [SerializeField] private DeliverySession session;
         [SerializeField] private RollingMelon[] melons = System.Array.Empty<RollingMelon>();
+        [Tooltip("Smallest start distance, measured from the middle of the melons.")]
         [SerializeField, Min(0.1f)] private float approachRadius = 6f;
+        [Tooltip("The start distance grows to the rider's speed times this, so fast riders see the melons coming.")]
+        [SerializeField, Min(0f)] private float approachLeadSeconds = 1.2f;
         [SerializeField, Min(0.1f)] private float rollSpeed = 6f;
         [SerializeField, Min(0f)] private float driveAcceleration = 12f;
         [SerializeField, Min(0.1f)] private float waveSeconds = 4f;
@@ -21,17 +25,21 @@ namespace DeliveryRider
         private float elapsed;
         private bool hitThisWave;
         private bool ready;
+        private Vector3 pileCenter;
 
         private void Awake()
         {
             rider = session != null && session.Player != null ? session.Player.GetComponent<RiderMotor>() : null;
             slot = GetComponent<HazardSlot>();
             if (rider == null || melons.Length == 0) { enabled = false; return; }
+            pileCenter = Vector3.zero;
             foreach (var melon in melons)
             {
                 if (melon == null) { enabled = false; return; }
                 melon.Prepare(this);
+                pileCenter += melon.transform.localPosition;
             }
+            pileCenter /= melons.Length;
             ready = true;
             ResetWave();
         }
@@ -47,17 +55,21 @@ namespace DeliveryRider
         {
             if (!ready || session.IsPaused || session.IsSettled || session.IsMapOpen) return;
             elapsed += Time.fixedDeltaTime;
-            var offset = rider.transform.position - transform.position;
-            float distance = Vector3.ProjectOnPlane(offset, Vector3.up).magnitude;
+            var offset = rider.transform.position - transform.TransformPoint(pileCenter);
+            var flatOffset = Vector3.ProjectOnPlane(offset, Vector3.up);
+            float distance = flatOffset.magnitude;
             switch (phase)
             {
                 case Phase.Ready:
-                    if ((slot == null || slot.StrikeAllowed) && Mathf.Abs(offset.y) < 3f && distance <= approachRadius)
+                    float reach = Mathf.Max(approachRadius, rider.HorizontalSpeed * approachLeadSeconds);
+                    if ((slot == null || slot.StrikeAllowed) && Mathf.Abs(offset.y) < 3f && distance <= reach)
                     {
                         phase = Phase.Rolling;
                         elapsed = 0f;
                         hitThisWave = false;
-                        var direction = Vector3.ProjectOnPlane(-transform.forward, Vector3.up).normalized;
+                        // Roll along the road, toward whichever end the rider is coming from.
+                        var along = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
+                        var direction = Vector3.Dot(flatOffset, along) >= 0f ? along : -along;
                         foreach (var melon in melons) melon.Release(direction, rollSpeed);
                     }
                     break;

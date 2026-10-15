@@ -17,7 +17,6 @@ namespace DeliveryRider
         [Header("Per call roll")]
         [SerializeField, Range(0f, 1f)] private float routeShare = 0.7f;
         [SerializeField, Range(0f, 1f)] private float typeGuarantee = 0.5f;
-        [SerializeField, Range(0f, 1f)] private float comboFirst = 0.35f;
         [Header("Chain ignition")]
         [SerializeField, Range(0f, 1f)] private float igniteChance = 0.8f;
         [SerializeField, Range(0f, 1f)] private float igniteChanceFromObject = 0.3f;
@@ -91,9 +90,8 @@ namespace DeliveryRider
             int typeCount = CountTypes(pool);
             int typeCap = typeCount >= 4 ? Mathf.Max(2, Mathf.CeilToInt(callTarget * 0.25f)) : callTarget;
 
-            // Shuffle with combo members pulled slightly forward, as the trial build does.
             order.Clear();
-            foreach (var slot in pool) order[slot] = UnityEngine.Random.value - (slot.Combo >= 0 ? comboFirst : 0f);
+            foreach (var slot in pool) order[slot] = UnityEngine.Random.value;
             pool.Sort((a, b) => order[a].CompareTo(order[b]));
 
             int route = RouteIndex(call);
@@ -141,15 +139,6 @@ namespace DeliveryRider
         }
 
         private void Light(HazardSlot slot)
-        {
-            Switch(slot);
-            if (slot.Combo < 0) return;
-            foreach (var other in slots)
-                if (other != null && other != slot && other.Combo == slot.Combo && other.Role == HazardRole.Trigger
-                    && other.UnlockDay <= day && !other.gameObject.activeSelf) Switch(other);
-        }
-
-        private void Switch(HazardSlot slot)
         {
             slot.StrikeAllowed = session.ActiveOrder != null && session.HasPickedUp;
             slot.gameObject.SetActive(true);

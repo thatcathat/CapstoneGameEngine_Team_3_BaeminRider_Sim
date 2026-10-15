@@ -97,11 +97,12 @@ namespace DeliveryRider.Editor
                         skipped[s.type] = skipped.TryGetValue(s.type, out int n) ? n + 1 : 1;
                         continue;
                 }
-                obj.name = $"{i:00}_{s.zone}_{s.type}" + (s.alley ? "_alley" : "") + (s.combo >= 0 ? $"_combo{s.combo}" : "");
+                // The slot file's combo groups are no longer used: every trigger is switched on by itself.
+                obj.name = $"{i:00}_{s.zone}_{s.type}" + (s.alley ? "_alley" : "");
                 obj.SetActive(true);
                 var slot = obj.AddComponent<HazardSlot>();
                 slot.Configure(s.type, s.isObject ? HazardRole.Object : HazardRole.Trigger, Mathf.Max(1, s.unlockDay),
-                    RankedTypes.Contains(s.type), s.rank, s.zone, s.alley, s.combo, s.routes);
+                    RankedTypes.Contains(s.type), s.rank, s.zone, s.alley, s.routes);
                 built.Add(slot);
             }
 

@@ -18,8 +18,6 @@ namespace DeliveryRider
         [SerializeField, Min(0)] private float forwardImpulse = 6;
         [SerializeField, Min(0)] private float upwardImpulse = 4.5f;
         [SerializeField, Min(0.1f)] private float slipSeconds = 2.2f;
-        [SerializeField, Min(0)] private float rearmSeconds = 10;
-        [SerializeField, Min(1)] private float rearmDistance = 4;
         private BoxCollider volume;
         private CapsuleCollider playerShape;
         private RiderMotor rider;
@@ -62,16 +60,17 @@ namespace DeliveryRider
                     if (elapsed >= activeSeconds) Finish();
                     break;
                 case Phase.Spent:
-                    if (elapsed >= rearmSeconds && Vector3.Distance(rider.transform.position, transform.position) > rearmDistance)
-                        Enter(Phase.Ready);
+                    // No cooldown: armed again as soon as the rider is off it, so standing on it cannot loop bursts.
+                    if (!Touching()) Enter(Phase.Ready);
                     break;
             }
         }
+        private bool Touching() => Physics.ComputePenetration(volume, transform.position, transform.rotation, playerShape,
+            playerShape.transform.position, playerShape.transform.rotation, out _, out _);
         private void TryContact()
         {
             if (contactConsumed || session.IsMapOpen || kind == GroundHazardKind.Melon && !rider.IsGroundedForHazards) return;
-            if (!Physics.ComputePenetration(volume, transform.position, transform.rotation, playerShape,
-                playerShape.transform.position, playerShape.transform.rotation, out _, out _)) return;
+            if (!Touching()) return;
             contactConsumed = true;
             // Consume even rejected contact: this activation cannot hit repeatedly later.
             if (kind == GroundHazardKind.Melon) { rider.TryHazardSlip(this, transform.forward, slipSeconds); Finish(); return; }

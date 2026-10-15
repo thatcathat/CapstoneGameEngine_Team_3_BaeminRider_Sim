@@ -19,8 +19,6 @@ namespace DeliveryRider
         [SerializeField] private bool ranked;
         [SerializeField] private string zone;
         [SerializeField] private bool alley;
-        [Tooltip("Slots with the same combo number are switched on together. -1 means none.")]
-        [SerializeField] private int combo = -1;
         [Tooltip("Call routes (shop index x door count + door index) that pass within 7 m.")]
         [SerializeField] private int[] routes = Array.Empty<int>();
 
@@ -31,14 +29,13 @@ namespace DeliveryRider
         public bool Ranked => ranked;
         public string Zone => zone;
         public bool Alley => alley;
-        public int Combo => combo;
         // Set by the planner; hazards check it before starting an attack.
         public bool StrikeAllowed { get; set; } = true;
 
         public bool IsOnRoute(int route) => route >= 0 && Array.IndexOf(routes, route) >= 0;
 
         public void Configure(string slotType, HazardRole slotRole, int slotUnlockDay, bool isRanked, float slotRank,
-            string slotZone, bool isAlley, int slotCombo, int[] slotRoutes)
+            string slotZone, bool isAlley, int[] slotRoutes)
         {
             type = slotType;
             role = slotRole;
@@ -47,7 +44,6 @@ namespace DeliveryRider
             rank = slotRank;
             zone = slotZone;
             alley = isAlley;
-            combo = slotCombo;
             routes = slotRoutes ?? Array.Empty<int>();
         }
     }
