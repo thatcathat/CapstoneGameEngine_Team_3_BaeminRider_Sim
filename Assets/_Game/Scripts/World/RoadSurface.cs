@@ -29,7 +29,8 @@ namespace DeliveryRider
         // Layering above the terrain: sidewalk < alley paving < asphalt < markings, so a crossing road's
         // asphalt covers the other road's sidewalk at junctions.
         // Steps of several centimetres keep the layers from flickering against each other at a distance.
-        private const float SidewalkLift = 0.04f, AlleyLift = 0.07f, AsphaltLift = 0.1f, MarkingLift = 0.14f;
+        // Public so placement code can set things on the drawn surface rather than the terrain under it.
+        public const float SidewalkLift = 0.04f, AlleyLift = 0.07f, AsphaltLift = 0.1f, MarkingLift = 0.14f;
         private const float LateralSpacing = 2f;
 
         private readonly List<Vector3> vertices = new List<Vector3>();

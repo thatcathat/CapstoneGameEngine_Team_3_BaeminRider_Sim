@@ -2,16 +2,22 @@ using UnityEngine;
 
 namespace DeliveryRider
 {
-    // Chicken: brushing past the roadside chickens sets the whole flock on the rider for a while; each peck knocks a little.
-    public sealed class ChaseFlockHazard : MonoBehaviour
+    // Chicken: passing close to the roadside chickens sets the whole flock on the rider for a while; each peck knocks
+    // a little. The flock keeps up with the rider's speed, so it ends after a few pecks or when the chase runs out.
+    public sealed class ChaseFlockHazard : MonoBehaviour, IPlacedHazard
     {
         private enum Phase { Idle, Chasing, Spent }
         [SerializeField] private DeliverySession session;
         [SerializeField] private Transform[] birds = System.Array.Empty<Transform>();
         [Header("Test values")]
-        [SerializeField, Min(0.1f)] private float triggerRadius = 1.8f;
-        [SerializeField, Min(0.1f)] private float chaseSeconds = 14f;
+        [SerializeField, Min(0.1f)] private float triggerRadius = 3f;
+        [SerializeField, Min(0.1f)] private float chaseSeconds = 6f;
+        [Tooltip("Slowest chase speed; the flock runs at the rider's speed times riderSpeedShare when that is faster.")]
         [SerializeField, Min(0.1f)] private float chaseSpeed = 5.2f;
+        [SerializeField, Min(0f)] private float riderSpeedShare = 1.15f;
+        [SerializeField, Min(0.1f)] private float maximumChaseSpeed = 20f;
+        [Tooltip("The flock gives up after this many pecks that knocked the rider.")]
+        [SerializeField, Min(1)] private int maximumPecks = 3;
         [SerializeField, Min(1f)] private float giveUpDistance = 40f;
         [SerializeField, Min(0.1f)] private float peckRadius = 0.9f;
         [SerializeField, Min(0.1f)] private float peckCooldown = 1.5f;
@@ -26,7 +32,10 @@ namespace DeliveryRider
         private Phase phase;
         private float elapsed;
         private float nextPeckAt;
+        private int pecks;
         private int activatedOrder = -1;
+
+        public void Place(DeliverySession owner, RoadNetwork ground, HazardCandidate spot) => session = owner;
 
         private void Awake()
         {
@@ -52,6 +61,7 @@ namespace DeliveryRider
                     {
                         activatedOrder = session.ActiveOrder != null ? session.ActiveOrder.Number : -1;
                         elapsed = 0f;
+                        pecks = 0;
                         nextPeckAt = Time.time + 0.6f;
                         phase = Phase.Chasing;
                     }
@@ -70,15 +80,16 @@ namespace DeliveryRider
         {
             elapsed += Time.fixedDeltaTime;
             Vector3 player = rider.transform.position;
-            if (elapsed >= chaseSeconds || session.IsMapOpen || !Near(transform.position, giveUpDistance)) { GoHome(); phase = Phase.Spent; return; }
+            if (elapsed >= chaseSeconds || pecks >= maximumPecks || session.IsMapOpen || !Near(transform.position, giveUpDistance)) { GoHome(); phase = Phase.Spent; return; }
             Vector3 feet = player - Vector3.up * riderCenterHeight;
+            float speed = Mathf.Clamp(rider.HorizontalSpeed * riderSpeedShare, chaseSpeed, Mathf.Max(chaseSpeed, maximumChaseSpeed));
             bool pecked = false;
             for (int i = 0; i < birds.Length; i++)
             {
                 // Each chicken aims at its own spot around the rider so the flock surrounds rather than stacks.
                 float angle = i * Mathf.PI * 2f / birds.Length;
                 Vector3 target = feet + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * 0.6f;
-                Vector3 position = Vector3.MoveTowards(birds[i].position, target, chaseSpeed * Time.fixedDeltaTime);
+                Vector3 position = Vector3.MoveTowards(birds[i].position, target, speed * Time.fixedDeltaTime);
                 position.y = Mathf.MoveTowards(birds[i].position.y, feet.y, 4f * Time.fixedDeltaTime);
                 Vector3 step = position - birds[i].position;
                 birds[i].position = position;
@@ -88,7 +99,7 @@ namespace DeliveryRider
                     pecked = true;
                     nextPeckAt = Time.time + peckCooldown;
                     var push = Vector3.ProjectOnPlane(player - birds[i].position, Vector3.up).normalized;
-                    rider.TryHazardCrash(this, push * peckImpulse + Vector3.up * peckLift, peckRecovery);
+                    if (rider.TryHazardCrash(this, push * peckImpulse + Vector3.up * peckLift, peckRecovery)) pecks++;
                 }
             }
         }

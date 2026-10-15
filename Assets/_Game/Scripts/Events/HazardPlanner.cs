@@ -1,18 +1,22 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace DeliveryRider
 {
-    // Decides which hazard slots exist today and which triggers are live for the current call.
-    // Rules follow the v5.2 trial build (roll() / objOn / ignition); every number is a test value.
+    // Spawns today's hazards at random baked candidates, then decides which triggers are live for the current call.
+    // Objects: the day's count per type, always on. Triggers: a pool per type, a few lit per call.
+    // Call rolls follow the v5.2 trial build (roll() / ignition); every number is a test value.
     public sealed class HazardPlanner : MonoBehaviour
     {
         [SerializeField] private DeliverySession session;
         [SerializeField] private RiderMotor rider;
-        [SerializeField] private HazardSlot[] slots = Array.Empty<HazardSlot>();
+        [SerializeField] private RoadNetwork ground;
+        [SerializeField] private HazardSpawnSettings settings;
+        [SerializeField] private HazardCandidates candidates;
+        [Tooltip("Off: always use the seed below, to reproduce a layout.")]
+        [SerializeField] private bool randomEachRun = true;
+        [SerializeField] private int seed = 11;
         [Header("Per day (index 0 = day 1, later days use the last value)")]
-        [SerializeField] private float[] objectShare = { 0.4f, 0.55f, 0.7f, 0.85f };
         [SerializeField] private int[] triggersPerCall = { 5, 8, 10, 13 };
         [Header("Per call roll")]
         [SerializeField, Range(0f, 1f)] private float routeShare = 0.7f;
@@ -24,6 +28,7 @@ namespace DeliveryRider
         [Tooltip("Ignition may add this many triggers above the per-call count.")]
         [SerializeField, Min(0)] private int igniteExtraLimit = 4;
 
+        private readonly List<HazardSlot> slots = new List<HazardSlot>();
         private readonly List<HazardSlot> pool = new List<HazardSlot>();
         private readonly List<HazardSlot> nearRoute = new List<HazardSlot>();
         private readonly Dictionary<string, int> perType = new Dictionary<string, int>();
@@ -37,16 +42,68 @@ namespace DeliveryRider
         private void Start()
         {
             day = session.Progress != null ? session.Progress.Day : 1;
-            float share = PerDay(objectShare);
-            foreach (var slot in slots)
-            {
-                if (slot == null) continue;
-                bool unlocked = slot.UnlockDay <= day;
-                bool placed = slot.Role == HazardRole.Object && unlocked && (!slot.Ranked || slot.Rank < share);
-                slot.StrikeAllowed = slot.Role == HazardRole.Object;
-                slot.gameObject.SetActive(placed);
-            }
+            Spawn();
             OnSessionChanged();
+        }
+
+        // Each unlocked type takes its count from shuffled candidates, keeping the spacing to every hazard placed so far
+        // (objects first, so their daily counts are met before the trigger pools fill the remaining room).
+        private void Spawn()
+        {
+            if (settings == null || candidates == null || ground == null) { Debug.LogError("Hazard planner needs spawn settings, candidates and the road network.", this); return; }
+            var random = randomEachRun ? new System.Random() : new System.Random(seed);
+            var placed = new List<(Vector3 position, string type)>();
+            var shuffled = new List<int>();
+            // Prefabs are instantiated under an inactive parent so they can be fitted before they wake.
+            var staging = new GameObject("HazardStaging");
+            staging.SetActive(false);
+            foreach (var role in new[] { HazardRole.Object, HazardRole.Trigger })
+                foreach (var kind in settings.Kinds)
+                {
+                    if (kind.role != role || kind.prefab == null || kind.unlockDay > day) continue;
+                    int want = kind.Count(day), count = 0;
+                    shuffled.Clear();
+                    for (int i = 0; i < candidates.Candidates.Count; i++)
+                        if (candidates.Candidates[i].type == kind.type) shuffled.Add(i);
+                    for (int i = shuffled.Count - 1; i > 0; i--) { int j = random.Next(i + 1); (shuffled[i], shuffled[j]) = (shuffled[j], shuffled[i]); }
+                    foreach (int index in shuffled)
+                    {
+                        if (count >= want) break;
+                        var spot = candidates.Candidates[index];
+                        if (!HasRoom(placed, spot.position, kind.type)) continue;
+                        SpawnOne(kind, spot, staging.transform);
+                        placed.Add((spot.position, kind.type));
+                        count++;
+                    }
+                    if (count < want) Debug.LogWarning($"Hazards: placed {count} of {want} {kind.type} (not enough spaced candidates).", this);
+                }
+            Destroy(staging);
+        }
+
+        private bool HasRoom(List<(Vector3 position, string type)> placed, Vector3 position, string type)
+        {
+            foreach (var other in placed)
+            {
+                float gap = other.type == type ? settings.SameTypeSpacing : settings.Spacing;
+                var offset = other.position - position;
+                if (offset.x * offset.x + offset.z * offset.z < gap * gap) return false;
+            }
+            return true;
+        }
+
+        private void SpawnOne(HazardSpawnSettings.Kind kind, HazardCandidate spot, Transform staging)
+        {
+            var obj = Instantiate(kind.prefab, spot.position, spot.rotation, staging);
+            obj.name = $"{slots.Count:00}_{kind.type}" + (spot.alley ? "_alley" : "");
+            foreach (var hazard in obj.GetComponents<IPlacedHazard>()) hazard.Place(session, ground, spot);
+            var slot = obj.AddComponent<HazardSlot>();
+            slot.Configure(kind.type, kind.role, kind.unlockDay, candidates.Routes(spot.spot));
+            // Objects stay on all day; triggers wait switched off until a call lights them.
+            bool isObject = kind.role == HazardRole.Object;
+            slot.StrikeAllowed = isObject;
+            obj.SetActive(isObject);
+            obj.transform.SetParent(transform, true);
+            slots.Add(slot);
         }
 
         private void OnEnable()
@@ -154,7 +211,6 @@ namespace DeliveryRider
 
         private int Count(string type) => perType.TryGetValue(type, out int value) ? value : 0;
         private int PerDayCount() => triggersPerCall.Length == 0 ? 0 : triggersPerCall[Mathf.Clamp(day - 1, 0, triggersPerCall.Length - 1)];
-        private float PerDay(float[] values) => values.Length == 0 ? 1f : values[Mathf.Clamp(day - 1, 0, values.Length - 1)];
 
         private static int CountTypes(List<HazardSlot> list)
         {

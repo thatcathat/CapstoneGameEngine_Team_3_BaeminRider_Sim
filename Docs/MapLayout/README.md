@@ -7,7 +7,7 @@
 | district_geometry.json | 현재 지형·도로·목적지 배치 데이터 |
 | district_surface.png / district_ground.png | 지도 표시 / 지면 색 |
 | route_table.json | 주문 보상·제한시간 등에 쓰는 거리표 |
-| hazard_slots.json | 사건 자리 배치 |
+| hazard_slots.json | 이전 고정 사건 자리 80곳. 함정 랜덤 배치로 바뀌어 현재 쓰지 않는다 |
 | road_elevation.* / road_summary.csv | 초기 도로·고도 계획 자료. 현재 지형과 구분 |
 
 이번 문서 정리에서 데이터·이미지는 변경하지 않았다. 필요한 작업에서 관련 파일만 확인한다.

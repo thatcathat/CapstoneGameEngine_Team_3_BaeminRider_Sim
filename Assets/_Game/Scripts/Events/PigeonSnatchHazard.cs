@@ -4,7 +4,7 @@ namespace DeliveryRider
 {
     // Pigeon snatch: a perched pigeon swoops on a rider carrying food, grabs it and flies off along the road.
     // Recovery reuses FoodThief: punch the pigeon to get the food back, or re-collect at the shop if it escapes.
-    public sealed class PigeonSnatchHazard : MonoBehaviour
+    public sealed class PigeonSnatchHazard : MonoBehaviour, IPlacedHazard
     {
         private enum Phase { Ready, Warning, Swoop, Flying, Spent }
         [SerializeField] private DeliverySession session;
@@ -24,6 +24,19 @@ namespace DeliveryRider
         private float elapsed;
         private Vector3 swoopFrom;
         private int activatedOrder = -1;
+
+        // Runtime spawn: the pole stands beside the road; the escape route runs along the road from the slot.
+        public void Place(DeliverySession owner, RoadNetwork ground, HazardCandidate spot)
+        {
+            session = owner;
+            var right = transform.right;
+            perch.rotation = Quaternion.LookRotation(-right * spot.side);
+            if (pigeon != null) pigeon.transform.SetPositionAndRotation(perch.position, perch.rotation);
+            var center = transform.position - right * spot.side * (spot.halfWidth + 1f);
+            var direction = spot.flip ? -transform.forward : transform.forward;
+            for (int i = 0; i < escapeRoute.Length; i++)
+                escapeRoute[i].position = ground.OnGround(center + direction * (4f + i * 3f), 1.5f);
+        }
 
         private void Awake()
         {

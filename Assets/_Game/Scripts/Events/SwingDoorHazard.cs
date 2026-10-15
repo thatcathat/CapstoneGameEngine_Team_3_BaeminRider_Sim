@@ -4,11 +4,12 @@ namespace DeliveryRider
 {
     public enum DoorRearmPolicy { NextOrder, AfterExitDelay }
 
-    // The approach box starts the animation; only the swept door panel can cause a hit.
-    public sealed class SwingDoorHazard : MonoBehaviour
+    // The approach box swings the door open at once (no warning delay: at running speed the rider would be past it);
+    // only the swept door panel can cause a hit.
+    public sealed class SwingDoorHazard : MonoBehaviour, IPlacedHazard
     {
         public event System.Action ContactHit;
-        private enum Phase { Ready, Warning, Opening, Holding, Closing, Spent }
+        private enum Phase { Ready, Opening, Holding, Closing, Spent }
         [SerializeField] private DeliverySession session;
         [SerializeField] private Transform hinge;
         [SerializeField] private BoxCollider panel;
@@ -16,7 +17,6 @@ namespace DeliveryRider
         [SerializeField] private AudioSource speaker;
         [SerializeField] private Vector3 approachCenter = new Vector3(1.3f, 1, 1.2f);
         [SerializeField] private Vector3 approachSize = new Vector3(3.2f, 3, 5);
-        [SerializeField, Min(0.1f)] private float warningSeconds = 0.8f;
         [SerializeField, Min(0.1f)] private float openingSeconds = 0.45f;
         [SerializeField, Range(10, 120)] private float openingAngle = 90;
         [SerializeField, Min(0.1f)] private float holdSeconds = 1.2f;
@@ -39,6 +39,8 @@ namespace DeliveryRider
         private HazardSlot slot;
         private AudioClip warningSound;
         private AudioClip hitSound;
+
+        public void Place(DeliverySession owner, RoadNetwork ground, HazardCandidate spot) => session = owner;
 
         private void Awake()
         {
@@ -81,13 +83,10 @@ namespace DeliveryRider
                     {
                         activatedOrder = session.ActiveOrder != null ? session.ActiveOrder.Number : 0;
                         hitThisCycle = false;
-                        Enter(Phase.Warning);
+                        Enter(Phase.Opening);
+                        SetLamp(true);
                         Play(warningSound);
                     }
-                    break;
-                case Phase.Warning:
-                    SetLamp(!hitThisCycle && Mathf.Repeat(elapsed, 0.2f) < 0.12f);
-                    if (elapsed >= warningSeconds) { Enter(Phase.Opening); SetLamp(!hitThisCycle); }
                     break;
                 case Phase.Opening:
                     float next = Mathf.Lerp(0, openingAngle, Mathf.Clamp01(elapsed / openingSeconds));

@@ -6,7 +6,7 @@ namespace DeliveryRider
     public enum GroundHazardKind { Manhole, Melon, Hydrant }
 
     [RequireComponent(typeof(BoxCollider))]
-    public sealed class GroundContactHazard : MonoBehaviour
+    public sealed class GroundContactHazard : MonoBehaviour, IPlacedHazard
     {
         private enum Phase { Ready, Active, Spent }
         [SerializeField] private DeliverySession session;
@@ -26,6 +26,8 @@ namespace DeliveryRider
         private bool contactConsumed;
         private HazardSlot slot;
         private bool CanStrike => slot == null || slot.StrikeAllowed;
+
+        public void Place(DeliverySession owner, RoadNetwork ground, HazardCandidate spot) => session = owner;
 
         private void Awake()
         {

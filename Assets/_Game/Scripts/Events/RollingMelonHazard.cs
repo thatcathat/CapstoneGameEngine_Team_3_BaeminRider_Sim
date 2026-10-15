@@ -5,7 +5,7 @@ namespace DeliveryRider
     // A reusable wave of solid, dynamic melons. Contact disables control; physics supplies the push.
     // The melons wait as a stacked pile laid out afresh for every wave. The wave starts when the rider nears
     // the pile and rolls along the road toward the rider; the pile collapses front-bottom first.
-    public sealed class RollingMelonHazard : MonoBehaviour
+    public sealed class RollingMelonHazard : MonoBehaviour, IPlacedHazard
     {
         private enum Phase { Ready, Rolling, Spent }
         [SerializeField] private DeliverySession session;
@@ -43,6 +43,8 @@ namespace DeliveryRider
         private int[] layers;
         private float[] releaseAt;
         private Vector3 direction;
+
+        public void Place(DeliverySession owner, RoadNetwork ground, HazardCandidate spot) => session = owner;
 
         private void Awake()
         {

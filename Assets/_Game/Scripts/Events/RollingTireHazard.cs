@@ -3,7 +3,7 @@ using UnityEngine;
 namespace DeliveryRider
 {
     // Authored ground-following path: a controlled hazard, not a free rigidbody vehicle.
-    public sealed class RollingTireHazard : MonoBehaviour
+    public sealed class RollingTireHazard : MonoBehaviour, IPlacedHazard
     {
         private enum Phase { Ready, Warning, Rolling, Spent }
         [SerializeField] private DeliverySession session;
@@ -38,6 +38,29 @@ namespace DeliveryRider
         private bool initialized;
         private Quaternion initialRotation;
         private HazardSlot slot;
+
+        // Runtime spawn: the tire rolls across the road from the slot's sidewalk to just past the far kerb.
+        public void Place(DeliverySession owner, RoadNetwork ground, HazardCandidate spot)
+        {
+            session = owner;
+            linkedDoor = null;
+            proximityActivation = true;
+            approachCenter = new Vector3(0f, 1f, 0f);
+            approachSize = new Vector3(spot.halfWidth * 2f + 4f, 3f, 14f);
+            float start = spot.halfWidth + (spot.alley ? 0.5f : 2.5f), end = spot.halfWidth + 1f;
+            var right = transform.right;
+            localPath = new Vector3[17];
+            var first = Vector3.zero;
+            for (int i = 0; i < localPath.Length; i++)
+            {
+                float lateral = Mathf.Lerp(start, -end, i / (float)(localPath.Length - 1)) * spot.side;
+                var world = ground.OnGround(transform.position + right * lateral, 0.65f);
+                if (i == 0) first = world;
+                localPath[i] = transform.InverseTransformPoint(world);
+            }
+            wheel.SetPositionAndRotation(first, Quaternion.LookRotation(-right * spot.side));
+            if (warningLamp != null) { warningLamp.transform.position = first + Vector3.up; warningLamp.enabled = false; }
+        }
 
         private void Awake()
         {
