@@ -282,10 +282,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4d37574f32d49f4eb03c2f14207ed74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.TrafficCar
-  cruiseSpeed: 6.5
+  cruiseSpeed: 13
   acceleration: 2.5
   braking: 7
-  slopeSpeed: 4.5
+  slopeSpeed: 9
   followGap: 2.5
   obstacleClearance: 1
   obstacleMask:

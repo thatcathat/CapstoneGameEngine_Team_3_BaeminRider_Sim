@@ -9,12 +9,13 @@ namespace DeliveryRider
     public sealed class TrafficCar : MonoBehaviour
     {
         [Header("Driving (test values)")]
-        [SerializeField, Min(0.1f)] private float cruiseSpeed = 6f;
+        [SerializeField, Min(0.1f)] private float cruiseSpeed = 12f;
         [SerializeField, Min(0.1f)] private float acceleration = 2.5f;
         [SerializeField, Min(0.1f)] private float braking = 7f;
-        [SerializeField, Min(0.1f)] private float slopeSpeed = 4.5f;
+        [SerializeField, Min(0.1f)] private float slopeSpeed = 9f;
         [SerializeField, Min(0.1f)] private float followGap = 2.5f;
         [SerializeField, Min(0.1f)] private float obstacleClearance = 1f;
+        [SerializeField, Min(0f)] private float riderBrakeDelay = 2f;
         [SerializeField] private LayerMask obstacleMask = ~0;
         [SerializeField] private Renderer bodyRenderer;
         [SerializeField] private Renderer brakeLights;
@@ -29,6 +30,7 @@ namespace DeliveryRider
         private int heldJunction = -1;
         private int scanFrame;
         private float cachedObstacle = float.PositiveInfinity;
+        private float riderDetectedAt = -1f;
 
         public int PathIndex { get; private set; } = -1;
         public int NextIndex { get; private set; } = -1;
@@ -48,6 +50,7 @@ namespace DeliveryRider
         public void Initialize(TrafficNetwork owner, int path, float distance, int randomSeed)
         {
             network = owner;
+            riderDetectedAt = -1f;
             random = new System.Random(randomSeed);
             body = GetComponent<Rigidbody>();
             shape = GetComponent<BoxCollider>();
@@ -145,6 +148,8 @@ namespace DeliveryRider
         private float ObstacleDistance(float scan)
         {
             var half = new Vector3(shape.size.x * 0.5f + 0.1f, shape.size.y * 0.5f, 0.6f);
+            float obstacleDistance = float.PositiveInfinity;
+            float riderDistance = float.PositiveInfinity;
             for (float d = 1f; d <= scan; d += 1f)
             {
                 float along = Distance + Length * 0.5f + d;
@@ -157,15 +162,28 @@ namespace DeliveryRider
                 {
                     var hit = hits[i];
                     if (hit.attachedRigidbody == body || hit is MeshCollider || hit.GetComponentInParent<TrafficCar>() != null) continue;
-                    return d;
+                    if (hit.attachedRigidbody != null && hit.attachedRigidbody.TryGetComponent<RiderMotor>(out _))
+                        riderDistance = Mathf.Min(riderDistance, d);
+                    else
+                        obstacleDistance = Mathf.Min(obstacleDistance, d);
                 }
             }
-            return float.PositiveInfinity;
+            // Delay only the rider response; other obstacles and junctions still stop the car normally.
+            if (float.IsPositiveInfinity(riderDistance)) riderDetectedAt = -1f;
+            else
+            {
+                if (riderDetectedAt < 0f) riderDetectedAt = Time.time;
+                bool mapOpen = network.Session != null && network.Session.IsMapOpen;
+                if (mapOpen || Time.time - riderDetectedAt >= riderBrakeDelay)
+                    obstacleDistance = Mathf.Min(obstacleDistance, riderDistance);
+            }
+            return obstacleDistance;
         }
 
         private void OnCollisionEnter(Collision collision)
         {
             float impactSpeed = speed;
+            riderDetectedAt = Time.time - riderBrakeDelay;
             speed = 0f;
             contactHoldUntil = Time.time + 0.5f;
             if (impactSpeed < 1f || collision.rigidbody == null || !collision.rigidbody.TryGetComponent<RiderMotor>(out var rider)) return;

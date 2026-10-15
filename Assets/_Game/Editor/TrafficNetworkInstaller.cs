@@ -23,7 +23,7 @@ namespace DeliveryRider.Editor
         private const float TouchReach = 3f;         // a road passes through a junction within its half width + this
         private const float StopBack = 3.5f;         // lanes stop this far beyond the other roads' carriageway edge
         private const float MinimumEdge = 4f;
-        private const float StraightLimit = 7f, TurnLimit = 3.5f, UTurnLimit = 2.5f;
+        private const float StraightLimit = 14f, TurnLimit = 7f, UTurnLimit = 5f;
 
         private sealed class Node { public Vector2 center; public bool deadEnd; public readonly List<(int road, float along)> touches = new List<(int, float)>(); }
         private sealed class Lane { public int edge, startNode, endNode, path; public List<Vector2> flat; }
@@ -282,11 +282,11 @@ namespace DeliveryRider.Editor
             if (!AssetDatabase.IsValidFolder(PrefabFolder)) AssetDatabase.CreateFolder("Assets/_Game/Prefabs", "Traffic");
             return new[]
             {
-                Kind(Vehicle("Car", new Vector3(1.8f, 1.45f, 4.2f), 6f, false, false), 0.5f,
+                Kind(Vehicle("Car", new Vector3(1.8f, 1.45f, 4.2f), 12f, false, false), 0.5f,
                     new Color(0.82f, 0.2f, 0.2f), new Color(0.2f, 0.35f, 0.75f), new Color(0.78f, 0.79f, 0.8f), new Color(0.15f, 0.16f, 0.18f), new Color(0.95f, 0.95f, 0.93f)),
-                Kind(Vehicle("Taxi", new Vector3(1.8f, 1.45f, 4.3f), 6.5f, true, false), 0.2f, new Color(0.98f, 0.78f, 0.15f)),
-                Kind(Vehicle("Van", new Vector3(1.9f, 2f, 4.8f), 5f, false, false), 0.2f, new Color(0.93f, 0.93f, 0.9f), new Color(0.6f, 0.62f, 0.64f)),
-                Kind(Vehicle("Bus", new Vector3(2.5f, 3f, 10f), 4f, false, true), 0.1f, new Color(0.2f, 0.6f, 0.35f), new Color(0.2f, 0.45f, 0.75f)),
+                Kind(Vehicle("Taxi", new Vector3(1.8f, 1.45f, 4.3f), 13f, true, false), 0.2f, new Color(0.98f, 0.78f, 0.15f)),
+                Kind(Vehicle("Van", new Vector3(1.9f, 2f, 4.8f), 10f, false, false), 0.2f, new Color(0.93f, 0.93f, 0.9f), new Color(0.6f, 0.62f, 0.64f)),
+                Kind(Vehicle("Bus", new Vector3(2.5f, 3f, 10f), 8f, false, true), 0.1f, new Color(0.2f, 0.6f, 0.35f), new Color(0.2f, 0.45f, 0.75f)),
             };
         }
 

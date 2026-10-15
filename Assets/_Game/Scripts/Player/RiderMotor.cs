@@ -8,7 +8,7 @@ namespace DeliveryRider
     {
         [SerializeField] private Transform view;
         [SerializeField] private DeliverySession session;
-        [SerializeField] private float speed = 5f;
+        [SerializeField] private float speed = 10f;
         [SerializeField] private float acceleration = 22f;
         [SerializeField] private float turnSpeed = 12f;
         [SerializeField] private float recoveryHeight = -8f;
