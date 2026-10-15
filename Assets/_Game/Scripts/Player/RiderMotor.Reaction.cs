@@ -37,6 +37,7 @@ namespace DeliveryRider
         private Vector3 collisionVelocity, pendingNormal, pendingVelocity, lastProgressPosition;
         private float pendingStrength, nextContactAt, reactionStartedAt, stableGroundTime, getUpStartedAt, noProgressTime;
         private int floorBounces;
+        private bool physicalTumble;
         private float supportContactAt = float.NegativeInfinity;
         private Vector3 supportContactNormal, supportContactPoint;
         private Collider supportCollider;
@@ -46,6 +47,7 @@ namespace DeliveryRider
             trafficRecoveryActive = state == RiderReactionState.Airborne || state == RiderReactionState.Rolling || state == RiderReactionState.GettingUp;
             if (ReactionState == state) return;
             ReactionState = state;
+            if (state == RiderReactionState.Normal) physicalTumble = false;
             stableGroundTime = 0f;
             if (state == RiderReactionState.GettingUp) getUpStartedAt = Time.time;
             ReactionChanged?.Invoke(state);
@@ -121,6 +123,11 @@ namespace DeliveryRider
             switch (ReactionState)
             {
                 case RiderReactionState.Airborne:
+                    if (physicalTumble)
+                    {
+                        if (groundedForHazards) SetReactionState(RiderReactionState.Rolling);
+                        break;
+                    }
                     if (groundedForHazards && Time.time >= trafficRecoveryUntil && Time.time >= nextContactAt)
                         SetReactionState(RiderReactionState.Rolling);
                     else
@@ -140,7 +147,7 @@ namespace DeliveryRider
                         var tangent = Vector3.MoveTowards(Vector3.ProjectOnPlane(body.linearVelocity, ReactionGroundNormal), Vector3.zero, rollDeceleration * dt);
                         body.linearVelocity = tangent;
                         stableGroundTime = tangent.magnitude <= getUpSpeed ? stableGroundTime + dt : 0f;
-                        if (stableGroundTime >= stableGroundSeconds) SetReactionState(RiderReactionState.GettingUp);
+                        if (stableGroundTime >= stableGroundSeconds && (!physicalTumble || Time.time >= trafficRecoveryUntil)) SetReactionState(RiderReactionState.GettingUp);
                     }
                     break;
                 case RiderReactionState.GettingUp:
@@ -175,7 +182,7 @@ namespace DeliveryRider
                     supportCollider = collision.collider;
                     break;
                 }
-            if (ReactionState != RiderReactionState.Airborne && ReactionState != RiderReactionState.Sliding) return;
+            if (physicalTumble || ReactionState != RiderReactionState.Airborne && ReactionState != RiderReactionState.Sliding) return;
             if (Time.time < nextContactAt) return;
             var incoming = collisionVelocity;
             // Gravity acts after FixedUpdate, so include this step for falling contacts.

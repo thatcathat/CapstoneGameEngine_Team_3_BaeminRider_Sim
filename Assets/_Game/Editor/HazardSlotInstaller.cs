@@ -70,8 +70,10 @@ namespace DeliveryRider.Editor
                         obj = CreateGround(layout, session, GroundHazardKind.Manhole, Ground(layout, center), along, parent);
                         break;
                     case "melon":
-                        obj = CreateGround(layout, session, GroundHazardKind.Melon,
-                            Ground(layout, center + right * Side(s) * Mathf.Max(0f, s.halfWidth - 1.2f)), along, parent);
+                        obj = new GameObject("Melon");
+                        obj.transform.SetParent(parent, false);
+                        obj.transform.SetPositionAndRotation(Ground(layout, center + right * Side(s) * Mathf.Max(0f, s.halfWidth - 1.2f)), Quaternion.LookRotation(along));
+                        RollingMelonInstaller.Build(obj, session);
                         break;
                     case "door":
                         obj = BuildDoor(sourceDoor, session, layout, s, center, along, right, parent);

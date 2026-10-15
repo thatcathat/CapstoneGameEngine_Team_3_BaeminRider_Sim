@@ -107,9 +107,25 @@ namespace DeliveryRider
             return true;
         }
 
+        // Keep solver velocity intact: the solid melons, not a scripted launch, move the rider.
+        public bool TryHazardTumble(UnityEngine.Object source, float recoverySeconds)
+        {
+            if (!AcceptHazard(source)) return false;
+            slipOwner = null;
+            movement = airMovement = Vector2.zero;
+            trafficRecoveryUntil = Time.time + Mathf.Max(0.1f, recoverySeconds);
+            nextTrafficHitAt = trafficRecoveryUntil + 1f;
+            BeginFlight(body.linearVelocity);
+            physicalTumble = true;
+            SetReactionState(RiderReactionState.Rolling);
+            HazardHit?.Invoke(source);
+            return true;
+        }
+
         public bool TryHazardSlip(UnityEngine.Object source, Vector3 direction, float duration)
         {
             if (!groundedForHazards || !AcceptHazard(source)) return false;
+            physicalTumble = false;
             trafficRecoveryActive = false;
             SetReactionState(RiderReactionState.Sliding);
             slipOwner = source;
@@ -143,6 +159,7 @@ namespace DeliveryRider
 
         private void ApplyContactCrash(Vector3 impulse, float recoverySeconds)
         {
+            physicalTumble = false;
             slipOwner = null;
             groundedForHazards = false;
             trafficRecoveryActive = true;
