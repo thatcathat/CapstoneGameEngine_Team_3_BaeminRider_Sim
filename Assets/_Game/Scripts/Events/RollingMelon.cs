@@ -15,14 +15,17 @@ namespace DeliveryRider
         {
             owner = hazard;
             body = GetComponent<Rigidbody>();
-            home = transform.localPosition;
-            homeRotation = transform.localRotation;
             radius = GetComponent<SphereCollider>().radius * Mathf.Abs(transform.lossyScale.x);
         }
 
-        public void Park()
+        public bool IsLoose => body != null && !body.isKinematic;
+
+        // Parks the melon at a new resting place in the pile (the pile is laid out afresh for every wave).
+        public void Park(Vector3 localPosition, Quaternion localRotation)
         {
             Hide();
+            home = localPosition;
+            homeRotation = localRotation;
             transform.localPosition = home;
             transform.localRotation = homeRotation;
             gameObject.SetActive(true);

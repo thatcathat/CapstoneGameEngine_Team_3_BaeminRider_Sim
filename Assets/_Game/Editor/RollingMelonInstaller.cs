@@ -1,72 +1,34 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace DeliveryRider.Editor
 {
+    // Builds the melon pile prefab used by HazardSlotInstaller. The pile itself is laid out at runtime
+    // by RollingMelonHazard, so the melons here only carry mesh, body and size.
     public static class RollingMelonInstaller
     {
         private const string Art = "Assets/_Game/Art/FourDistrict/";
+        // Enough melons for the largest pile (3 x 3 base: 9 + 4 + 1).
+        private const int MaximumMelons = 14;
 
-        [MenuItem("Delivery Rider/Upgrade Melon Slots")]
-        public static void Apply()
+        public static RollingMelonHazard CreatePrefab(DeliverySession session, string path)
         {
-            if (EditorApplication.isPlaying || EditorApplication.isCompiling) throw new InvalidOperationException("Stop Play Mode and finish compilation first.");
-            var scene = SceneManager.GetActiveScene();
-            if (scene.path != DistrictLayout.ScenePath || scene.isDirty) throw new InvalidOperationException("Open the saved FourDistrictPrototype scene first.");
-            var session = UnityEngine.Object.FindFirstObjectByType<DeliverySession>();
-            var slots = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<HazardSlot>(true)).Where(s => s.Type == "melon").ToArray();
-            int changed = 0;
-            foreach (var slot in slots)
-            {
-                if (slot.GetComponent<RollingMelonHazard>() != null) continue;
-                Build(slot.gameObject, session);
-                changed++;
-            }
-            EditorSceneManager.MarkSceneDirty(scene);
-            AssetDatabase.SaveAssets();
-            if (!EditorSceneManager.SaveScene(scene)) throw new InvalidOperationException("Could not save melon upgrade.");
-            Debug.Log($"Rolling melon slots upgraded: {changed}/{slots.Length}. Play Mode not started.");
-        }
-
-        public static void Build(GameObject root, DeliverySession session)
-        {
-            if (root.GetComponent<RollingMelonHazard>() != null) return;
             if (session == null || session.Player == null) throw new InvalidOperationException("A player is required for melon sizing.");
             var player = session.Player.GetComponent<CapsuleCollider>();
             if (player == null) throw new InvalidOperationException("Player capsule is missing.");
             float diameter = player.height * Mathf.Abs(player.transform.lossyScale.y) * 0.3f;
-            var positions = new Vector3[7];
-            for (int i = 0; i < positions.Length; i++)
-            {
-                Vector3 world = root.transform.TransformPoint(new Vector3((i % 3 - 1) * diameter * 1.35f, 0f, 2.8f + i / 3 * diameter * 1.5f));
-                var ground = Physics.RaycastAll(world + Vector3.up * 10f, Vector3.down, 25f, ~0, QueryTriggerInteraction.Ignore)
-                    .Where(h => h.collider is MeshCollider && h.rigidbody == null).OrderBy(h => h.distance).ToArray();
-                if (ground.Length == 0) throw new InvalidOperationException($"No ground at {root.name} melon {i}.");
-                positions[i] = ground[0].point + Vector3.up * (diameter * 0.5f + 0.03f);
-            }
+            var root = new GameObject("MelonPile");
+            var hazard = root.AddComponent<RollingMelonHazard>();
             var mesh = MelonMesh();
             var materials = new[] { MakeMaterial("RollingMelonGreen", new Color(0.24f, 0.6f, 0.12f)), MakeMaterial("RollingMelonStripe", new Color(0.035f, 0.19f, 0.04f)) };
-            var old = root.GetComponent<GroundContactHazard>();
-            if (old != null)
-            {
-                UnityEngine.Object.DestroyImmediate(old);
-                var volume = root.GetComponent<BoxCollider>();
-                if (volume != null) UnityEngine.Object.DestroyImmediate(volume);
-                foreach (Transform child in root.transform.Cast<Transform>().ToArray())
-                    if (child.name == "Pulp" || child.name == "Rind" || child.name == "Warning" || child.name == "Burst") UnityEngine.Object.DestroyImmediate(child.gameObject);
-            }
-            var hazard = root.AddComponent<RollingMelonHazard>();
-            var actors = new RollingMelon[positions.Length];
+            var actors = new RollingMelon[MaximumMelons];
             for (int i = 0; i < actors.Length; i++)
             {
                 var melon = new GameObject("RollingMelon_" + i);
                 melon.transform.SetParent(root.transform, false);
-                melon.transform.position = positions[i];
+                melon.transform.localPosition = new Vector3(0f, diameter * 0.5f, 3.5f);
                 melon.transform.localScale = Vector3.one * diameter;
                 melon.AddComponent<MeshFilter>().sharedMesh = mesh;
                 melon.AddComponent<MeshRenderer>().sharedMaterials = materials;
@@ -81,11 +43,14 @@ namespace DeliveryRider.Editor
                 actors[i] = melon.AddComponent<RollingMelon>();
             }
             var data = new SerializedObject(hazard);
-            data.FindProperty("session").objectReferenceValue = session;
             var array = data.FindProperty("melons");
             array.arraySize = actors.Length;
             for (int i = 0; i < actors.Length; i++) array.GetArrayElementAtIndex(i).objectReferenceValue = actors[i];
             data.ApplyModifiedPropertiesWithoutUndo();
+            var prefab = PrefabUtility.SaveAsPrefabAsset(root, path);
+            UnityEngine.Object.DestroyImmediate(root);
+            if (prefab == null) throw new InvalidOperationException("Could not save " + path);
+            return prefab.GetComponent<RollingMelonHazard>();
         }
 
         private static Material MakeMaterial(string name, Color color)
