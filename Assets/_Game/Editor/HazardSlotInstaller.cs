@@ -193,7 +193,7 @@ namespace DeliveryRider.Editor
             return tire.gameObject;
         }
 
-        // Hydrant: stands on the sidewalk edge; touching it after the warning throws the rider high into the road.
+        // Hydrant: stands on the sidewalk edge; touching it bursts at once and throws the rider high into the road.
         private static GameObject BuildHydrant(DeliverySession session, DistrictLayout.Layout layout, SlotData s,
             Vector3 center, Vector3 right, Transform parent)
         {
@@ -222,8 +222,6 @@ namespace DeliveryRider.Editor
             data.FindProperty("kind").enumValueIndex = (int)GroundHazardKind.Hydrant;
             data.FindProperty("warningLamp").objectReferenceValue = lamp.GetComponent<Renderer>();
             data.FindProperty("effect").objectReferenceValue = water;
-            data.FindProperty("approachRadius").floatValue = 1.8f;
-            data.FindProperty("warningSeconds").floatValue = 0.5f;
             data.FindProperty("activeSeconds").floatValue = 0.8f;
             data.FindProperty("forwardImpulse").floatValue = 2f;
             data.FindProperty("upwardImpulse").floatValue = 11f;
