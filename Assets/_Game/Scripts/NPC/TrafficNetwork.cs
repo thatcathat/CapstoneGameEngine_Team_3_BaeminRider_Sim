@@ -56,6 +56,7 @@ namespace DeliveryRider
         {
             public readonly List<TrafficCar> occupants = new List<TrafficCar>();
             public readonly List<TrafficCar> waiting = new List<TrafficCar>();
+            public int connector = -1;
         }
 
         private List<TrafficCar>[] occupants;
@@ -174,7 +175,7 @@ namespace DeliveryRider
             float offset = 0f;
             int path = car.PathIndex;
             float from = car.Distance;
-            for (int step = 0; step < 3 && path >= 0 && offset < lookAhead; step++)
+            for (int step = 0; step < 4 && path >= 0 && offset < lookAhead; step++)
             {
                 foreach (var other in occupants[path])
                 {
@@ -191,12 +192,26 @@ namespace DeliveryRider
             return best;
         }
 
-        // Room at the start of a lane, so a car never stops inside a junction waiting for space.
-        public float FreeEntry(int lane)
+        // The whole car must fit beyond the junction, even when stopped at the next stop line.
+        // A stop line needs only its boundary margin; an actual car ahead needs the following gap.
+        public bool HasEntryRoom(int lane, TrafficCar car, float followingGap, float entryClearance)
         {
-            float free = paths[lane].length;
-            foreach (var other in occupants[lane]) free = Mathf.Min(free, other.Distance - other.Length * 0.5f);
-            return free;
+            float half = car.Length * 0.5f;
+            float stopCenter = paths[lane].length - half - TrafficCar.JunctionStopMargin;
+            foreach (var other in occupants[lane])
+                if (other != car)
+                    stopCenter = Mathf.Min(stopCenter, other.Distance - other.Length * 0.5f - followingGap - half);
+
+            // A leader's center may already be on the next connector while its rear is still in this lane.
+            foreach (int next in paths[lane].next)
+                foreach (var other in occupants[next])
+                {
+                    if (other == car) continue;
+                    float rear = other.Distance - other.Length * 0.5f;
+                    if (rear < 0f)
+                        stopCenter = Mathf.Min(stopCenter, paths[lane].length + rear - followingGap - half);
+                }
+            return stopCenter >= half + entryClearance;
         }
 
         // A junction admits one connector at a time (several cars may follow on that same connector), first come first served.
@@ -207,12 +222,14 @@ namespace DeliveryRider
             state.waiting.RemoveAll(c => c == null || !c.isActiveAndEnabled);
             if (state.occupants.Contains(car)) return true;
             if (!state.waiting.Contains(car)) state.waiting.Add(car);
-            bool sameFlow = state.occupants.Count > 0 && state.occupants.TrueForAll(c => c.NextIndex == connector || c.PathIndex == connector);
+            // Keep the admitted flow while a vehicle's rear is still clearing this junction.
+            bool sameFlow = state.occupants.Count > 0 && state.connector == connector;
             bool othersWaiting = state.waiting.Exists(c => c != car && c.NextIndex != connector);
             bool grant = state.occupants.Count == 0 ? state.waiting[0] == car : sameFlow && !othersWaiting;
             if (!grant) return false;
             state.waiting.Remove(car);
             state.occupants.Add(car);
+            state.connector = connector;
             return true;
         }
 

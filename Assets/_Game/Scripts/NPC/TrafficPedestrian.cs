@@ -17,7 +17,7 @@ namespace DeliveryRider
         [Header("Avoidance (test values)")]
         [Tooltip("How long to keep to the passing side before stepping back into the walking lane.")]
         [SerializeField, Min(0f)] private float avoidHoldSeconds = 1.2f;
-        [Tooltip("Turn back when neither side of the sidewalk is free for this long.")]
+        [Tooltip("Allowed time without forward progress, in addition to the time needed for a sidestep.")]
         [SerializeField, Min(0f)] private float turnBackSeconds = 1f;
         [Header("Punch response (test values)")]
         [SerializeField] private float punchSpeed = 5f;
@@ -60,7 +60,11 @@ namespace DeliveryRider
         private float visualSpin, lieAngle;
         private bool lying;
         // Signed sideways offset from the path centre; positive keeps right. Avoidance moves it across the sidewalk.
-        private float sideOffset, avoidUntil, blockedSince = -1f;
+        private float sideOffset, avoidUntil, progressDeadline, avoidStartDistance;
+        private Vector3 progressPosition;
+        private enum AvoidPhase { None, Passing, ReturningToLane }
+        private AvoidPhase avoidPhase;
+        private int triedSides;
         private int chainDepth;
         private Vector3 flightVelocity;
         // After landing: get up where the flight ended, then walk to this sidewalk spot and join its path.
@@ -89,7 +93,7 @@ namespace DeliveryRider
             random = new System.Random(randomSeed);
             speed = Mathf.Lerp(walkingSpeed.x, walkingSpeed.y, (float)random.NextDouble());
             path = route; distance = along;
-            sideOffset = laneOffset;
+            ResetAvoidance();
             idleAt = Time.time + 8f + (float)random.NextDouble() * 15f;
             if (coat != null && coatMaterial != null) coat.sharedMaterial = coatMaterial;
             SetWalking();
@@ -126,7 +130,7 @@ namespace DeliveryRider
             }
             if (returning) { WalkBack(); return; }
             if (Time.time < waitUntil) return;
-            if (Time.time >= idleAt)
+            if (avoidPhase == AvoidPhase.None && Time.time >= idleAt)
             {
                 waitUntil = Time.time + 0.5f + (float)random.NextDouble();
                 idleAt = Time.time + 10f + (float)random.NextDouble() * 20f;
@@ -135,62 +139,123 @@ namespace DeliveryRider
             network.Sample(path, distance, out var currentFeet, out var forward);
             var currentRoute = network.Path(path);
             var right = Vector3.Cross(Vector3.up, forward);
-            if (Time.time >= nextObstacleAt)
-            {
-                nextObstacleAt = Time.time + 0.1f;
-                blocked = Blocked(body.position, forward) && !TrySidestep(currentFeet, forward, right, currentRoute);
-                if (!blocked && Time.time >= avoidUntil) TryReturnToLane(currentFeet, forward, right, currentRoute);
-            }
-            if (blocked)
-            {
-                if (blockedSince < 0f) blockedSince = Time.time;
-                else if (Time.time - blockedSince >= turnBackSeconds) TurnBack(currentRoute);
-                return;
-            }
-            blockedSince = -1f;
+            if (!UpdateAvoidance(currentFeet, forward, right, currentRoute)) return;
             var currentTarget = currentFeet + right * Lane(currentRoute);
             // An outer corner or U-turn is longer than the centre line. Catch up before advancing
             // route distance, otherwise repeated turns leave the actor increasingly behind its path.
             // Sidesteps use the same catch-up, so the walker moves across before going on.
             if ((currentTarget - body.position).sqrMagnitude > 0.0144f)
             {
-                body.MovePosition(Vector3.MoveTowards(body.position, currentTarget, speed * Time.fixedDeltaTime));
+                var step = Vector3.MoveTowards(body.position, currentTarget, speed * Time.fixedDeltaTime);
+                if (!ClearMove(body.position, step)) { blocked = true; nextObstacleAt = 0f; return; }
+                body.MovePosition(step);
                 body.MoveRotation(Quaternion.Slerp(body.rotation, Quaternion.LookRotation(forward), turnSpeed * Time.fixedDeltaTime));
                 return;
             }
-            distance += speed * Time.fixedDeltaTime;
+            float nextDistance = distance + speed * Time.fixedDeltaTime;
+            int nextPath = path;
             var route = network.Path(path);
-            if (distance >= route.length)
+            bool turningBack = false;
+            if (nextDistance >= route.length)
             {
-                int next = network.Next(path, random);
-                distance -= route.length;
-                if (next == route.reverse) waitUntil = Time.time + 0.3f;
-                path = next;
-                nextObstacleAt = 0f;
-                route = network.Path(path);
+                nextPath = network.Next(path, random);
+                nextDistance -= route.length;
+                turningBack = nextPath == route.reverse;
+                route = network.Path(nextPath);
             }
-            network.Sample(path, distance, out var feet, out forward);
-            var target = feet + Vector3.Cross(Vector3.up, forward) * Lane(route);
+            network.Sample(nextPath, nextDistance, out var feet, out forward);
+            float nextOffset = nextPath == path ? Lane(route) : Mathf.Clamp(laneOffset, -Limit(route), Limit(route));
+            var target = feet + Vector3.Cross(Vector3.up, forward) * nextOffset;
+            var nextPosition = Vector3.MoveTowards(body.position, target, speed * Time.fixedDeltaTime);
+            if (!ClearMove(body.position, nextPosition)) { blocked = true; nextObstacleAt = 0f; return; }
+            if (nextPath != path) ResetAvoidance();
+            path = nextPath;
+            distance = nextDistance;
+            if (turningBack) waitUntil = Time.time + 0.3f;
             // Turn/side changes ease toward the new walking lane instead of teleporting sideways.
-            body.MovePosition(Vector3.MoveTowards(body.position, target, speed * Time.fixedDeltaTime));
+            body.MovePosition(nextPosition);
             body.MoveRotation(Quaternion.Slerp(body.rotation, Quaternion.LookRotation(forward), turnSpeed * Time.fixedDeltaTime));
         }
 
         private static float Limit(PedestrianPath route) => Mathf.Max(0f, route.halfWidth - 0.35f);
         private float Lane(PedestrianPath route) => Mathf.Clamp(sideOffset, -Limit(route), Limit(route));
 
-        // Passes on the left first, as when overtaking, then tries the right edge of the sidewalk.
+        private void ResetAvoidance()
+        {
+            avoidPhase = AvoidPhase.None;
+            triedSides = 0;
+            sideOffset = laneOffset;
+            avoidUntil = progressDeadline = 0f;
+            blocked = false;
+            nextObstacleAt = 0f;
+        }
+
+        private bool UpdateAvoidance(Vector3 feet, Vector3 forward, Vector3 right, PedestrianPath route)
+        {
+            if (avoidPhase != AvoidPhase.None)
+            {
+                // Sideways movement must not keep the no-progress watchdog alive.
+                if (Vector3.Dot(body.position - progressPosition, forward) >= 0.2f)
+                {
+                    progressPosition = body.position;
+                    progressDeadline = Time.time + Mathf.Max(0.1f, turnBackSeconds);
+                }
+                if (Time.time >= progressDeadline)
+                {
+                    if (avoidPhase != AvoidPhase.Passing || !TrySidestep(feet, forward, right, route))
+                    { TurnBack(route); return false; }
+                    blocked = false;
+                    nextObstacleAt = 0f;
+                }
+            }
+            if (Time.time < nextObstacleAt) return !blocked;
+            nextObstacleAt = Time.time + 0.1f;
+            var target = feet + right * Lane(route);
+            bool movingSideways = (target - body.position).sqrMagnitude > 0.0144f;
+            if (avoidPhase == AvoidPhase.None)
+            {
+                if (!blocked && !Blocked(body.position, forward)) return true;
+                avoidPhase = AvoidPhase.Passing;
+                triedSides = 0;
+                avoidStartDistance = distance;
+                progressPosition = body.position;
+                progressDeadline = Time.time + Mathf.Max(0.1f, turnBackSeconds);
+                blocked = !TrySidestep(feet, forward, right, route);
+                return !blocked;
+            }
+            // Keep the selected lane while approaching it. Do not retest the old forward lane
+            // and choose the opposite side on every obstacle scan.
+            blocked = movingSideways ? !ClearMove(body.position, target) : Blocked(body.position, forward);
+            if (avoidPhase == AvoidPhase.ReturningToLane && !movingSideways)
+            {
+                bool obstacle = blocked;
+                ResetAvoidance();
+                blocked = obstacle;
+            }
+            else if (avoidPhase == AvoidPhase.Passing && !blocked && !movingSideways && Time.time >= avoidUntil
+                && distance - avoidStartDistance >= obstacleReach + 0.4f)
+                TryReturnToLane(feet, forward, right, route);
+            return !blocked;
+        }
+
+        // Each passing side can be selected at most once in one avoidance attempt.
         private bool TrySidestep(Vector3 feet, Vector3 forward, Vector3 right, PedestrianPath route)
         {
             float limit = Limit(route), current = Lane(route);
             for (int side = -1; side <= 1; side += 2)
             {
+                int mask = side < 0 ? 1 : 2;
+                if ((triedSides & mask) != 0) continue;
+                triedSides |= mask;
                 float offset = side * limit;
                 if (Mathf.Abs(offset - current) < 0.3f) continue;
                 var spot = feet + right * offset;
-                if (!HasRoom(spot) || Blocked(spot, forward)) continue;
+                if (!HasRoom(spot) || Blocked(spot, forward) || !ClearMove(body.position, spot)) continue;
                 sideOffset = offset;
                 avoidUntil = Time.time + avoidHoldSeconds;
+                progressPosition = body.position;
+                progressDeadline = Time.time + Vector3.Distance(body.position, spot) / Mathf.Max(0.1f, speed)
+                    + Mathf.Max(0.1f, turnBackSeconds);
                 return true;
             }
             return false;
@@ -198,27 +263,61 @@ namespace DeliveryRider
 
         private void TryReturnToLane(Vector3 feet, Vector3 forward, Vector3 right, PedestrianPath route)
         {
-            if (Mathf.Approximately(sideOffset, laneOffset)) return;
             var spot = feet + right * Mathf.Clamp(laneOffset, -Limit(route), Limit(route));
-            if (HasRoom(spot) && !Blocked(spot, forward)) sideOffset = laneOffset;
+            if (HasRoom(spot) && !Blocked(spot, forward) && ClearMove(body.position, spot))
+            {
+                sideOffset = laneOffset;
+                avoidPhase = AvoidPhase.ReturningToLane;
+                progressPosition = body.position;
+                progressDeadline = Time.time + Vector3.Distance(body.position, spot) / Mathf.Max(0.1f, speed)
+                    + Mathf.Max(0.1f, turnBackSeconds);
+            }
             else avoidUntil = Time.time + 0.3f;
         }
 
         // Both sides stayed blocked: walk the same sidewalk the other way instead of waiting forever.
         private void TurnBack(PedestrianPath route)
         {
-            distance = Mathf.Clamp(route.length - distance, 0f, route.length);
-            path = route.reverse;
-            sideOffset = laneOffset;
-            avoidUntil = 0f;
-            blocked = false; blockedSince = -1f; nextObstacleAt = 0f;
+            float previousOffset = Lane(route);
+            if (route.connector)
+            {
+                // A connector's reverse points to its incoming lane, not a reversed connector.
+                path = network.Path(route.reverse).reverse;
+                distance = 0f;
+            }
+            else
+            {
+                distance = Mathf.Clamp(route.length - distance, 0f, route.length);
+                path = route.reverse;
+            }
+            ResetAvoidance();
             waitUntil = Time.time + 0.3f;
+            // Reverse forward motion where the walker stands instead of first cutting across
+            // the same obstacle to reach the opposite walking lane.
+            sideOffset = route.connector ? laneOffset : -previousOffset;
+            avoidPhase = AvoidPhase.Passing;
+            avoidStartDistance = distance;
+            progressPosition = body.position;
+            network.Sample(path, distance, out var feet, out var forward);
+            var target = feet + Vector3.Cross(Vector3.up, forward) * Lane(network.Path(path));
+            progressDeadline = waitUntil + Vector3.Distance(body.position, target) / Mathf.Max(0.1f, speed)
+                + Mathf.Max(0.1f, turnBackSeconds);
+            avoidUntil = waitUntil + avoidHoldSeconds;
         }
 
         private bool Blocked(Vector3 feet, Vector3 direction)
+            => SweepBlocked(feet, direction, obstacleReach);
+
+        private bool ClearMove(Vector3 from, Vector3 to)
+        {
+            var delta = to - from;
+            return delta.sqrMagnitude < 0.000001f || !SweepBlocked(from, delta.normalized, delta.magnitude);
+        }
+
+        private bool SweepBlocked(Vector3 feet, Vector3 direction, float reach)
         {
             int count = Physics.CapsuleCastNonAlloc(feet + Vector3.up * 0.35f, feet + Vector3.up * 1.45f,
-                0.28f, direction, hits, obstacleReach, obstacleMask, QueryTriggerInteraction.Ignore);
+                0.28f, direction, hits, reach, obstacleMask, QueryTriggerInteraction.Ignore);
             for (int i = 0; i < count; i++)
                 if (hits[i].rigidbody != body && hits[i].normal.y < 0.7f) return true;
             return count == hits.Length;
@@ -254,7 +353,7 @@ namespace DeliveryRider
             flying = true; hitAt = Time.time; floorAt = float.NegativeInfinity;
             returning = false;
             chainDepth = depth;
-            blocked = false; blockedSince = -1f;
+            ResetAvoidance();
             // Hit again while down: tumble on from the lying pose instead of popping upright.
             visualSpin = lying ? lieAngle : 0f;
             lying = false;
@@ -362,8 +461,7 @@ namespace DeliveryRider
             lying = false;
             ApplyPose(Quaternion.identity, BodyCenter);
             waitUntil = Time.time + 0.3f;
-            sideOffset = laneOffset; avoidUntil = 0f;
-            blocked = false; blockedSince = -1f; nextObstacleAt = 0f;
+            ResetAvoidance();
         }
 
         private void LateUpdate()

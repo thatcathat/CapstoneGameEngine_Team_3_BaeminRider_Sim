@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DeliveryRider
@@ -35,7 +36,15 @@ namespace DeliveryRider
         [SerializeField] private Renderer bodyRenderer;
         [SerializeField] private Renderer brakeLights;
         private const int ObstacleScanInterval = 3;
+        internal const float JunctionStopMargin = 0.3f;
+        private const float JunctionEntryClearance = 1f;
+        private struct JunctionClearance
+        {
+            public int junction;
+            public float remaining;
+        }
         private readonly Collider[] hits = new Collider[16];
+        private readonly List<JunctionClearance> clearingJunctions = new List<JunctionClearance>(2);
         private TrafficNetwork network;
         private Rigidbody body;
         private BoxCollider shape;
@@ -101,11 +110,11 @@ namespace DeliveryRider
             if (!path.IsConnector && NextIndex >= 0)
             {
                 var connector = network.Path(NextIndex);
-                float toStopLine = path.length - Distance - half - 0.3f;
+                float toStopLine = path.length - Distance - half - JunctionStopMargin;
                 if (connector.IsConnector && toStopLine < stopping + 4f && heldJunction != connector.junction)
                 {
                     int exitLane = connector.next.Length > 0 ? connector.next[0] : -1;
-                    bool room = exitLane < 0 || network.FreeEntry(exitLane) > Length + followGap + 1f;
+                    bool room = exitLane < 0 || network.HasEntryRoom(exitLane, this, followGap, JunctionEntryClearance);
                     if (room && network.TryEnterJunction(connector.junction, this, NextIndex)) heldJunction = connector.junction;
                     else
                     {
@@ -142,6 +151,7 @@ namespace DeliveryRider
 
         private void Advance(float travel)
         {
+            ClearJunctionsAfterTravel(travel);
             Distance += travel;
             int guard = 0;
             while (Distance > network.Path(PathIndex).length && guard++ < 4)
@@ -155,9 +165,28 @@ namespace DeliveryRider
                 NextIndex = network.ChooseNext(PathIndex, random);
                 if (leavingConnector && heldJunction >= 0)
                 {
-                    network.LeaveJunction(heldJunction, this);
+                    // Distance includes this step's overshoot beyond the connector's end.
+                    float remaining = Length * 0.5f + JunctionStopMargin - Distance;
+                    if (remaining > 0f)
+                        clearingJunctions.Add(new JunctionClearance { junction = heldJunction, remaining = remaining });
+                    else network.LeaveJunction(heldJunction, this);
                     heldJunction = -1;
                 }
+            }
+        }
+
+        private void ClearJunctionsAfterTravel(float travel)
+        {
+            for (int i = clearingJunctions.Count - 1; i >= 0; i--)
+            {
+                var clearance = clearingJunctions[i];
+                clearance.remaining -= travel;
+                if (clearance.remaining <= 0f)
+                {
+                    network.LeaveJunction(clearance.junction, this);
+                    clearingJunctions.RemoveAt(i);
+                }
+                else clearingJunctions[i] = clearance;
             }
         }
 
@@ -258,6 +287,8 @@ namespace DeliveryRider
             if (network == null) return;
             network.Leave(this, PathIndex);
             if (heldJunction >= 0) network.LeaveJunction(heldJunction, this);
+            foreach (var clearance in clearingJunctions) network.LeaveJunction(clearance.junction, this);
+            clearingJunctions.Clear();
             heldJunction = -1;
         }
     }
