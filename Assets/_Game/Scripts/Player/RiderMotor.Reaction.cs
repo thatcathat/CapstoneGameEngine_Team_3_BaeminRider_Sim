@@ -81,6 +81,7 @@ namespace DeliveryRider
 
         private void SetReactionState(RiderReactionState state)
         {
+            if (state != RiderReactionState.Normal) ClearChickenControl();
             trafficRecoveryActive = state == RiderReactionState.Airborne || state == RiderReactionState.Rolling || state == RiderReactionState.GettingUp;
             if (ReactionState == state) return;
             ReactionState = state;
@@ -110,6 +111,7 @@ namespace DeliveryRider
 
         private void ResetReaction()
         {
+            ClearChickenControl();
             slipOwner = null;
             airMovement = Vector2.zero;
             jumpQueued = false;

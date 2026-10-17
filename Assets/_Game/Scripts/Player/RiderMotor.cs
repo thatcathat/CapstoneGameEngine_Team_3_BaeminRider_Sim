@@ -66,6 +66,53 @@ namespace DeliveryRider
         private InputAction punch;
         private InputAction jump;
         private Vector2 movement;
+        private UnityEngine.Object chickenControlOwner;
+        private Vector3 chickenControlDirection;
+        private float chickenControlUntil;
+        private readonly System.Collections.Generic.List<UnityEngine.Object> chickenControlSources = new System.Collections.Generic.List<UnityEngine.Object>(4);
+
+        public bool TryAttachChicken(UnityEngine.Object source, Vector3 direction, float seconds)
+        {
+            if (!isActiveAndEnabled || source == null || session == null || session.IsPaused || session.IsMapOpen || session.IsSettled
+                || ReactionState != RiderReactionState.Normal) return false;
+            if (Time.time >= chickenControlUntil) ClearChickenControl();
+            if (!chickenControlSources.Contains(source)) chickenControlSources.Add(source);
+            if (chickenControlOwner == null)
+            {
+                chickenControlOwner = source;
+                chickenControlDirection = Vector3.ProjectOnPlane(direction, Vector3.up).normalized;
+            }
+            // Every newly attached bird adds time to the common deadline, including other flocks.
+            chickenControlUntil = Mathf.Max(Time.time, chickenControlUntil) + Mathf.Max(0.1f, seconds);
+            jumpQueued = false;
+            return true;
+        }
+
+        public bool TryChickenControl(UnityEngine.Object source, Vector3 direction)
+        {
+            if (!isActiveAndEnabled || session == null || session.IsPaused || session.IsMapOpen || session.IsSettled
+                || ReactionState != RiderReactionState.Normal || Time.time >= chickenControlUntil
+                || !chickenControlSources.Contains(source)) return false;
+            if (chickenControlOwner == source)
+                chickenControlDirection = Vector3.ProjectOnPlane(direction, Vector3.up).normalized;
+            return true;
+        }
+
+        public void EndChickenControl(UnityEngine.Object source)
+        {
+            chickenControlSources.Remove(source);
+            if (chickenControlSources.Count == 0) ClearChickenControl();
+            else if (chickenControlOwner == source) chickenControlOwner = chickenControlSources[0];
+        }
+
+        private void ClearChickenControl()
+        {
+            chickenControlSources.Clear();
+            chickenControlOwner = null;
+            chickenControlDirection = Vector3.zero;
+            chickenControlUntil = 0f;
+            movement = Vector2.zero;
+        }
         private Vector3 spawn;
         public Vector2 Look => session.CanMove ? look.ReadValue<Vector2>() : Vector2.zero;
         public bool CanLook => session != null && !session.IsPaused && !session.IsMapOpen && !session.IsSettled;
@@ -253,8 +300,8 @@ namespace DeliveryRider
             airMovement = CanLook ? Vector2.ClampMagnitude(move.ReadValue<Vector2>(), 1f) : Vector2.zero;
             if (CanLook && recover.WasPressedThisFrame()) RestoreSafePosition();
             if (session.CanPickup) session.TryPickup();
-            if (session.CanMove && punch.WasPressedThisFrame()) TryPunch();
-            if (session.CanMove && jump.WasPressedThisFrame()) jumpQueued = true;
+            if (session.CanMove && chickenControlOwner == null && punch.WasPressedThisFrame()) TryPunch();
+            if (session.CanMove && chickenControlOwner == null && jump.WasPressedThisFrame()) jumpQueued = true;
         }
 
         // Punches go where the camera looks, so a standing rider can still aim at the recipient.
@@ -282,6 +329,7 @@ namespace DeliveryRider
 
         private void FixedUpdate()
         {
+            if (chickenControlOwner != null && Time.time >= chickenControlUntil) ClearChickenControl();
             bool wasGrounded = groundedForHazards;
             groundedForHazards = TryGround(out var supportNormal, false) && Vector3.Dot(body.linearVelocity, supportNormal) <= 0.5f;
             // Only keep an already grounded walk attached to a descending road.
@@ -301,6 +349,7 @@ namespace DeliveryRider
             var forward = Vector3.ProjectOnPlane(view.forward, Vector3.up).normalized;
             var right = Vector3.ProjectOnPlane(view.right, Vector3.up).normalized;
             var direction = session.CanMove ? forward * movement.y + right * movement.x : Vector3.zero;
+            if (session.CanMove && chickenControlOwner != null) direction = chickenControlDirection;
             var current = body.linearVelocity;
             bool jumping = jumpQueued && groundedForHazards && session.CanMove && !IsSlipping;
             jumpQueued = false;

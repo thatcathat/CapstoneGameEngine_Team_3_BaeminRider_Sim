@@ -99,9 +99,9 @@ namespace DeliveryRider
             var slot = obj.AddComponent<HazardSlot>();
             slot.Configure(kind.type, kind.role, kind.unlockDay, candidates.Routes(spot.spot));
             // Objects stay on all day; triggers wait switched off until a call lights them.
-            bool isObject = kind.role == HazardRole.Object;
-            slot.StrikeAllowed = isObject;
-            obj.SetActive(isObject);
+            bool alwaysActive = kind.role == HazardRole.Object || kind.type == "chicken";
+            slot.StrikeAllowed = alwaysActive;
+            obj.SetActive(alwaysActive);
             obj.transform.SetParent(transform, true);
             slots.Add(slot);
         }
@@ -128,7 +128,7 @@ namespace DeliveryRider
             }
             bool strike = active != null && session.HasPickedUp;
             foreach (var slot in slots)
-                if (slot != null && slot.Role == HazardRole.Trigger) slot.StrikeAllowed = strike;
+                if (slot != null && IsCallTrigger(slot)) slot.StrikeAllowed = strike;
         }
 
         // A new call switches every trigger off, then lights about 70% near this call's route and the rest anywhere.
@@ -137,7 +137,7 @@ namespace DeliveryRider
             pool.Clear();
             foreach (var slot in slots)
             {
-                if (slot == null || slot.Role != HazardRole.Trigger) continue;
+                if (slot == null || !IsCallTrigger(slot)) continue;
                 slot.gameObject.SetActive(false);
                 if (slot.UnlockDay <= day) pool.Add(slot);
             }
@@ -188,12 +188,15 @@ namespace DeliveryRider
             float radius = igniteRadius * igniteRadius;
             foreach (var slot in slots)
             {
-                if (slot == null || slot.Role != HazardRole.Trigger || slot.gameObject.activeSelf || slot.UnlockDay > day) continue;
+                if (slot == null || !IsCallTrigger(slot) || slot.gameObject.activeSelf || slot.UnlockDay > day) continue;
                 if ((slot.transform.position - hit.transform.position).sqrMagnitude > radius) continue;
                 if (UnityEngine.Random.Range(0, ++seen) == 0) pick = slot;
             }
             if (pick != null) Light(pick);
         }
+
+        // Chickens stay active independently of calls and food; the other trigger types use the call pool.
+        private static bool IsCallTrigger(HazardSlot slot) => slot.Role == HazardRole.Trigger && slot.Type != "chicken";
 
         private void Light(HazardSlot slot)
         {

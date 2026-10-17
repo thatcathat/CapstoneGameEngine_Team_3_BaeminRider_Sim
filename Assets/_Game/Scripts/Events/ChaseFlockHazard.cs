@@ -2,67 +2,109 @@ using UnityEngine;
 
 namespace DeliveryRider
 {
-    // Chicken: passing close to the roadside chickens sets the whole flock on the rider for a while; each peck knocks
-    // a little. The flock keeps up with the rider's speed, so it ends after a few pecks or when the chase runs out.
+    // Free birds chase for six seconds. Attached birds share a separate, extendable control timer.
     public sealed class ChaseFlockHazard : MonoBehaviour, IPlacedHazard
     {
         private enum Phase { Idle, Chasing, Spent }
         [SerializeField] private DeliverySession session;
         [SerializeField] private Transform[] birds = System.Array.Empty<Transform>();
         [Header("Test values")]
-        [SerializeField, Min(0.1f)] private float triggerRadius = 3f;
+        [SerializeField, Min(0.1f)] private float triggerRadius = 7f;
         [SerializeField, Min(0.1f)] private float chaseSeconds = 6f;
-        [Tooltip("Slowest chase speed; the flock runs at the rider's speed times riderSpeedShare when that is faster.")]
+        [SerializeField, Min(0.1f)] private float attachmentSeconds = 3f;
         [SerializeField, Min(0.1f)] private float chaseSpeed = 5.2f;
         [SerializeField, Min(0f)] private float riderSpeedShare = 1.15f;
         [SerializeField, Min(0.1f)] private float maximumChaseSpeed = 20f;
-        [Tooltip("The flock gives up after this many pecks that knocked the rider.")]
-        [SerializeField, Min(1)] private int maximumPecks = 3;
-        [SerializeField, Min(1f)] private float giveUpDistance = 40f;
-        [SerializeField, Min(0.1f)] private float peckRadius = 0.9f;
-        [SerializeField, Min(0.1f)] private float peckCooldown = 1.5f;
-        [SerializeField, Min(0f)] private float peckImpulse = 3f;
-        [SerializeField, Min(0f)] private float peckLift = 2.5f;
-        [SerializeField, Min(0.1f)] private float peckRecovery = 0.45f;
-        [SerializeField, Min(0f)] private float riderCenterHeight = 1.08f;
+        [Header("Independent wandering")]
+        [SerializeField] private Vector2 turnInterval = new Vector2(0.35f, 0.8f);
+        [SerializeField, Min(0f)] private float wanderRadius = 2.5f;
+        [SerializeField, Range(0f, 180f)] private float wanderAngle = 65f;
+        [SerializeField, Min(0.1f)] private float separationDistance = 0.8f;
+        [SerializeField, Min(0.1f)] private float contactRadius = 0.65f;
         private RiderMotor rider;
+        private CapsuleCollider playerShape;
+        private RoadNetwork ground;
         private HazardSlot slot;
-        private Vector3[] homes;
+        private Vector3[] homes, headings;
         private Quaternion[] facings;
+        private float[] turnAt;
+        private bool[] attached;
         private Phase phase;
-        private float elapsed;
-        private float nextPeckAt;
-        private int pecks;
+        private float elapsed, commandUntil;
+        private Vector3 command;
+        private bool controlling;
         private int activatedOrder = -1;
 
-        public void Place(DeliverySession owner, RoadNetwork ground, HazardCandidate spot) => session = owner;
+        public void Place(DeliverySession owner, RoadNetwork roadGround, HazardCandidate spot)
+        {
+            session = owner;
+            ground = roadGround;
+        }
 
         private void Awake()
         {
             rider = session != null && session.Player != null ? session.Player.GetComponent<RiderMotor>() : null;
             if (rider == null || birds.Length == 0) { enabled = false; return; }
+            playerShape = rider.GetComponent<CapsuleCollider>();
             slot = GetComponent<HazardSlot>();
             homes = new Vector3[birds.Length];
             facings = new Quaternion[birds.Length];
-            for (int i = 0; i < birds.Length; i++) { homes[i] = birds[i].localPosition; facings[i] = birds[i].localRotation; }
+            headings = new Vector3[birds.Length];
+            turnAt = new float[birds.Length];
+            attached = new bool[birds.Length];
+            for (int i = 0; i < birds.Length; i++)
+            {
+                if (birds[i] == null) { enabled = false; return; }
+                homes[i] = birds[i].localPosition;
+                facings[i] = birds[i].localRotation;
+            }
         }
 
-        private void OnDisable() { if (homes != null) GoHome(); phase = Phase.Spent; }
-        private void OnEnable() { if (homes != null) phase = Phase.Spent; }
-        private void Update() { if (session.IsSettled && phase == Phase.Chasing) { GoHome(); phase = Phase.Spent; } }
+        private void OnEnable()
+        {
+            if (homes == null || rider == null) return;
+            rider.ReactionChanged += OnReaction;
+            rider.SafePositionRestored += OnSafePositionRestored;
+            ResetBirds();
+            phase = Phase.Idle;
+        }
+
+        private void OnDisable()
+        {
+            if (rider != null)
+            {
+                rider.ReactionChanged -= OnReaction;
+                rider.SafePositionRestored -= OnSafePositionRestored;
+            }
+            Finish();
+        }
+
+        private void OnReaction(RiderReactionState state)
+        {
+            if (controlling && state != RiderReactionState.Normal) Finish();
+        }
+
+        private void OnSafePositionRestored()
+        {
+            if (controlling) Finish();
+        }
+
+        private void Update()
+        {
+            if (rider != null && session.IsSettled && phase == Phase.Chasing) Finish();
+        }
 
         private void FixedUpdate()
         {
-            if (session.IsPaused || session.IsSettled) return;
+            if (rider == null || session.IsPaused || session.IsSettled) return;
             switch (phase)
             {
                 case Phase.Idle:
-                    if ((slot == null || slot.StrikeAllowed) && !session.IsMapOpen && !rider.IsRecovering && Near(transform.position, triggerRadius))
+                    if (!session.IsMapOpen && !rider.IsRecovering && Near(transform.position, triggerRadius))
                     {
                         activatedOrder = session.ActiveOrder != null ? session.ActiveOrder.Number : -1;
-                        elapsed = 0f;
-                        pecks = 0;
-                        nextPeckAt = Time.time + 0.6f;
+                        elapsed = commandUntil = 0f;
+                        for (int i = 0; i < birds.Length; i++) turnAt[i] = 0f;
                         phase = Phase.Chasing;
                     }
                     break;
@@ -71,49 +113,140 @@ namespace DeliveryRider
                     break;
                 case Phase.Spent:
                     var order = session.ActiveOrder;
-                    if (order != null && order.Number != activatedOrder && !Near(transform.position, triggerRadius * 3f)) phase = Phase.Idle;
+                    if (order != null && order.Number != activatedOrder && !Near(transform.position, triggerRadius * 3f))
+                    {
+                        ResetBirds();
+                        phase = Phase.Idle;
+                    }
                     break;
             }
         }
 
+        private float NextTurnDelay() => Random.Range(Mathf.Max(0.1f, turnInterval.x), Mathf.Max(0.1f, Mathf.Max(turnInterval.x, turnInterval.y)));
+
         private void Chase()
         {
             elapsed += Time.fixedDeltaTime;
-            Vector3 player = rider.transform.position;
-            if (elapsed >= chaseSeconds || pecks >= maximumPecks || session.IsMapOpen || !Near(transform.position, giveUpDistance)) { GoHome(); phase = Phase.Spent; return; }
-            Vector3 feet = player - Vector3.up * riderCenterHeight;
+            if (session.IsMapOpen) { Finish(); return; }
+            if (elapsed >= chaseSeconds)
+            {
+                for (int i = 0; i < birds.Length; i++) if (!attached[i]) birds[i].gameObject.SetActive(false);
+                if (!controlling) { Finish(); return; }
+            }
+            if (controlling)
+            {
+                if (elapsed >= commandUntil)
+                {
+                    command = Quaternion.Euler(0f, Random.Range(-120f, 120f), 0f) * rider.transform.forward;
+                    commandUntil = elapsed + NextTurnDelay();
+                }
+                if (!rider.TryChickenControl(this, command))
+                {
+                    EndAttachedBirds();
+                    if (elapsed >= chaseSeconds) { Finish(); return; }
+                }
+            }
+            var feet = rider.transform.position;
+            feet.y = playerShape != null ? playerShape.bounds.min.y : feet.y - 1f;
             float speed = Mathf.Clamp(rider.HorizontalSpeed * riderSpeedShare, chaseSpeed, Mathf.Max(chaseSpeed, maximumChaseSpeed));
-            bool pecked = false;
             for (int i = 0; i < birds.Length; i++)
             {
-                // Each chicken aims at its own spot around the rider so the flock surrounds rather than stacks.
-                float angle = i * Mathf.PI * 2f / birds.Length;
-                Vector3 target = feet + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * 0.6f;
-                Vector3 position = Vector3.MoveTowards(birds[i].position, target, speed * Time.fixedDeltaTime);
-                position.y = Mathf.MoveTowards(birds[i].position.y, feet.y, 4f * Time.fixedDeltaTime);
-                Vector3 step = position - birds[i].position;
-                birds[i].position = position;
-                if (new Vector2(step.x, step.z).sqrMagnitude > 0.0001f) birds[i].rotation = Quaternion.LookRotation(new Vector3(step.x, 0f, step.z));
-                if (!pecked && Time.time >= nextPeckAt && Near(birds[i].position + Vector3.up * riderCenterHeight, peckRadius))
+                if (attached[i] || !birds[i].gameObject.activeSelf) continue;
+                var before = birds[i].position;
+                if (elapsed >= turnAt[i])
                 {
-                    pecked = true;
-                    nextPeckAt = Time.time + peckCooldown;
-                    var push = Vector3.ProjectOnPlane(player - birds[i].position, Vector3.up).normalized;
-                    if (rider.TryHazardCrash(this, push * peckImpulse + Vector3.up * peckLift, peckRecovery)) pecks++;
+                    float angle = i * Mathf.PI * 2f / birds.Length + Random.Range(-0.6f, 0.6f);
+                    var target = feet + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * wanderRadius;
+                    var seek = Vector3.ProjectOnPlane(target - before, Vector3.up).normalized;
+                    headings[i] = Quaternion.Euler(0f, Random.Range(-wanderAngle, wanderAngle), 0f) * seek;
+                    turnAt[i] = elapsed + NextTurnDelay();
                 }
+                var separation = Vector3.zero;
+                for (int j = 0; j < birds.Length; j++)
+                {
+                    if (j == i || attached[j] || !birds[j].gameObject.activeSelf) continue;
+                    var away = Vector3.ProjectOnPlane(before - birds[j].position, Vector3.up);
+                    float distance = away.magnitude;
+                    if (distance > 0.001f && distance < separationDistance)
+                        separation += away / distance * (1f - distance / separationDistance);
+                }
+                var step = (headings[i] + separation * 1.5f).normalized * (speed * Time.fixedDeltaTime);
+                var position = before + step;
+                if (ground != null) position = ground.OnGround(position, 0f);
+                else position.y = feet.y;
+                birds[i].position = position;
+                if (step.sqrMagnitude > 0.0001f) birds[i].rotation = Quaternion.LookRotation(step);
+                // Sweep the travelled segment so fast birds can touch the rider between fixed frames.
+                var flatStep = Vector3.ProjectOnPlane(position - before, Vector3.up);
+                float t = flatStep.sqrMagnitude > 0.0001f ? Mathf.Clamp01(Vector3.Dot(feet - before, flatStep) / flatStep.sqrMagnitude) : 0f;
+                if (Near(Vector3.Lerp(before, position, t), contactRadius) && !rider.IsRecovering)
+                {
+                    if (!controlling)
+                    {
+                        command = Quaternion.Euler(0f, Random.Range(-120f, 120f), 0f) * rider.transform.forward;
+                        commandUntil = elapsed + NextTurnDelay();
+                    }
+                    if (rider.TryAttachChicken(this, command, attachmentSeconds)) { attached[i] = true; controlling = true; }
+                }
+            }
+        }
+
+        private void LateUpdate()
+        {
+            if (!controlling || playerShape == null) return;
+            var head = playerShape.bounds.center + Vector3.up * (playerShape.bounds.extents.y + 0.03f);
+            int count = 0;
+            for (int i = 0; i < birds.Length; i++) if (attached[i]) count++;
+            int index = 0;
+            for (int i = 0; i < birds.Length; i++)
+            {
+                if (!attached[i]) continue;
+                float angle = index++ * Mathf.PI * 2f / count;
+                var offset = count == 1 ? Vector3.zero : new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * 0.25f;
+                birds[i].SetPositionAndRotation(head + offset, rider.transform.rotation);
             }
         }
 
         private bool Near(Vector3 point, float radius)
         {
-            Vector3 offset = rider.transform.position - point;
+            var offset = rider.transform.position - point;
             return Mathf.Abs(offset.y) < 2.5f && new Vector2(offset.x, offset.z).sqrMagnitude <= radius * radius;
         }
 
-        private void GoHome()
+        private void ResetBirds()
         {
             for (int i = 0; i < birds.Length; i++)
-                if (birds[i] != null) { birds[i].localPosition = homes[i]; birds[i].localRotation = facings[i]; }
+            {
+                attached[i] = false;
+                birds[i].localPosition = homes[i];
+                birds[i].localRotation = facings[i];
+                birds[i].gameObject.SetActive(true);
+            }
+        }
+
+        private void EndAttachedBirds()
+        {
+            if (rider != null) rider.EndChickenControl(this);
+            controlling = false;
+            if (attached == null) return;
+            for (int i = 0; i < birds.Length; i++)
+            {
+                if (!attached[i]) continue;
+                attached[i] = false;
+                if (birds[i] != null) birds[i].gameObject.SetActive(false);
+            }
+        }
+
+        private void Finish()
+        {
+            EndAttachedBirds();
+            if (attached != null)
+                for (int i = 0; i < birds.Length; i++)
+                {
+                    attached[i] = false;
+                    if (birds[i] != null) birds[i].gameObject.SetActive(false);
+                }
+            phase = Phase.Spent;
         }
     }
 }

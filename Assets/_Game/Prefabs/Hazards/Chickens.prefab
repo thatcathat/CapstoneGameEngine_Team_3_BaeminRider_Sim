@@ -54,19 +54,17 @@ MonoBehaviour:
   - {fileID: 266839353001756334}
   - {fileID: 7091117577642646442}
   - {fileID: 6746447372287291489}
-  triggerRadius: 3
+  triggerRadius: 7
   chaseSeconds: 6
+  attachmentSeconds: 3
   chaseSpeed: 5.2
   riderSpeedShare: 1.15
   maximumChaseSpeed: 20
-  maximumPecks: 3
-  giveUpDistance: 40
-  peckRadius: 0.9
-  peckCooldown: 1.5
-  peckImpulse: 3
-  peckLift: 2.5
-  peckRecovery: 0.45
-  riderCenterHeight: 1.08
+  turnInterval: {x: 0.35, y: 0.8}
+  wanderRadius: 2.5
+  wanderAngle: 65
+  separationDistance: 0.8
+  contactRadius: 0.65
 --- !u!1 &1680630381634810605
 GameObject:
   m_ObjectHideFlags: 0
