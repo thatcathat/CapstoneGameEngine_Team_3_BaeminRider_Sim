@@ -192,6 +192,7 @@ namespace DeliveryRider
         {
             body = GetComponent<Rigidbody>();
             capsule = GetComponent<CapsuleCollider>();
+            InitializeCollisionMaterials();
             spawn = transform.position;
             safeRecovery = GetComponent<RiderSafeRecovery>();
             gameplay = new InputActionMap("Gameplay");
@@ -209,9 +210,26 @@ namespace DeliveryRider
             recover = gameplay.AddAction("Recover", InputActionType.Button, "<Keyboard>/r");
         }
 
-        private void OnEnable() => gameplay.Enable();
-        private void OnDisable() { gameplay.Disable(); movement = Vector2.zero; ResetReaction(); }
-        private void OnDestroy() => gameplay.Dispose();
+        private void OnEnable()
+        {
+            gameplay.Enable();
+            UpdateCollisionMaterial();
+        }
+
+        private void OnDisable()
+        {
+            gameplay.Disable();
+            movement = Vector2.zero;
+            ResetReaction();
+            capsule.sharedMaterial = originalCollisionMaterial;
+        }
+
+        private void OnDestroy()
+        {
+            gameplay.Dispose();
+            Destroy(normalCollisionMaterial);
+            Destroy(rollingCollisionMaterial);
+        }
 
         private void Update()
         {

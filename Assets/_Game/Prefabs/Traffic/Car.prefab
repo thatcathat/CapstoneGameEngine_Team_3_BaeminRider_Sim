@@ -647,6 +647,14 @@ MonoBehaviour:
   slopeSpeed: 9
   followGap: 2.5
   obstacleClearance: 1
+  riderBrakeDelay: 2
+  riderIgnoreChance: 0.3
+  riderForgetSeconds: 1
+  maximumLaunchSpeed: 15
+  bonnetAngle: 30
+  restitution: 0.6
+  sideSpeedKeep: 0.5
+  relaunchInterval: 0.3
   obstacleMask:
     serializedVersion: 2
     m_Bits: 4294967295

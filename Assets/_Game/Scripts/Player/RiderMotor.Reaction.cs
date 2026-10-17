@@ -22,6 +22,10 @@ namespace DeliveryRider
         [SerializeField, Min(0.01f)] private float getUpSeconds = 0.45f;
         [SerializeField, Min(1f)] private float accidentTimeout = 8f;
         [SerializeField, Min(0.1f)] private float stuckSeconds = 2f;
+        [Header("Rolling friction (test values)")]
+        [SerializeField, Range(0f, 1f)] private float rollingStaticFriction = 0.6f;
+        [SerializeField, Range(0f, 1f)] private float rollingDynamicFriction = 0.6f;
+        private PhysicsMaterial normalCollisionMaterial, rollingCollisionMaterial, originalCollisionMaterial;
         public RiderReactionState ReactionState { get; private set; }
         public bool IsAccidentAirborne => ReactionState == RiderReactionState.Airborne;
         public float GetUpDuration => getUpSeconds;
@@ -42,11 +46,45 @@ namespace DeliveryRider
         private Vector3 supportContactNormal, supportContactPoint;
         private Collider supportCollider;
 
+        private void InitializeCollisionMaterials()
+        {
+            originalCollisionMaterial = capsule.sharedMaterial;
+            normalCollisionMaterial = new PhysicsMaterial("Rider Normal (No Friction)")
+            {
+                hideFlags = HideFlags.DontSave,
+                staticFriction = 0f,
+                dynamicFriction = 0f,
+                frictionCombine = PhysicsMaterialCombine.Minimum,
+                bounciness = 0f,
+                bounceCombine = PhysicsMaterialCombine.Minimum
+            };
+            rollingCollisionMaterial = new PhysicsMaterial("Rider Rolling (Friction)")
+            {
+                hideFlags = HideFlags.DontSave,
+                staticFriction = rollingStaticFriction,
+                dynamicFriction = rollingDynamicFriction,
+                frictionCombine = PhysicsMaterialCombine.Average,
+                bounciness = 0f,
+                bounceCombine = PhysicsMaterialCombine.Minimum
+            };
+            UpdateCollisionMaterial();
+        }
+
+        private void UpdateCollisionMaterial()
+        {
+            if (capsule == null || normalCollisionMaterial == null) return;
+            // Sliding hazards and airborne reactions must not regain wall friction.
+            var material = ReactionState == RiderReactionState.Rolling || ReactionState == RiderReactionState.GettingUp
+                ? rollingCollisionMaterial : normalCollisionMaterial;
+            if (capsule.sharedMaterial != material) capsule.sharedMaterial = material;
+        }
+
         private void SetReactionState(RiderReactionState state)
         {
             trafficRecoveryActive = state == RiderReactionState.Airborne || state == RiderReactionState.Rolling || state == RiderReactionState.GettingUp;
             if (ReactionState == state) return;
             ReactionState = state;
+            UpdateCollisionMaterial();
             if (state == RiderReactionState.Normal) physicalTumble = false;
             stableGroundTime = 0f;
             if (state == RiderReactionState.GettingUp) getUpStartedAt = Time.time;

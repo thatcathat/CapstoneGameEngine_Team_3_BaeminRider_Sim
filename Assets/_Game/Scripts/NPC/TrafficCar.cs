@@ -22,11 +22,11 @@ namespace DeliveryRider
         [Tooltip("A new encounter (and a new roll) starts once the rider has been out of the lane this long.")]
         [SerializeField, Min(0f)] private float riderForgetSeconds = 1f;
         [Header("Hitting the rider (test values)")]
-        [Tooltip("Cap on the rider's bounce speed; keep it above the fastest car so the rider gets clear.")]
-        [SerializeField, Min(1f)] private float maximumLaunchSpeed = 22f;
+        [Tooltip("Total rider launch speed cap, including upward motion. 11 is half the previous full-speed head-on cap of 22.")]
+        [SerializeField, Min(1f)] private float maximumLaunchSpeed = 11f;
         [Tooltip("The front is treated as a bonnet sloping up by this angle, so the bounce itself throws the rider upward.")]
         [SerializeField, Range(0f, 60f)] private float bonnetAngle = 30f;
-        [Tooltip("0 = the rider just leaves at the car's speed, 1 = fully elastic bounce. Keep (1 + e) * cos²(bonnet) >= 1 so a car that does not stop cannot catch the rider again.")]
+        [Tooltip("Normal-direction restitution before the launch speed cap: 0 follows the car, 1 gives a fully elastic bounce.")]
         [SerializeField, Range(0f, 1f)] private float restitution = 0.6f;
         [Tooltip("Share of the rider's own motion along the car's front (mostly sideways) kept through the hit.")]
         [SerializeField, Range(0f, 1f)] private float sideSpeedKeep = 0.5f;
