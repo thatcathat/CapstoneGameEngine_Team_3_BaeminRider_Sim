@@ -2,9 +2,7 @@ using UnityEngine;
 
 namespace DeliveryRider
 {
-    // A reusable wave of solid, dynamic melons. Contact disables control; physics supplies the push.
-    // The melons wait as a stacked pile laid out afresh for every wave. The wave starts when the rider nears
-    // the pile and rolls along the road toward the rider; the pile collapses front-bottom first.
+    // A reusable pile that bursts outward once, then lets gravity and collisions drive each melon.
     public sealed class RollingMelonHazard : MonoBehaviour, IPlacedHazard
     {
         private enum Phase { Ready, Rolling, Spent }
@@ -13,36 +11,31 @@ namespace DeliveryRider
         [SerializeField] private RollingMelon[] melons = System.Array.Empty<RollingMelon>();
         [Header("Pile (test values)")]
         [Tooltip("Middle of the pile in local space (y is ignored; each melon sits on the ground below it).")]
-        [SerializeField] private Vector3 pileOffset = new Vector3(0f, 0f, 3.5f);
+        [SerializeField] private Vector3 pileOffset = Vector3.zero;
         [Tooltip("Smallest and largest number of melons in a pile.")]
-        [SerializeField] private Vector2Int pileCount = new Vector2Int(6, 10);
-        [Tooltip("Upper and back melons start up to this much later, so the pile tumbles instead of launching as one.")]
-        [SerializeField, Min(0f)] private float releaseSpread = 0.4f;
+        [SerializeField] private Vector2Int pileCount = new Vector2Int(14, 14);
         [Header("Wave (test values)")]
         [Tooltip("Smallest start distance, measured from the middle of the melons.")]
         [SerializeField, Min(0.1f)] private float approachRadius = 6f;
         [Tooltip("The start distance grows to the rider's speed times this, so fast riders see the melons coming.")]
         [SerializeField, Min(0f)] private float approachLeadSeconds = 1.2f;
         [SerializeField, Min(0.1f)] private float rollSpeed = 6f;
-        [SerializeField, Min(0f)] private float driveAcceleration = 12f;
-        [SerializeField, Min(0.1f)] private float waveSeconds = 4f;
-        [SerializeField, Min(0.1f)] private float tumbleSeconds = 2.2f;
+        [SerializeField, Min(0f)] private float burstLift = 1.2f;
+        [SerializeField, Range(0.1f, 10f)] private float waveSeconds = 10f;
+        [SerializeField, Min(0.1f)] private float tumbleSeconds = 0.1f;
+        [Tooltip("Extra horizontal speed when another melon hits the rider while rolling or getting up.")]
+        [SerializeField, Min(0f)] private float downedPushSpeed = 1.5f;
         [SerializeField, Min(0f)] private float rearmSeconds = 10f;
         [SerializeField, Min(0f)] private float rearmDistance = 8f;
-        // Base footprints (columns x rows); each layer above is one smaller in both directions.
-        private static readonly Vector2Int[] Bases = { new Vector2Int(2, 2), new Vector2Int(3, 2), new Vector2Int(2, 3), new Vector2Int(3, 3) };
-        private const float Gap = 1.04f, LayerRise = 0.68f, Jitter = 0.04f;
+        // A compact three-level pyramid: nine on the ground, four above, one on top.
+        private const float Gap = 1.02f, LayerRise = 0.72f, Jitter = 0.015f;
         private readonly RaycastHit[] groundHits = new RaycastHit[8];
         private RiderMotor rider;
         private HazardSlot slot;
         private Phase phase;
         private float elapsed;
-        private bool hitThisWave;
         private bool ready;
         private int active;
-        private int[] layers;
-        private float[] releaseAt;
-        private Vector3 direction;
 
         public void Place(DeliverySession owner, RoadNetwork ground, HazardCandidate spot) => session = owner;
 
@@ -56,8 +49,6 @@ namespace DeliveryRider
                 if (melon == null) { enabled = false; return; }
                 melon.Prepare(this);
             }
-            layers = new int[melons.Length];
-            releaseAt = new float[melons.Length];
             ready = true;
             ResetWave();
         }
@@ -80,16 +71,10 @@ namespace DeliveryRider
             {
                 case Phase.Ready:
                     float reach = Mathf.Max(approachRadius, rider.HorizontalSpeed * approachLeadSeconds);
-                    if ((slot == null || slot.StrikeAllowed) && Mathf.Abs(offset.y) < 3f && distance <= reach) BeginWave(flatOffset);
+                    if ((slot == null || slot.StrikeAllowed) && Mathf.Abs(offset.y) < 3f && distance <= reach) BeginWave();
                     break;
                 case Phase.Rolling:
-                    if (elapsed >= waveSeconds) { Finish(); break; }
-                    for (int i = 0; i < active; i++)
-                    {
-                        var melon = melons[i];
-                        if (!melon.IsLoose && elapsed >= releaseAt[i]) melon.Release(direction, layers[i] > 0 ? rollSpeed * 0.5f : rollSpeed);
-                        melon.Drive(rollSpeed, driveAcceleration);
-                    }
+                    if (elapsed >= Mathf.Min(waveSeconds, 10f)) Finish();
                     break;
                 case Phase.Spent:
                     if (elapsed >= rearmSeconds && distance > rearmDistance) ResetWave();
@@ -97,38 +82,31 @@ namespace DeliveryRider
             }
         }
 
-        // Roll along the road toward whichever end the rider is coming from. Melons nearest the rider and on the
-        // bottom layer go first; the rest follow within releaseSpread.
-        private void BeginWave(Vector3 towardRider)
+        private void BeginWave()
         {
             phase = Phase.Rolling;
             elapsed = 0f;
-            hitThisWave = false;
-            var along = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
-            direction = Vector3.Dot(towardRider, along) >= 0f ? along : -along;
-            var center = transform.TransformPoint(pileOffset);
-            int topLayer = 0;
-            float front = float.NegativeInfinity, back = float.PositiveInfinity;
+            float startAngle = Random.Range(0f, 360f);
             for (int i = 0; i < active; i++)
             {
-                topLayer = Mathf.Max(topLayer, layers[i]);
-                float lead = Vector3.Dot(melons[i].transform.position - center, direction);
-                front = Mathf.Max(front, lead);
-                back = Mathf.Min(back, lead);
-            }
-            for (int i = 0; i < active; i++)
-            {
-                float height = topLayer == 0 ? 0f : layers[i] / (float)topLayer;
-                float behind = front - back < 0.01f ? 0f : (front - Vector3.Dot(melons[i].transform.position - center, direction)) / (front - back);
-                releaseAt[i] = releaseSpread * (0.6f * height + 0.4f * behind);
+                // Distribute around the whole circle, with a little variation per melon.
+                float angle = startAngle + i * 360f / active + Random.Range(-10f, 10f);
+                var outward = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
+                melons[i].Release(outward, rollSpeed * Random.Range(0.65f, 1f), burstLift);
             }
         }
 
-        public void Contact(RiderMotor target)
+        public void Contact(RollingMelon melon, RiderMotor target)
         {
-            if (phase != Phase.Rolling || hitThisWave || target != rider || session.IsMapOpen || session.IsSettled) return;
-            // Do not stop or remove the melons when a hit succeeds.
-            if (rider.TryHazardTumble(this, tumbleSeconds)) hitThisWave = true;
+            if (phase != Phase.Rolling || melon == null || target != rider || session.IsMapOpen || session.IsSettled) return;
+            var push = Vector3.zero;
+            if (rider.ReactionState == RiderReactionState.Rolling || rider.ReactionState == RiderReactionState.GettingUp)
+            {
+                var away = Vector3.ProjectOnPlane(rider.transform.position - melon.transform.position, Vector3.up);
+                if (away.sqrMagnitude < 0.0001f) away = -rider.transform.forward;
+                push = away.normalized * downedPushSpeed;
+            }
+            rider.TryHazardTumble(melon, tumbleSeconds, true, push);
         }
 
         private void ResetWave()
@@ -136,21 +114,14 @@ namespace DeliveryRider
             LayOutPile();
             phase = Phase.Ready;
             elapsed = 0f;
-            hitThisWave = false;
         }
 
-        // A square-packed pyramid on a random base, filled bottom-up with a random number of melons,
-        // each nudged and turned a little so no two piles look the same.
+        // Keep the base centred and fill the 3 x 3, 2 x 2 and 1 x 1 layers in order.
         private void LayOutPile()
         {
             float diameter = Mathf.Abs(melons[0].transform.localScale.x);
             int want = Mathf.Clamp(Random.Range(pileCount.x, pileCount.y + 1), 1, melons.Length);
-            var footprint = Bases[Bases.Length - 1];
-            for (int attempt = 0; attempt < 8; attempt++)
-            {
-                var candidate = Bases[Random.Range(0, Bases.Length)];
-                if (Capacity(candidate) >= want) { footprint = candidate; break; }
-            }
+            var footprint = new Vector2Int(3, 3);
             active = 0;
             for (int layer = 0; active < want; layer++)
             {
@@ -162,7 +133,6 @@ namespace DeliveryRider
                         var local = pileOffset + new Vector3((column - (columns - 1) * 0.5f) * diameter * Gap + Random.Range(-Jitter, Jitter) * diameter,
                             0f, (row - (rows - 1) * 0.5f) * diameter * Gap + Random.Range(-Jitter, Jitter) * diameter);
                         local.y = GroundHeight(local) + diameter * (0.5f + layer * LayerRise) + 0.03f;
-                        layers[active] = layer;
                         melons[active].Park(local, Random.rotation);
                         active++;
                     }
@@ -170,12 +140,7 @@ namespace DeliveryRider
             for (int i = active; i < melons.Length; i++) melons[i].Hide();
         }
 
-        private static int Capacity(Vector2Int footprint)
-        {
-            int total = 0;
-            for (int layer = 0; footprint.x - layer > 0 && footprint.y - layer > 0; layer++) total += (footprint.x - layer) * (footprint.y - layer);
-            return total;
-        }
+        public static float PileHalfExtent(float diameter) => diameter * (Gap + Jitter + 0.5f);
 
         // Local height of the terrain under a local point (the static ground mesh, not props or bodies).
         private float GroundHeight(Vector3 local)

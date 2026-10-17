@@ -28,7 +28,7 @@ namespace DeliveryRider.Editor
             {
                 var melon = new GameObject("RollingMelon_" + i);
                 melon.transform.SetParent(root.transform, false);
-                melon.transform.localPosition = new Vector3(0f, diameter * 0.5f, 3.5f);
+                melon.transform.localPosition = new Vector3(0f, diameter * 0.5f, 0f);
                 melon.transform.localScale = Vector3.one * diameter;
                 melon.AddComponent<MeshFilter>().sharedMesh = mesh;
                 melon.AddComponent<MeshRenderer>().sharedMaterials = materials;

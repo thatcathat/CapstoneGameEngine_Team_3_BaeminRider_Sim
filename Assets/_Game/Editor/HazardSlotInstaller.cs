@@ -39,6 +39,7 @@ namespace DeliveryRider.Editor
             public DistrictLayout.Layout layout;
             public HashSet<Collider> terrain;
             public List<Vector3> keepOut;
+            public float melonHalfExtent;
             public readonly List<HazardCandidates.Spot> spots = new List<HazardCandidates.Spot>();
             public readonly List<HazardCandidate> candidates = new List<HazardCandidate>();
         }
@@ -76,6 +77,7 @@ namespace DeliveryRider.Editor
                 layout = DistrictLayout.ReadLayout(),
                 terrain = new HashSet<Collider>(References<Collider>(new SerializedObject(network).FindProperty("ground"))),
                 keepOut = shops.Concat(doors).Select(t => t.position).Append(rider.transform.position).ToList(),
+                melonHalfExtent = RollingMelonHazard.PileHalfExtent(rider.GetComponent<CapsuleCollider>().height * Mathf.Abs(rider.transform.lossyScale.y) * 0.3f),
             };
             foreach (var road in bake.roads) BakeRoad(bake, road);
             AssignRoutes(bake, shops, doors);
@@ -176,8 +178,13 @@ namespace DeliveryRider.Editor
                         Add(bake, "manhole", spot, road, Ground(bake.layout, lid) + Vector3.up * (surface + 0.005f), Tilted(bake.layout, lid, along), side);
                     }
                     Add(bake, "chicken", spot, road, Ground(bake.layout, center + right * side * Mathf.Max(0f, half - 0.8f)), Quaternion.LookRotation(along), side);
-                    if (straight && !InJunction(bake, road, road.PointAt(d + 3.5f)) && !InJunction(bake, road, road.PointAt(d - 3.5f)))
-                        Add(bake, "melon", spot, road, Ground(bake.layout, center + right * side * Mathf.Max(0f, half - 1.2f)), Quaternion.LookRotation(along), side);
+                    // Keep the entire resting pile on the sidewalk, or just inside the alley edge.
+                    float pileHalf = bake.melonHalfExtent;
+                    bool fits = road.Alley ? half >= pileHalf + 0.05f : road.SidewalkWidth >= pileHalf * 2f + 0.1f;
+                    float melonOffset = road.Alley ? half - pileHalf - 0.05f : half + pileHalf + 0.05f;
+                    var melon = Ground(bake.layout, center + right * side * melonOffset);
+                    if (fits && ClearPile(bake, melon, along, pileHalf) && !InJunction(bake, road, new Vector2(melon.x, melon.z)))
+                        Add(bake, "melon", spot, road, melon, Quaternion.LookRotation(along), side);
                     // A door needs a wall right behind it at the building line (alleys: the alley edge).
                     var door = Ground(bake.layout, center + right * side * (road.Alley ? half : half + 3f)) + Vector3.up * 0.03f;
                     if (Wall(bake, door, right * side))
@@ -249,6 +256,12 @@ namespace DeliveryRider.Editor
         private static bool Clear(Bake bake, Vector3 feet)
         {
             var hits = Physics.OverlapCapsule(feet + Vector3.up * 0.5f, feet + Vector3.up * 1.5f, 0.5f, ~0, QueryTriggerInteraction.Ignore);
+            return hits.All(h => bake.terrain.Contains(h));
+        }
+
+        private static bool ClearPile(Bake bake, Vector3 feet, Vector3 along, float halfExtent)
+        {
+            var hits = Physics.OverlapBox(feet + Vector3.up * 1.2f, new Vector3(halfExtent, 1.1f, halfExtent), Quaternion.LookRotation(along), ~0, QueryTriggerInteraction.Ignore);
             return hits.All(h => bake.terrain.Contains(h));
         }
 

@@ -123,17 +123,20 @@ namespace DeliveryRider
             return true;
         }
 
-        // Keep solver velocity intact: the solid melons, not a scripted launch, move the rider.
-        public bool TryHazardTumble(UnityEngine.Object source, float recoverySeconds)
+        // Melons use the same flight, rolling and get-up recovery as vehicle crashes.
+        public bool TryHazardTumble(UnityEngine.Object source, float recoverySeconds, bool repeatContact = false, Vector3 extraVelocity = default)
         {
-            if (!AcceptHazard(source)) return false;
-            slipOwner = null;
-            movement = airMovement = Vector2.zero;
-            trafficRecoveryUntil = Time.time + Mathf.Max(0.1f, recoverySeconds);
-            nextTrafficHitAt = trafficRecoveryUntil + 1f;
-            BeginFlight(body.linearVelocity);
-            physicalTumble = true;
-            SetReactionState(RiderReactionState.Rolling);
+            if (repeatContact)
+            {
+                // Each melon is consumed on contact, so a new melon can restart the accident reaction.
+                if (source == null || session == null || session.IsPaused || session.IsMapOpen || session.IsSettled) return false;
+                hazardChainCount = lastHazard != null && Time.time - lastHazardHitAt <= 8f ? hazardChainCount + 1 : 1;
+                lastHazard = source;
+                lastHazardHitAt = Time.time;
+            }
+            else if (!AcceptHazard(source)) return false;
+            // Preserve contact motion, with an optional small horizontal shove for an already downed rider.
+            ApplyContactCrash(body.linearVelocity + Vector3.ProjectOnPlane(extraVelocity, Vector3.up), recoverySeconds);
             HazardHit?.Invoke(source);
             return true;
         }

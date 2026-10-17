@@ -348,6 +348,14 @@ namespace DeliveryRider
             return true;
         }
 
+        // Hazards can trip a walker even when the hazard has slowed below the running-hit threshold.
+        public bool TryHazardKnock(Vector3 velocity)
+        {
+            if (!CanReact || network.Session != null && (network.Session.IsMapOpen || network.Session.IsPaused || network.Session.IsSettled)) return false;
+            Launch(velocity, 0);
+            return true;
+        }
+
         private void Launch(Vector3 velocity, int depth)
         {
             flying = true; hitAt = Time.time; floorAt = float.NegativeInfinity;

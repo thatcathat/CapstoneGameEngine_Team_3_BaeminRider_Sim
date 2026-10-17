@@ -31,24 +31,14 @@ namespace DeliveryRider
             gameObject.SetActive(true);
         }
 
-        public void Release(Vector3 rollDirection, float speed)
+        public void Release(Vector3 rollDirection, float speed, float lift)
         {
             direction = rollDirection;
             body.isKinematic = false;
             body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-            body.linearVelocity = direction * speed;
+            body.linearVelocity = direction * speed + Vector3.up * lift;
             body.angularVelocity = Vector3.Cross(Vector3.up, direction) * (speed / radius);
             body.WakeUp();
-        }
-
-        public void Drive(float speed, float acceleration)
-        {
-            if (body.isKinematic || !gameObject.activeInHierarchy) return;
-            // Force-based drive leaves blocking, pushing and deflection to the collision solver.
-            var horizontal = Vector3.ProjectOnPlane(body.linearVelocity, Vector3.up);
-            body.AddForce(Vector3.ClampMagnitude((direction * speed - horizontal) / Time.fixedDeltaTime, acceleration), ForceMode.Acceleration);
-            var angular = Vector3.Cross(Vector3.up, horizontal) / radius;
-            body.AddTorque(Vector3.ClampMagnitude((angular - body.angularVelocity) / Time.fixedDeltaTime, acceleration / radius), ForceMode.Acceleration);
         }
 
         public void Hide()
@@ -64,8 +54,20 @@ namespace DeliveryRider
         private void OnCollisionStay(Collision collision) => Contact(collision);
         private void Contact(Collision collision)
         {
-            if (owner != null && collision.rigidbody != null && collision.rigidbody.TryGetComponent<RiderMotor>(out var rider))
-                owner.Contact(rider);
+            if (!IsLoose || !gameObject.activeSelf || collision.rigidbody == null) return;
+            var other = collision.rigidbody;
+            if (other.TryGetComponent<TrafficCar>(out _)) Hide();
+            else if (other.TryGetComponent<TrafficPedestrian>(out var person))
+            {
+                const float knockSpeed = 3f, knockLift = 1.2f;
+                person.TryHazardKnock(direction * knockSpeed + Vector3.up * knockLift);
+                Hide();
+            }
+            else if (other.TryGetComponent<RiderMotor>(out var rider))
+            {
+                if (owner != null) owner.Contact(this, rider);
+                Hide();
+            }
         }
     }
 }
