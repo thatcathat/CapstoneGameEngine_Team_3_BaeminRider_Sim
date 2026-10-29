@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Game/Scenes/FourDistrictPrototype.unity
     guid: 2aaf8e7a4d87a0f46ba97168b698fca3
+  - enabled: 1
+    path: Assets/_Game/Scenes/FourDistrictPrototype_Myeongji.unity
+    guid: 0972d72128e620c4d801414c4af6cc19
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

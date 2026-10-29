@@ -1,0 +1,1082 @@
+[
+  {
+    "name": "A_Shop_01",
+    "type": "shop",
+    "index": 0,
+    "zone": "A",
+    "building": "A01",
+    "position": [
+      13.4999971,
+      -0.14,
+      -2.79999733
+    ],
+    "forward": [
+      -8.742278E-08,
+      0.0,
+      1.0
+    ],
+    "road": "main",
+    "roadPoint": [
+      13.4999952,
+      -0.14,
+      1.5493697E-07
+    ],
+    "shopName": "엄마손떡볶이"
+  },
+  {
+    "name": "A_Shop_02",
+    "type": "shop",
+    "index": 1,
+    "zone": "A",
+    "building": "A02",
+    "position": [
+      1.74999726,
+      -0.14,
+      -23.0
+    ],
+    "forward": [
+      -1.0,
+      0.0,
+      -1.19248806E-08
+    ],
+    "road": "west",
+    "roadPoint": [
+      0.0,
+      -0.14,
+      -23.0
+    ],
+    "shopName": "명지대2호점"
+  },
+  {
+    "name": "B_Shop_03",
+    "type": "shop",
+    "index": 2,
+    "zone": "B",
+    "building": "B01",
+    "position": [
+      42.0,
+      -0.14,
+      -3.20000172
+    ],
+    "forward": [
+      -8.742278E-08,
+      0.0,
+      1.0
+    ],
+    "road": "main",
+    "roadPoint": [
+      42.0,
+      -0.14,
+      0.0
+    ],
+    "shopName": "맥도날드"
+  },
+  {
+    "name": "B_Shop_04",
+    "type": "shop",
+    "index": 3,
+    "zone": "B",
+    "building": "B03",
+    "position": [
+      72.0,
+      -0.14,
+      -3.60000515
+    ],
+    "forward": [
+      -8.742278E-08,
+      0.0,
+      1.0
+    ],
+    "road": "main",
+    "roadPoint": [
+      72.0,
+      -0.14,
+      5.770744E-09
+    ],
+    "shopName": "꾸오레베르"
+  },
+  {
+    "name": "C_Shop_05",
+    "type": "shop",
+    "index": 4,
+    "zone": "C",
+    "building": "E01",
+    "position": [
+      10.9999933,
+      -0.0650003552,
+      -56.1999969
+    ],
+    "forward": [
+      -8.742278E-08,
+      0.0,
+      1.0
+    ],
+    "road": "back",
+    "roadPoint": [
+      10.9999933,
+      -0.14,
+      -52.0
+    ],
+    "shopName": "모래내곱창"
+  },
+  {
+    "name": "A_Shop_06",
+    "type": "shop",
+    "index": 5,
+    "zone": "A",
+    "building": "A06",
+    "position": [
+      8.799996,
+      -0.139999986,
+      -49.2
+    ],
+    "forward": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "road": "back",
+    "roadPoint": [
+      8.799996,
+      -0.14,
+      -52.0
+    ],
+    "shopName": "가게 1"
+  },
+  {
+    "name": "B_Shop_07",
+    "type": "shop",
+    "index": 6,
+    "zone": "B",
+    "building": "B15",
+    "position": [
+      37.4999962,
+      -0.14,
+      -49.6000023
+    ],
+    "forward": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "road": "back",
+    "roadPoint": [
+      37.4999962,
+      -0.14,
+      -52.0
+    ],
+    "shopName": "가게 2"
+  },
+  {
+    "name": "C_Shop_08",
+    "type": "shop",
+    "index": 7,
+    "zone": "C",
+    "building": "E06",
+    "position": [
+      4.699993,
+      0.0,
+      -77.0
+    ],
+    "forward": [
+      -1.0,
+      0.0,
+      -1.19248806E-08
+    ],
+    "road": "extension_west",
+    "roadPoint": [
+      -4.54747351E-13,
+      -0.139999986,
+      -77.0
+    ],
+    "shopName": "가게 3"
+  },
+  {
+    "name": "C_Shop_09",
+    "type": "shop",
+    "index": 8,
+    "zone": "C",
+    "building": "E12",
+    "position": [
+      39.9999924,
+      -0.14,
+      -100.8
+    ],
+    "forward": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "road": "extension_south",
+    "roadPoint": [
+      39.9999924,
+      -0.14,
+      -103.0
+    ],
+    "shopName": "가게 4"
+  },
+  {
+    "name": "D_Shop_10",
+    "type": "shop",
+    "index": 9,
+    "zone": "D",
+    "building": "F03",
+    "position": [
+      93.24999,
+      0.0,
+      -48.67201
+    ],
+    "forward": [
+      -1.0,
+      0.0,
+      -1.19248806E-08
+    ],
+    "road": "east_infill_top",
+    "roadPoint": [
+      93.24999,
+      -0.14,
+      -44.0
+    ],
+    "shopName": "가게 5"
+  },
+  {
+    "name": "D_Shop_11",
+    "type": "shop",
+    "index": 10,
+    "zone": "D",
+    "building": "G02",
+    "position": [
+      114.799995,
+      0.0,
+      -70.00001
+    ],
+    "forward": [
+      1.0,
+      0.0,
+      4.371139E-08
+    ],
+    "road": "east_infill_outer",
+    "roadPoint": [
+      117.0,
+      -0.14,
+      -70.00001
+    ],
+    "shopName": "가게 6"
+  },
+  {
+    "name": "D_Shop_12",
+    "type": "shop",
+    "index": 11,
+    "zone": "D",
+    "building": "G04",
+    "position": [
+      107.999992,
+      -0.14,
+      -100.300011
+    ],
+    "forward": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "road": "east_infill_bottom",
+    "roadPoint": [
+      107.999992,
+      -0.14,
+      -103.0
+    ],
+    "shopName": "가게 7"
+  },
+  {
+    "name": "A_Door_01",
+    "type": "door",
+    "index": 0,
+    "zone": "A",
+    "building": "A01",
+    "position": [
+      16.2583981,
+      -0.14,
+      -2.799997
+    ],
+    "forward": [
+      -8.742278E-08,
+      0.0,
+      1.0
+    ],
+    "road": "main",
+    "roadPoint": [
+      16.2583961,
+      -0.14,
+      3.89596835E-08
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "A_Door_02",
+    "type": "door",
+    "index": 1,
+    "zone": "A",
+    "building": "A02",
+    "position": [
+      1.749997,
+      -0.14,
+      -20.0425014
+    ],
+    "forward": [
+      -1.0,
+      0.0,
+      -1.19248806E-08
+    ],
+    "road": "west",
+    "roadPoint": [
+      9.029907E-08,
+      -0.14,
+      -20.0425014
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "A_Door_03",
+    "type": "door",
+    "index": 2,
+    "zone": "A",
+    "building": "A03",
+    "position": [
+      24.5,
+      0.0,
+      -23.0000038
+    ],
+    "forward": [
+      1.0,
+      0.0,
+      4.371139E-08
+    ],
+    "road": "A_B_connector",
+    "roadPoint": [
+      27.0,
+      -0.14,
+      -23.0000038
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "A_Door_04",
+    "type": "door",
+    "index": 3,
+    "zone": "A",
+    "building": "A04",
+    "position": [
+      3.39999628,
+      0.0,
+      -32.6
+    ],
+    "forward": [
+      -1.0,
+      0.0,
+      -1.19248806E-08
+    ],
+    "road": "west",
+    "roadPoint": [
+      2.27373675E-13,
+      -0.14,
+      -32.6
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "A_Door_05",
+    "type": "door",
+    "index": 4,
+    "zone": "A",
+    "building": "A05",
+    "position": [
+      24.5,
+      0.0,
+      -32.6
+    ],
+    "forward": [
+      1.0,
+      0.0,
+      4.371139E-08
+    ],
+    "road": "A_B_connector",
+    "roadPoint": [
+      27.0,
+      -0.14,
+      -32.5999947
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "A_Door_06",
+    "type": "door",
+    "index": 5,
+    "zone": "A",
+    "building": "A06",
+    "position": [
+      6.264996,
+      -0.14,
+      -49.2
+    ],
+    "forward": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "road": "back",
+    "roadPoint": [
+      6.264996,
+      -0.14,
+      -51.9999962
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "A_Door_07",
+    "type": "door",
+    "index": 6,
+    "zone": "A",
+    "building": "A07",
+    "position": [
+      19.2999954,
+      -0.14,
+      -49.0500031
+    ],
+    "forward": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "road": "back",
+    "roadPoint": [
+      19.2999954,
+      -0.14,
+      -52.0
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "A_Door_08",
+    "type": "door",
+    "index": 7,
+    "zone": "A",
+    "building": "A01",
+    "position": [
+      10.7415981,
+      -0.14,
+      -2.79999757
+    ],
+    "forward": [
+      -8.742278E-08,
+      0.0,
+      1.0
+    ],
+    "road": "main",
+    "roadPoint": [
+      10.7415991,
+      -0.14,
+      1.45744025E-07
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "B_Door_09",
+    "type": "door",
+    "index": 8,
+    "zone": "B",
+    "building": "B02",
+    "position": [
+      57.5000038,
+      -0.14,
+      -3.40000272
+    ],
+    "forward": [
+      -8.742278E-08,
+      0.0,
+      1.0
+    ],
+    "road": "main",
+    "roadPoint": [
+      57.5000038,
+      -0.14,
+      -1.03466391E-07
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "B_Door_10",
+    "type": "door",
+    "index": 9,
+    "zone": "B",
+    "building": "B04",
+    "position": [
+      87.0,
+      -0.14,
+      -3.600006
+    ],
+    "forward": [
+      -8.742278E-08,
+      0.0,
+      1.0
+    ],
+    "road": "main",
+    "roadPoint": [
+      87.0,
+      -0.14,
+      -8.09905032E-10
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "B_Door_11",
+    "type": "door",
+    "index": 10,
+    "zone": "B",
+    "building": "B06",
+    "position": [
+      37.8,
+      0.0,
+      -26.8000031
+    ],
+    "forward": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "road": "B_dead_end_west",
+    "roadPoint": [
+      37.8,
+      -0.14,
+      -29.0
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "B_Door_12",
+    "type": "door",
+    "index": 11,
+    "zone": "B",
+    "building": "B08",
+    "position": [
+      66.0,
+      -0.14,
+      -28.8000069
+    ],
+    "forward": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "road": "B_internal_link",
+    "roadPoint": [
+      66.0,
+      -0.14,
+      -28.9999981
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "B_Door_13",
+    "type": "door",
+    "index": 12,
+    "zone": "B",
+    "building": "B10",
+    "position": [
+      92.0,
+      0.0,
+      -26.8000069
+    ],
+    "forward": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "road": "B_internal_link",
+    "roadPoint": [
+      91.99999,
+      -0.139999986,
+      -28.9999981
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "B_Door_14",
+    "type": "door",
+    "index": 13,
+    "zone": "B",
+    "building": "B11",
+    "position": [
+      37.7999954,
+      -0.14,
+      -30.5000019
+    ],
+    "forward": [
+      -8.742278E-08,
+      0.0,
+      1.0
+    ],
+    "road": "B_dead_end_west",
+    "roadPoint": [
+      37.7999954,
+      -0.14,
+      -29.0
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "B_Door_15",
+    "type": "door",
+    "index": 14,
+    "zone": "B",
+    "building": "B14",
+    "position": [
+      80.0,
+      -0.14,
+      -28.9000072
+    ],
+    "forward": [
+      -8.742278E-08,
+      0.0,
+      1.0
+    ],
+    "road": "B_internal_link",
+    "roadPoint": [
+      80.0,
+      -0.14,
+      -29.0
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "B_Door_16",
+    "type": "door",
+    "index": 15,
+    "zone": "B",
+    "building": "B17",
+    "position": [
+      65.99999,
+      -0.14,
+      -49.6000061
+    ],
+    "forward": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "road": "back",
+    "roadPoint": [
+      65.99999,
+      -0.139999986,
+      -51.9999962
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "C_Door_17",
+    "type": "door",
+    "index": 16,
+    "zone": "C",
+    "building": "E02",
+    "position": [
+      28.2499943,
+      0.0,
+      -57.15
+    ],
+    "forward": [
+      -8.742278E-08,
+      0.0,
+      1.0
+    ],
+    "road": "extension_alley",
+    "roadPoint": [
+      31.9999981,
+      -0.14,
+      -57.1499977
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "C_Door_18",
+    "type": "door",
+    "index": 17,
+    "zone": "C",
+    "building": "E03",
+    "position": [
+      35.9249954,
+      0.0,
+      -57.15
+    ],
+    "forward": [
+      -8.742278E-08,
+      0.0,
+      1.0
+    ],
+    "road": "extension_alley",
+    "roadPoint": [
+      31.9999981,
+      -0.14,
+      -57.1499977
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "C_Door_19",
+    "type": "door",
+    "index": 18,
+    "zone": "C",
+    "building": "E04",
+    "position": [
+      52.9999962,
+      0.0,
+      -56.2000046
+    ],
+    "forward": [
+      -8.742278E-08,
+      0.0,
+      1.0
+    ],
+    "road": "back",
+    "roadPoint": [
+      52.9999924,
+      -0.140000015,
+      -51.9999962
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "C_Door_20",
+    "type": "door",
+    "index": 19,
+    "zone": "C",
+    "building": "E07",
+    "position": [
+      28.7999916,
+      0.0,
+      -77.0
+    ],
+    "forward": [
+      1.0,
+      0.0,
+      4.371139E-08
+    ],
+    "road": "extension_alley",
+    "roadPoint": [
+      32.0,
+      -0.139999986,
+      -77.0
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "C_Door_21",
+    "type": "door",
+    "index": 20,
+    "zone": "C",
+    "building": "E08",
+    "position": [
+      44.9999962,
+      0.0,
+      -83.30002
+    ],
+    "forward": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "road": "extension_alley_branch",
+    "roadPoint": [
+      45.0,
+      -0.140000015,
+      -86.00001
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "C_Door_22",
+    "type": "door",
+    "index": 21,
+    "zone": "C",
+    "building": "E10",
+    "position": [
+      9.999991,
+      -0.14,
+      -100.8
+    ],
+    "forward": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "road": "extension_south",
+    "roadPoint": [
+      9.999991,
+      -0.14,
+      -103.0
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "C_Door_23",
+    "type": "door",
+    "index": 22,
+    "zone": "C",
+    "building": "E11",
+    "position": [
+      23.99999,
+      -0.14,
+      -100.8
+    ],
+    "forward": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "road": "extension_south",
+    "roadPoint": [
+      23.99999,
+      -0.14,
+      -103.0
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "C_Door_24",
+    "type": "door",
+    "index": 23,
+    "zone": "C",
+    "building": "E13",
+    "position": [
+      53.9999924,
+      -0.14,
+      -100.800011
+    ],
+    "forward": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "road": "extension_south",
+    "roadPoint": [
+      53.9999924,
+      -0.14,
+      -103.0
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "D_Door_25",
+    "type": "door",
+    "index": 24,
+    "zone": "D",
+    "building": "F01",
+    "position": [
+      110.35,
+      0.0,
+      -16.6720066
+    ],
+    "forward": [
+      -1.0,
+      0.0,
+      -1.19248806E-08
+    ],
+    "road": "east",
+    "roadPoint": [
+      107.006485,
+      -0.14,
+      -14.61446
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "D_Door_26",
+    "type": "door",
+    "index": 25,
+    "zone": "D",
+    "building": "F02",
+    "position": [
+      101.549995,
+      0.0,
+      -32.3470078
+    ],
+    "forward": [
+      -1.0,
+      0.0,
+      -1.19248806E-08
+    ],
+    "road": "B_internal_link",
+    "roadPoint": [
+      100.0,
+      -0.14,
+      -29.0
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "D_Door_27",
+    "type": "door",
+    "index": 26,
+    "zone": "D",
+    "building": "F04",
+    "position": [
+      83.9,
+      -0.0184685253,
+      -64.6720047
+    ],
+    "forward": [
+      -1.0,
+      0.0,
+      -1.19248806E-08
+    ],
+    "road": "extension_east",
+    "roadPoint": [
+      79.6796341,
+      -0.140000015,
+      -63.0169563
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "D_Door_28",
+    "type": "door",
+    "index": 27,
+    "zone": "D",
+    "building": "F05",
+    "position": [
+      77.2999954,
+      0.0,
+      -79.6720047
+    ],
+    "forward": [
+      -1.0,
+      0.0,
+      -1.19248806E-08
+    ],
+    "road": "extension_east",
+    "roadPoint": [
+      73.70162,
+      -0.14,
+      -78.26088
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "D_Door_29",
+    "type": "door",
+    "index": 28,
+    "zone": "D",
+    "building": "F06",
+    "position": [
+      73.3999939,
+      0.0,
+      -91.1720047
+    ],
+    "forward": [
+      -1.0,
+      0.0,
+      -1.19248806E-08
+    ],
+    "road": "extension_east",
+    "roadPoint": [
+      69.2730942,
+      -0.14,
+      -89.55361
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "D_Door_30",
+    "type": "door",
+    "index": 29,
+    "zone": "D",
+    "building": "G01",
+    "position": [
+      115.155548,
+      -0.140000015,
+      -55.00001
+    ],
+    "forward": [
+      1.0,
+      0.0,
+      4.371139E-08
+    ],
+    "road": "east_infill_outer",
+    "roadPoint": [
+      117.0,
+      -0.14,
+      -55.00001
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "D_Door_31",
+    "type": "door",
+    "index": 30,
+    "zone": "D",
+    "building": "G03",
+    "position": [
+      115.2,
+      -0.14,
+      -84.00001
+    ],
+    "forward": [
+      1.0,
+      0.0,
+      4.371139E-08
+    ],
+    "road": "east_infill_outer",
+    "roadPoint": [
+      117.000008,
+      -0.14,
+      -84.00001
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "D_Door_32",
+    "type": "door",
+    "index": 31,
+    "zone": "D",
+    "building": "G05",
+    "position": [
+      93.99999,
+      -0.14,
+      -100.629433
+    ],
+    "forward": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "road": "east_infill_bottom",
+    "roadPoint": [
+      93.99999,
+      -0.14,
+      -103.0
+    ],
+    "shopName": ""
+  },
+  {
+    "name": "C_Home",
+    "type": "home",
+    "index": 0,
+    "zone": "C",
+    "building": "H01",
+    "position": [
+      4.199992,
+      0.0,
+      -86.00001
+    ],
+    "forward": [
+      -1.0,
+      0.0,
+      -1.19248806E-08
+    ],
+    "road": "extension_west",
+    "roadPoint": [
+      -9.094947E-13,
+      -0.140000015,
+      -86.0000153
+    ],
+    "shopName": ""
+  }
+]

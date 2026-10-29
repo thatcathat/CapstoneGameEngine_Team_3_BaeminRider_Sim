@@ -13,8 +13,8 @@ namespace DeliveryRider
     [DefaultExecutionOrder(-200)]
     public sealed class SceneController : MonoBehaviour
     {
-        // The four-district map is the game scene.
-        private const string GameSceneName = "FourDistrictPrototype";
+        // Scene copies can keep their own next-day destination. Existing scenes retain the original default.
+        [SerializeField] private string gameSceneName = "FourDistrictPrototype";
         public static SceneController Instance { get; private set; }
 
         private bool loading;
@@ -71,7 +71,7 @@ namespace DeliveryRider
 
         private void UpdateCurrentScene(string sceneName)
         {
-            if (sceneName == GameSceneName) currentScene = ESceneType.GameScene;
+            if (sceneName == gameSceneName) currentScene = ESceneType.GameScene;
             else if (sceneName == "TitleScene") currentScene = ESceneType.Title;
         }
 
@@ -83,7 +83,7 @@ namespace DeliveryRider
             string sceneName = nextScene switch
             {
                 ESceneType.Title => "TitleScene",
-                ESceneType.GameScene => GameSceneName,
+                ESceneType.GameScene => gameSceneName,
                 _ => "TitleScene"
             };
 
