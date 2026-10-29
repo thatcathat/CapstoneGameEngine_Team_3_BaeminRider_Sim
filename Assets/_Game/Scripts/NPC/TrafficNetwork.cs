@@ -26,6 +26,14 @@ namespace DeliveryRider
         public Vector3 center;
     }
 
+    [Serializable]
+    public sealed class TrafficSignalStop
+    {
+        public int path;
+        public float distance;
+        public PedestrianCrossingSignal signal;
+    }
+
     // Road traffic for the four-district map: lanes and junction connectors baked from the road splines
     // (Delivery Rider -> Apply Traffic Network), vehicles spawned at start. Junctions are reserved so crossing
     // flows never meet; cars entering from the same lane through the same connector may follow each other in.
@@ -42,6 +50,7 @@ namespace DeliveryRider
         [SerializeField] private DeliverySession session;
         [SerializeField] private TrafficPath[] paths = Array.Empty<TrafficPath>();
         [SerializeField] private TrafficJunctionData[] junctions = Array.Empty<TrafficJunctionData>();
+        [SerializeField] private TrafficSignalStop[] signalStops = Array.Empty<TrafficSignalStop>();
         [Header("Spawning (test values)")]
         [SerializeField] private VehicleKind[] kinds = Array.Empty<VehicleKind>();
         [SerializeField, Min(0)] private int vehicleCount = 50;
@@ -184,6 +193,13 @@ namespace DeliveryRider
                     if (ahead <= 0f) continue;
                     float gap = ahead - (other.Length + car.Length) * 0.5f;
                     if (gap < best) best = gap;
+                }
+                foreach (var stop in signalStops)
+                {
+                    if (stop.path != path || stop.signal == null || !stop.signal.VehiclesMustStop) continue;
+                    float gap = offset + stop.distance - from - car.Length * 0.5f;
+                    // Vehicles whose front already passed the line must clear the crossing.
+                    if (gap >= 0f) best = Mathf.Min(best, gap);
                 }
                 offset += paths[path].length - from;
                 from = 0f;
