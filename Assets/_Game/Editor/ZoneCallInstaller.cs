@@ -186,6 +186,8 @@ namespace DeliveryRider.Editor
             text.alignment = TextAlignmentOptions.Center;
             text.color = ZoneColors.TryGetValue(zone, out var color) ? color : Color.white;
             text.textWrappingMode = TextWrappingModes.NoWrap;
+            // Text is not drawn with the curved shader; it follows the bent panel instead.
+            text.gameObject.AddComponent<CurvedWorldFollower>();
         }
 
         // Unit vector (flat) from the nearest road toward the shop, i.e. toward its building.
@@ -222,7 +224,7 @@ namespace DeliveryRider.Editor
             string path = MaterialFolder + name + ".mat";
             var material = AssetDatabase.LoadAssetAtPath<Material>(path);
             if (material != null) return material;
-            material = new Material(Shader.Find("Universal Render Pipeline/Lit")) { name = name, color = color };
+            material = new Material(Shader.Find(CurvedWorldInstaller.LitShader)) { name = name, color = color };
             material.SetFloat("_Smoothness", 0.1f);
             AssetDatabase.CreateAsset(material, path);
             return material;

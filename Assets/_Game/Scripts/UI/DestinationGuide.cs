@@ -25,8 +25,10 @@ namespace DeliveryRider
             beacon.gameObject.SetActive(visible);
             indicator.gameObject.SetActive(visible && !session.IsMapOpen && !session.IsPaused);
             if (!visible) return;
-            beacon.position = GroundBelow(target.position) + Vector3.up * 0.08f;
-            var point = view.WorldToViewportPoint(target.position + Vector3.up * 2f);
+            // The ring and label are not drawn with the curved shader, so the whole beacon follows the bent ground.
+            var ground = GroundBelow(target.position) + Vector3.up * 0.08f;
+            beacon.SetPositionAndRotation(CurvedWorld.Bend(ground), CurvedWorld.Tilt(ground));
+            var point = view.WorldToViewportPoint(CurvedWorld.Bend(target.position + Vector3.up * 2f));
             var direction = new Vector2(point.x - 0.5f, point.y - 0.5f);
             if (point.z < 0) direction = -direction;
             bool offscreen = point.z < 0 || point.x < 0.06f || point.x > 0.94f || point.y < 0.2f || point.y > 0.79f;

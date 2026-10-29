@@ -124,16 +124,27 @@ namespace DeliveryRider
         public Vector3 Velocity => body == null ? Vector3.zero : body.linearVelocity;
         // Velocity before the latest contacts were solved; a hit uses it rather than the already-pushed velocity.
         public Vector3 ContactVelocity => collisionVelocity;
-        public float Speed => speed;
+        public float Speed => speed * inlineSpeedScale;
         public bool HasInline { get; private set; }
+        // Inline skates scale the tuned base values at runtime; the serialized speed and acceleration stay the base.
+        private float inlineSpeedScale = 1f, inlineAccelerationScale = 1f;
+        private bool inputBlocked;
 
         // Inline skates only raise speed (with a little inertia); time limits are unchanged.
         public void EquipInline(float speedMultiplier, float accelerationMultiplier)
         {
             if (HasInline) return;
             HasInline = true;
-            speed *= Mathf.Max(1f, speedMultiplier);
-            acceleration *= Mathf.Clamp(accelerationMultiplier, 0.1f, 1f);
+            inlineSpeedScale = Mathf.Max(1f, speedMultiplier);
+            inlineAccelerationScale = Mathf.Clamp(accelerationMultiplier, 0.1f, 1f);
+        }
+
+        // Developer tools take the keyboard and mouse while their panel is open; the world keeps running.
+        public void SetInputBlocked(bool blocked)
+        {
+            inputBlocked = blocked;
+            if (blocked) gameplay.Disable();
+            else if (isActiveAndEnabled) gameplay.Enable();
         }
         public bool IsRecovering => trafficRecoveryActive;
 
@@ -199,7 +210,7 @@ namespace DeliveryRider
             slipOwner = source;
             slipUntil = Time.time + Mathf.Max(0.1f, duration);
             var horizontal = Vector3.ProjectOnPlane(body.linearVelocity, Vector3.up);
-            if (horizontal.magnitude < speed) horizontal = Vector3.ProjectOnPlane(direction, Vector3.up).normalized * speed;
+            if (horizontal.magnitude < Speed) horizontal = Vector3.ProjectOnPlane(direction, Vector3.up).normalized * Speed;
             horizontal = Vector3.ClampMagnitude(horizontal, slipMaximumSpeed);
             body.linearVelocity = new Vector3(horizontal.x, body.linearVelocity.y, horizontal.z);
             HazardHit?.Invoke(source);
@@ -264,7 +275,7 @@ namespace DeliveryRider
 
         private void OnEnable()
         {
-            gameplay.Enable();
+            if (!inputBlocked) gameplay.Enable();
             UpdateCollisionMaterial();
         }
 
@@ -374,7 +385,8 @@ namespace DeliveryRider
                 collisionVelocity = body.linearVelocity;
                 return;
             }
-            var horizontal = session.CanMove ? Vector3.MoveTowards(new Vector3(current.x, 0f, current.z), direction * speed, acceleration * Time.fixedDeltaTime) : Vector3.zero;
+            var horizontal = session.CanMove ? Vector3.MoveTowards(new Vector3(current.x, 0f, current.z), direction * Speed,
+                acceleration * inlineAccelerationScale * Time.fixedDeltaTime) : Vector3.zero;
             if (jumping)
             {
                 normalJumpActive = true;

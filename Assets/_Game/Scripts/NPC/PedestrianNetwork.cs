@@ -39,11 +39,22 @@ namespace DeliveryRider
         public int PathCount => paths.Length;
         public int PedestrianCount => pedestrians.Count;
         public int Population => population;
+        public TrafficPedestrian Prefab => prefab;
+        public IReadOnlyList<TrafficPedestrian> Pedestrians => pedestrians;
         public PedestrianPath Path(int index) => paths[index];
         public void Configure(DeliverySession owner, PedestrianPath[] routes, TrafficPedestrian walker, Material[] coatMaterials)
         { session = owner; paths = routes; prefab = walker; coats = coatMaterials; }
 
         private void Start() => Spawn();
+
+        // Developer tools: replaces every walker with a fresh crowd from the current settings.
+        public void Respawn()
+        {
+            foreach (var walker in pedestrians)
+                if (walker != null) { walker.gameObject.SetActive(false); Destroy(walker.gameObject); }
+            pedestrians.Clear();
+            Spawn();
+        }
 
         // Walkers go on sidewalk lanes, weighted by lane length, spaced apart and clear of solid props.
         private void Spawn()

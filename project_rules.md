@@ -77,7 +77,8 @@ Assets/
       Events/        오브젝트·트리거 사건, 고정 사건
       NPC/           주민, 받는 사람, 도둑, 교통
       Economy/       진행 상태, 생활비, 빚, 저장
-      World/         도로(Splines) 표면
+      World/         도로(Splines) 표면, 커브드월드
+      DevTools/      F1 개발자 도구(실시간 수치 조정·저장)
       UI/            HUD, 지도, 정산 화면
       Data/          설정 데이터 타입
     Editor/          에디터 전용 설치기(씬 반영)와 자동 점검
@@ -91,6 +92,7 @@ Assets/
       Props/         문·타이어·차량 머티리얼
       Roads/         도로·인도·골목·차선 머티리얼
       Materials/     캐릭터·소품 공용 머티리얼
+      Shaders/       커브드월드 Lit 셰이더(URP Lit 기반)
   Settings/          URP 렌더 파이프라인(프로젝트 설정)
   TextMesh Pro/      TMP 패키지 리소스
 Docs/                기획·계획·현재 구현 안내, 기록/(끝난 작업과 제거된 시스템의 안내)

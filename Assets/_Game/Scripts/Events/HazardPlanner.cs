@@ -38,6 +38,9 @@ namespace DeliveryRider
         private int liveTriggers;
         private int callTarget;
         public int LiveTriggers => liveTriggers;
+        public IReadOnlyList<HazardSlot> Slots => slots;
+        // Raised for each new hazard before it is placed and woken, so developer tools can apply tuned values first.
+        public event System.Action<GameObject, string> HazardSpawned;
 
         private void Start()
         {
@@ -80,6 +83,19 @@ namespace DeliveryRider
             Destroy(staging);
         }
 
+        // Developer tools: replaces today's hazards with a fresh layout from the current settings. Switching a hazard
+        // off first runs its teardown (chicken control and slips end; a pigeon holding food sends the rider back to
+        // the shop).
+        public void Respawn()
+        {
+            foreach (var slot in slots)
+                if (slot != null) { slot.gameObject.SetActive(false); Destroy(slot.gameObject); }
+            slots.Clear();
+            rolledOrder = -1;
+            Spawn();
+            OnSessionChanged();
+        }
+
         private bool HasRoom(List<(Vector3 position, string type)> placed, Vector3 position, string type)
         {
             foreach (var other in placed)
@@ -95,6 +111,7 @@ namespace DeliveryRider
         {
             var obj = Instantiate(kind.prefab, spot.position, spot.rotation, staging);
             obj.name = $"{slots.Count:00}_{kind.type}" + (spot.alley ? "_alley" : "");
+            HazardSpawned?.Invoke(obj, kind.type);
             foreach (var hazard in obj.GetComponents<IPlacedHazard>()) hazard.Place(session, ground, spot);
             var slot = obj.AddComponent<HazardSlot>();
             slot.Configure(kind.type, kind.role, kind.unlockDay, candidates.Routes(spot.spot));

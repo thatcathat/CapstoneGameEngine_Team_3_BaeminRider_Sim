@@ -58,7 +58,7 @@ namespace DeliveryRider.Editor
             string path = Art + name + ".mat";
             var existing = AssetDatabase.LoadAssetAtPath<Material>(path);
             if (existing != null) return existing;
-            var material = new Material(Shader.Find("Universal Render Pipeline/Lit")) { name = name, color = color };
+            var material = new Material(Shader.Find(CurvedWorldInstaller.LitShader)) { name = name, color = color };
             material.SetFloat("_Smoothness", 0.25f);
             AssetDatabase.CreateAsset(material, path);
             return material;

@@ -46132,6 +46132,7 @@ GameObject:
   - component: {fileID: 287265347}
   - component: {fileID: 287265349}
   - component: {fileID: 287265348}
+  - component: {fileID: 287265350}
   m_Layer: 0
   m_Name: Name
   m_TagString: Untagged
@@ -46187,7 +46188,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4288276108
   m_fontColor: {r: 0.55, g: 0.9, b: 0.6, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -46200,7 +46201,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -46302,6 +46303,18 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &287265350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 287265346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7791b32afb1221b418c30ef3479dd9c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.CurvedWorldFollower
 --- !u!1 &287569833
 GameObject:
   m_ObjectHideFlags: 0
@@ -59156,6 +59169,7 @@ GameObject:
   - component: {fileID: 405880548}
   - component: {fileID: 405880550}
   - component: {fileID: 405880549}
+  - component: {fileID: 405880551}
   m_Layer: 0
   m_Name: Name
   m_TagString: Untagged
@@ -59211,7 +59225,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4285777919
   m_fontColor: {r: 1, g: 0.78, b: 0.45, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -59224,7 +59238,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -59326,6 +59340,18 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &405880551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 405880547}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7791b32afb1221b418c30ef3479dd9c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.CurvedWorldFollower
 --- !u!1 &406537353
 GameObject:
   m_ObjectHideFlags: 0
@@ -61242,6 +61268,8 @@ MonoBehaviour:
   getUpSeconds: 0.45
   accidentTimeout: 8
   stuckSeconds: 2
+  rollingStaticFriction: 0.6
+  rollingDynamicFriction: 0.6
   view: {fileID: 1684003829}
   session: {fileID: 421427440}
   speed: 10
@@ -72221,6 +72249,7 @@ GameObject:
   - component: {fileID: 511615457}
   - component: {fileID: 511615459}
   - component: {fileID: 511615458}
+  - component: {fileID: 511615460}
   m_Layer: 0
   m_Name: Name
   m_TagString: Untagged
@@ -72276,7 +72305,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4285777919
   m_fontColor: {r: 1, g: 0.78, b: 0.45, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -72289,7 +72318,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -72391,6 +72420,18 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &511615460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 511615456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7791b32afb1221b418c30ef3479dd9c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.CurvedWorldFollower
 --- !u!1 &512256902
 GameObject:
   m_ObjectHideFlags: 0
@@ -134249,6 +134290,7 @@ GameObject:
   - component: {fileID: 929774862}
   - component: {fileID: 929774864}
   - component: {fileID: 929774863}
+  - component: {fileID: 929774865}
   m_Layer: 0
   m_Name: Name
   m_TagString: Untagged
@@ -134304,7 +134346,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4294950796
   m_fontColor: {r: 0.55, g: 0.75, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -134317,7 +134359,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -134419,6 +134461,18 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &929774865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 929774861}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7791b32afb1221b418c30ef3479dd9c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.CurvedWorldFollower
 --- !u!1 &931651998
 GameObject:
   m_ObjectHideFlags: 0
@@ -151268,6 +151322,7 @@ GameObject:
   - component: {fileID: 1113673732}
   - component: {fileID: 1113673734}
   - component: {fileID: 1113673733}
+  - component: {fileID: 1113673735}
   m_Layer: 0
   m_Name: Name
   m_TagString: Untagged
@@ -151323,7 +151378,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4292452095
   m_fontColor: {r: 1, g: 0.62, b: 0.85, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -151336,7 +151391,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -151438,6 +151493,18 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1113673735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1113673731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7791b32afb1221b418c30ef3479dd9c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.CurvedWorldFollower
 --- !u!1 &1113880486
 GameObject:
   m_ObjectHideFlags: 0
@@ -153081,6 +153148,7 @@ GameObject:
   - component: {fileID: 1123111364}
   - component: {fileID: 1123111366}
   - component: {fileID: 1123111365}
+  - component: {fileID: 1123111367}
   m_Layer: 0
   m_Name: Name
   m_TagString: Untagged
@@ -153136,7 +153204,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4292452095
   m_fontColor: {r: 1, g: 0.62, b: 0.85, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -153149,7 +153217,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -153251,6 +153319,18 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1123111367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1123111363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7791b32afb1221b418c30ef3479dd9c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.CurvedWorldFollower
 --- !u!1 &1123450515
 GameObject:
   m_ObjectHideFlags: 0
@@ -162665,6 +162745,7 @@ GameObject:
   - component: {fileID: 1218525189}
   - component: {fileID: 1218525191}
   - component: {fileID: 1218525190}
+  - component: {fileID: 1218525192}
   m_Layer: 0
   m_Name: Name
   m_TagString: Untagged
@@ -162720,7 +162801,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4292452095
   m_fontColor: {r: 1, g: 0.62, b: 0.85, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -162733,7 +162814,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -162835,6 +162916,18 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1218525192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1218525188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7791b32afb1221b418c30ef3479dd9c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.CurvedWorldFollower
 --- !u!1 &1219062381
 GameObject:
   m_ObjectHideFlags: 0
@@ -165128,6 +165221,7 @@ GameObject:
   - component: {fileID: 1248741926}
   - component: {fileID: 1248741928}
   - component: {fileID: 1248741927}
+  - component: {fileID: 1248741929}
   m_Layer: 0
   m_Name: Name
   m_TagString: Untagged
@@ -165183,7 +165277,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4288276108
   m_fontColor: {r: 0.55, g: 0.9, b: 0.6, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -165196,7 +165290,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -165298,6 +165392,18 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1248741929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1248741925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7791b32afb1221b418c30ef3479dd9c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.CurvedWorldFollower
 --- !u!1 &1249788333
 GameObject:
   m_ObjectHideFlags: 0
@@ -203311,6 +203417,7 @@ GameObject:
   - component: {fileID: 1641809280}
   - component: {fileID: 1641809282}
   - component: {fileID: 1641809281}
+  - component: {fileID: 1641809283}
   m_Layer: 0
   m_Name: Name
   m_TagString: Untagged
@@ -203366,7 +203473,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4288276108
   m_fontColor: {r: 0.55, g: 0.9, b: 0.6, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -203379,7 +203486,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -203481,6 +203588,18 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1641809283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1641809279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7791b32afb1221b418c30ef3479dd9c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.CurvedWorldFollower
 --- !u!1 &1643408567
 GameObject:
   m_ObjectHideFlags: 0
@@ -205874,6 +205993,7 @@ GameObject:
   - component: {fileID: 1665354089}
   - component: {fileID: 1665354091}
   - component: {fileID: 1665354090}
+  - component: {fileID: 1665354092}
   m_Layer: 0
   m_Name: Name
   m_TagString: Untagged
@@ -205929,7 +206049,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4294950796
   m_fontColor: {r: 0.55, g: 0.75, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -205942,7 +206062,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -206044,6 +206164,18 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1665354092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1665354088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7791b32afb1221b418c30ef3479dd9c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.CurvedWorldFollower
 --- !u!1 &1666427374
 GameObject:
   m_ObjectHideFlags: 0
@@ -207431,6 +207563,7 @@ GameObject:
   - component: {fileID: 1684003832}
   - component: {fileID: 1684003831}
   - component: {fileID: 1684003830}
+  - component: {fileID: 1684003833}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -207591,6 +207724,21 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1684003827}
   m_Enabled: 1
+--- !u!114 &1684003833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1684003827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38003b321346f5740aadc25bde9eefeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.CurvedWorld
+  pivot: {fileID: 424159418}
+  curvature: 0.002
+  cullingFovMargin: 10
 --- !u!1 &1684291323
 GameObject:
   m_ObjectHideFlags: 0
@@ -222649,6 +222797,7 @@ GameObject:
   - component: {fileID: 1862129022}
   - component: {fileID: 1862129021}
   - component: {fileID: 1862129020}
+  - component: {fileID: 1862129023}
   m_Layer: 0
   m_Name: CustomerLabel
   m_TagString: Untagged
@@ -222831,6 +222980,18 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1862129023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1862129018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7791b32afb1221b418c30ef3479dd9c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.CurvedWorldFollower
 --- !u!1 &1862275943
 GameObject:
   m_ObjectHideFlags: 0
@@ -226667,6 +226828,62 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1912199500}
   m_CullTransparentMesh: 1
+--- !u!1 &1912301072
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1912301074}
+  - component: {fileID: 1912301073}
+  m_Layer: 0
+  m_Name: DevTools
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1912301073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1912301072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d77a34817b14c0c46ad758cc1adbb554, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.DevTools
+  session: {fileID: 421427440}
+  rider: {fileID: 424159419}
+  riderVisual: {fileID: 424159425}
+  safeRecovery: {fileID: 424159424}
+  followCamera: {fileID: 1684003830}
+  curvedWorld: {fileID: 1684003833}
+  hazards: {fileID: 32693207}
+  hazardSettings: {fileID: 11400000, guid: 2c362fd23635a874cb46406c08121528, type: 2}
+  traffic: {fileID: 160504038}
+  pedestrians: {fileID: 667766425}
+  daySettings: {fileID: 11400000, guid: 38c0843b3ef9d53429a2a97f991b17f5, type: 2}
+  font: {fileID: 12800000, guid: 48305c1c5367aaa439a3cc39f516363e, type: 3}
+--- !u!4 &1912301074
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1912301072}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1912455934
 GameObject:
   m_ObjectHideFlags: 0
@@ -242248,6 +242465,7 @@ GameObject:
   - component: {fileID: 2077266161}
   - component: {fileID: 2077266163}
   - component: {fileID: 2077266162}
+  - component: {fileID: 2077266164}
   m_Layer: 0
   m_Name: Name
   m_TagString: Untagged
@@ -242303,7 +242521,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4294950796
   m_fontColor: {r: 0.55, g: 0.75, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -242316,7 +242534,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -242418,6 +242636,18 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2077266164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2077266160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7791b32afb1221b418c30ef3479dd9c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.CurvedWorldFollower
 --- !u!1 &2077668248
 GameObject:
   m_ObjectHideFlags: 0
@@ -247471,6 +247701,7 @@ GameObject:
   - component: {fileID: 2145289963}
   - component: {fileID: 2145289965}
   - component: {fileID: 2145289964}
+  - component: {fileID: 2145289966}
   m_Layer: 0
   m_Name: Name
   m_TagString: Untagged
@@ -247526,7 +247757,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4285777919
   m_fontColor: {r: 1, g: 0.78, b: 0.45, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -247539,7 +247770,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -247641,6 +247872,18 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2145289966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2145289962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7791b32afb1221b418c30ef3479dd9c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.CurvedWorldFollower
 --- !u!1 &2145356059
 GameObject:
   m_ObjectHideFlags: 0
@@ -248136,3 +248379,4 @@ SceneRoots:
   - {fileID: 160504039}
   - {fileID: 667766426}
   - {fileID: 32693208}
+  - {fileID: 1912301074}

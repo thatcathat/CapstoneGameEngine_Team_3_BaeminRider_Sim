@@ -68,6 +68,7 @@ namespace DeliveryRider
         public int JunctionCount => junctions.Length;
         public TrafficPath Path(int index) => paths[index];
         public IReadOnlyList<TrafficCar> Cars => cars;
+        public IReadOnlyList<VehicleKind> Kinds => kinds;
 
         public void Configure(DeliverySession deliverySession, TrafficPath[] bakedPaths, TrafficJunctionData[] bakedJunctions, VehicleKind[] vehicleKinds)
         {
@@ -86,6 +87,16 @@ namespace DeliveryRider
         }
 
         private void Start() => Spawn();
+
+        // Developer tools: replaces every car with a fresh fleet from the current settings. Switching a car off
+        // first releases its lane and junction places.
+        public void Respawn()
+        {
+            foreach (var car in cars)
+                if (car != null) { car.gameObject.SetActive(false); Destroy(car.gameObject); }
+            cars.Clear();
+            Spawn();
+        }
 
         // Cars go on lanes only, weighted by lane length, at least minimumSpacing apart.
         private void Spawn()

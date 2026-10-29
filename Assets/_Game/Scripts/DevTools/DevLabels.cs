@@ -1,0 +1,93 @@
+using System.Collections.Generic;
+
+namespace DeliveryRider
+{
+    // Korean names for the developer tools. Keys are "Type.field" (when a name means different things) or the field
+    // name; anything missing shows its Inspector name.
+    public static class DevLabels
+    {
+        private static readonly Dictionary<string, string> HazardTypes = new Dictionary<string, string>
+        {
+            { "manhole", "맨홀" }, { "hydrant", "소화전" }, { "melon", "수박" }, { "door", "문" }, { "duck", "오리" },
+            { "chicken", "닭" }, { "tire", "타이어" }, { "theft", "비둘기 도둑" }, { "muscleman", "근육맨" },
+        };
+
+        private static readonly Dictionary<string, string> Fields = new Dictionary<string, string>
+        {
+            // Rider
+            { "RiderMotor.speed", "이동 속도 (인라인 전 기본값)" }, { "RiderMotor.acceleration", "가속도" }, { "RiderMotor.turnSpeed", "회전 속도" },
+            { "recoveryHeight", "추락 복귀 높이" }, { "followSlopes", "경사 따라 걷기" }, { "maximumSlope", "오를 수 있는 경사(도)" },
+            { "groundReach", "지면 붙임 거리" }, { "groundContactTolerance", "지면 접촉 허용치" }, { "safeFallDepth", "추락 판정 깊이" },
+            { "punchCooldown", "주먹 쿨타임" }, { "punchReach", "주먹 거리" }, { "punchRadius", "주먹 범위" }, { "punchHeight", "주먹 높이" },
+            { "slipSteering", "미끄러질 때 조향" }, { "slipMaximumSpeed", "미끄러짐 최고 속도" },
+            { "airSteering", "공중 조향" }, { "airInputSpeedLimit", "공중 조향 속도 한도" }, { "wallReflection", "벽 튕김 비율" },
+            { "floorReflection", "바닥 튕김 비율" }, { "minimumBounceSpeed", "최소 튕김 속도" }, { "maximumFloorBounces", "바닥 튕김 횟수" },
+            { "contactInterval", "충돌 판정 간격" }, { "rollDeceleration", "구르기 감속" }, { "getUpSpeed", "일어날 수 있는 속도" },
+            { "stableGroundSeconds", "착지 안정 시간" }, { "RiderMotor.getUpSeconds", "일어나는 시간" }, { "accidentTimeout", "사고 최대 시간" },
+            { "stuckSeconds", "끼임 판정 시간" }, { "rollingStaticFriction", "구를 때 정지 마찰" }, { "rollingDynamicFriction", "구를 때 운동 마찰" },
+            { "flightSpinRange", "비행 회전 속도" }, { "poseSmoothTime", "자세 전환 시간" }, { "groundVisualClearance", "바닥 표시 여유" },
+            { "sampleSpacing", "안전 지점 간격" }, { "groundClearance", "지면 여유" },
+            // Camera and view
+            { "distance", "카메라 거리" }, { "sensitivity", "마우스 감도" }, { "pitch", "상하 각도" }, { "targetHeight", "바라보는 높이" },
+            { "fovSpeedRange", "시야 확대 속도 범위" }, { "maximumFovIncrease", "최대 시야 확대" }, { "fovSmoothTime", "시야 변화 시간" },
+            { "flightDistanceIncrease", "비행 시 거리 증가" }, { "flightHeightRange", "비행 높이 범위" }, { "followSmoothTime", "따라가기 지연" },
+            { "distanceSmoothTime", "거리 변화 시간" }, { "shakeAmplitude", "흔들림 크기" }, { "shakeDuration", "흔들림 시간" },
+            { "fullShakeImpulse", "최대 흔들림 충격" }, { "collisionRadius", "충돌 반경" }, { "collisionPadding", "충돌 여유" },
+            { "groundProbeDistance", "지면 탐색 거리" }, { "teleportDistance", "순간이동 판정 거리" },
+            { "curvature", "곡률" }, { "cullingFovMargin", "컬링 시야 여유(도)" },
+            // Hazard planning
+            { "randomEachRun", "매번 무작위 배치" }, { "seed", "시드" }, { "triggersPerCall", "콜당 트리거 수 (일차)" },
+            { "routeShare", "경로 근처 비율" }, { "typeGuarantee", "종류 보장 확률" }, { "igniteChance", "연쇄 발동 확률" },
+            { "igniteChanceFromObject", "오브젝트 연쇄 확률" }, { "igniteRadius", "연쇄 반경" }, { "igniteExtraLimit", "연쇄 추가 한도" },
+            { "HazardSpawnSettings.spacing", "사건 간 최소 거리" }, { "sameTypeSpacing", "같은 종류 최소 거리" },
+            // Hazards
+            { "triggerRadius", "발동 반경" }, { "chaseSeconds", "추격 시간" }, { "attachmentSeconds", "조종 시간" },
+            { "extraAttachmentSeconds", "추가 조종 시간" }, { "chaseSpeed", "추격 속도" }, { "riderSpeedShare", "라이더 속도 배율" },
+            { "maximumChaseSpeed", "최대 추격 속도" }, { "turnInterval", "방향 전환 간격" }, { "wanderRadius", "배회 반경" },
+            { "wanderAngle", "배회 각도" }, { "separationDistance", "서로 떨어질 거리" }, { "contactRadius", "접촉 반경" },
+            { "maximumLeadDistance", "최대 앞지름 거리" }, { "arrivalMargin", "도착 여유" }, { "waitingSpacing", "대기 간격" },
+            { "walkSpeed", "걷기 속도" }, { "CrossingFlockHazard.spacing", "오리 간격" }, { "hitRadius", "충돌 반경" },
+            { "bounceImpulse", "튕김 충격" }, { "bounceLift", "튕김 높이" }, { "recoverySeconds", "회복 시간" },
+            { "activeSeconds", "작동 시간" }, { "forwardImpulse", "앞쪽 충격" }, { "upwardImpulse", "위쪽 충격" }, { "slipSeconds", "미끄러지는 시간" },
+            { "spawnBehindDistance", "뒤쪽 등장 거리" }, { "minimumStraightBehind", "뒤쪽 최소 직선 거리" }, { "speedMultiplier", "속도 배율" },
+            { "disappearAfterTurn", "코너 후 사라지는 시간" }, { "runnerHeight", "키" }, { "runnerRadius", "몸 반경" },
+            { "shoveSpeed", "밀치는 속도" }, { "pedestrianLift", "행인 띄움" },
+            { "warningSeconds", "경고 시간" }, { "swoopSeconds", "급강하 시간" }, { "flySpeed", "비행 속도" }, { "escapeSeconds", "도주 시간" },
+            { "pileCount", "더미 크기" }, { "approachRadius", "접근 반경" }, { "approachLeadSeconds", "접근 예측 시간" },
+            { "rollSpeed", "구르는 속도" }, { "burstLift", "흩어질 때 높이" }, { "waveSeconds", "흩어지는 시간" },
+            { "tumbleSeconds", "넘어지는 시간" }, { "downedPushSpeed", "쓰러진 뒤 미는 속도" }, { "rearmSeconds", "재작동 대기" },
+            { "rearmDistance", "재작동 거리" }, { "proximityActivation", "근접 발동" }, { "radius", "반경" },
+            { "initialSpeed", "시작 속도" }, { "maximumSpeed", "최고 속도" }, { "slopeAcceleration", "경사 가속" },
+            { "maximumLifetime", "최대 지속 시간" }, { "impulse", "충격량" }, { "rearmOnNextOrder", "다음 주문에 재작동" },
+            { "openingSeconds", "열리는 시간" }, { "openingAngle", "열림 각도" }, { "holdSeconds", "열려 있는 시간" },
+            { "closingSeconds", "닫히는 시간" }, { "horizontalImpulse", "수평 충격" },
+            // Traffic and walkers
+            { "vehicleCount", "차량 수" }, { "minimumSpacing", "차량 간 최소 간격" }, { "playerClearance", "플레이어 주변 비움 거리" },
+            { "share", "등장 비율" }, { "cruiseSpeed", "주행 속도" }, { "TrafficCar.acceleration", "가속도" }, { "braking", "제동력" },
+            { "slopeSpeed", "경사 주행 속도" }, { "followGap", "앞차 간격" }, { "obstacleClearance", "장애물 여유" },
+            { "riderBrakeDelay", "라이더 앞 제동 지연" }, { "riderIgnoreChance", "라이더 무시 확률" }, { "riderForgetSeconds", "라이더 잊는 시간" },
+            { "maximumLaunchSpeed", "최대 튕김 속도" }, { "bonnetAngle", "보닛 각도" }, { "restitution", "반발 계수" },
+            { "sideSpeedKeep", "옆 속도 유지" }, { "relaunchInterval", "재충돌 간격" },
+            { "spawnSpacing", "배치 간격" }, { "population", "보행자 수" }, { "walkingSpeed", "걷기 속도" }, { "laneOffset", "길 안쪽 간격" },
+            { "TrafficPedestrian.turnSpeed", "회전 속도" }, { "obstacleReach", "장애물 감지 거리" }, { "avoidHoldSeconds", "비켜서기 유지" },
+            { "turnBackSeconds", "되돌아서는 시간" }, { "punchSpeed", "맞았을 때 속도" }, { "punchLift", "맞았을 때 높이" },
+            { "minimumFlight", "최소 비행 시간" }, { "returnTimeout", "복귀 제한 시간" }, { "TrafficPedestrian.getUpSeconds", "일어나는 시간" },
+            { "returnWalkSlack", "복귀 여유 거리" }, { "knockMinimumSpeed", "넘어뜨리는 최소 속도" }, { "knockSpeedShare", "넘어뜨림 속도 배율" },
+            { "chainMinimumSpeed", "연쇄 최소 속도" }, { "chainSpeedShare", "연쇄 속도 배율" }, { "chainLimit", "연쇄 한도" },
+            { "riderHitMinimumSpeed", "라이더 충돌 최소 속도" },
+            // Delivery, day and economy
+            { "candidateCount", "콜 후보 수" }, { "homeLeaveDistance", "출발 판정 거리" }, { "pickupRange", "수령 거리" },
+            { "recipientHeight", "받는 사람 높이" }, { "durationSeconds", "하루 길이(초)" },
+            { "runSpeed", "기준 달리기 속도" }, { "limitRatio", "제한시간 배율" }, { "limitPadding", "제한시간 여유(초)" },
+            { "limitRounding", "제한시간 반올림 단위" }, { "minimumDistance", "최소 배달 거리" }, { "rewardTiers", "보상 구간" },
+            { "maximumDistance", "최대 거리" }, { "reward", "보상" }, { "lateRatio", "지각 보상 비율" }, { "startingDebt", "시작 빚" },
+            { "livingCost", "생활비" }, { "inlinePrice", "인라인 가격" }, { "inlineSaleDay", "인라인 판매 일차" },
+            { "inlineSpeedMultiplier", "인라인 속도 배율" }, { "inlineAccelerationMultiplier", "인라인 가속 배율" },
+        };
+
+        public static string Find(string type, string field)
+            => Fields.TryGetValue(type + "." + field, out var name) || Fields.TryGetValue(field, out name) ? name : null;
+
+        public static string HazardType(string type) => HazardTypes.TryGetValue(type, out var name) ? name : type;
+    }
+}
