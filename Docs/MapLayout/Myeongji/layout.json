@@ -1,0 +1,761 @@
+{
+  "seed": 14102026,
+  "roads": [
+    {
+      "id": "main",
+      "a": [
+        -10,
+        0
+      ],
+      "b": [
+        124,
+        0
+      ],
+      "width": 8
+    },
+    {
+      "id": "west",
+      "a": [
+        0,
+        0
+      ],
+      "b": [
+        0,
+        -52
+      ],
+      "width": 6
+    },
+    {
+      "id": "A_B_connector",
+      "a": [
+        27,
+        0
+      ],
+      "b": [
+        27,
+        -52
+      ],
+      "width": 5
+    },
+    {
+      "id": "back",
+      "a": [
+        0,
+        -52
+      ],
+      "b": [
+        84,
+        -52
+      ],
+      "width": 7
+    },
+    {
+      "id": "east",
+      "a": [
+        116,
+        0
+      ],
+      "b": [
+        84,
+        -52
+      ],
+      "width": 7
+    },
+    {
+      "id": "B_dead_end_west",
+      "a": [
+        27,
+        -29
+      ],
+      "b": [
+        57,
+        -29
+      ],
+      "width": 4,
+      "note": "Extended to south alley junction; original identifier retained."
+    },
+    {
+      "id": "B_dead_end_south",
+      "a": [
+        57,
+        -52
+      ],
+      "b": [
+        57,
+        -29
+      ],
+      "width": 4
+    },
+    {
+      "id": "extension_west",
+      "a": [
+        0,
+        -52
+      ],
+      "b": [
+        0,
+        -103
+      ],
+      "width": 6
+    },
+    {
+      "id": "extension_east",
+      "a": [
+        84,
+        -52
+      ],
+      "b": [
+        64,
+        -103
+      ],
+      "width": 7
+    },
+    {
+      "id": "extension_south",
+      "a": [
+        0,
+        -103
+      ],
+      "b": [
+        64,
+        -103
+      ],
+      "width": 6
+    },
+    {
+      "id": "extension_alley",
+      "a": [
+        32,
+        -52
+      ],
+      "b": [
+        32,
+        -86
+      ],
+      "width": 3
+    },
+    {
+      "id": "extension_alley_branch",
+      "a": [
+        32,
+        -86
+      ],
+      "b": [
+        55,
+        -86
+      ],
+      "width": 3
+    },
+    {
+      "id": "east_infill_top",
+      "a": [
+        89,
+        -44
+      ],
+      "b": [
+        117,
+        -44
+      ],
+      "width": 4
+    },
+    {
+      "id": "east_infill_outer",
+      "a": [
+        117,
+        -44
+      ],
+      "b": [
+        117,
+        -103
+      ],
+      "width": 4
+    },
+    {
+      "id": "east_infill_bottom",
+      "a": [
+        64,
+        -103
+      ],
+      "b": [
+        117,
+        -103
+      ],
+      "width": 6
+    },
+    {
+      "id": "east_infill_branch",
+      "a": [
+        101,
+        -63
+      ],
+      "b": [
+        117,
+        -63
+      ],
+      "width": 3
+    },
+    {
+      "id": "east_infill_inner",
+      "a": [
+        101,
+        -63
+      ],
+      "b": [
+        101,
+        -89
+      ],
+      "width": 3
+    },
+    {
+      "id": "B_internal_link",
+      "a": [
+        57,
+        -29
+      ],
+      "b": [
+        100,
+        -29
+      ],
+      "width": 2,
+      "note": "Narrow access alley connecting east road."
+    }
+  ],
+  "lots": [
+    [
+      "A01",
+      "source_a01",
+      13.5,
+      -9,
+      17,
+      8,
+      4,
+      180
+    ],
+    [
+      "A02",
+      "source_arch",
+      9.7,
+      -23,
+      8.8,
+      10.5,
+      3,
+      270
+    ],
+    [
+      "A03",
+      "house",
+      19.7,
+      -23,
+      8,
+      6,
+      3,
+      90
+    ],
+    [
+      "A04",
+      "brick",
+      9.7,
+      -32.6,
+      8.8,
+      10.1,
+      4,
+      270
+    ],
+    [
+      "A05",
+      "house",
+      19.7,
+      -32.6,
+      7.5,
+      6,
+      2,
+      90
+    ],
+    [
+      "A06",
+      "grey",
+      8.8,
+      -43,
+      7.8,
+      8.8,
+      3,
+      0
+    ],
+    [
+      "A07",
+      "brick",
+      19.3,
+      -43,
+      7.4,
+      8.5,
+      3,
+      0
+    ],
+    [
+      "B01",
+      "source_b01",
+      42,
+      -10,
+      14.4,
+      9.2,
+      3,
+      180
+    ],
+    [
+      "B02",
+      "grey",
+      57.5,
+      -10.2,
+      12,
+      10,
+      3,
+      180
+    ],
+    [
+      "B03",
+      "brick",
+      72,
+      -10,
+      12,
+      9.2,
+      4,
+      180
+    ],
+    [
+      "B04",
+      "brown",
+      87,
+      -9.8,
+      12,
+      8.8,
+      3,
+      180
+    ],
+    [
+      "B05",
+      "house",
+      99,
+      -9.4,
+      8,
+      8,
+      2,
+      180
+    ],
+    [
+      "B06",
+      "brown",
+      37.8,
+      -21,
+      10,
+      8,
+      3,
+      0
+    ],
+    [
+      "B07",
+      "brick",
+      51.3,
+      -21,
+      12,
+      8,
+      3,
+      0
+    ],
+    [
+      "B08",
+      "grey",
+      66,
+      -22,
+      12,
+      10,
+      4,
+      0
+    ],
+    [
+      "B09",
+      "brick",
+      81,
+      -22,
+      12,
+      10,
+      3,
+      0
+    ],
+    [
+      "B10",
+      "house",
+      92,
+      -21,
+      7,
+      8,
+      2,
+      0
+    ],
+    [
+      "B11",
+      "brown",
+      37.8,
+      -35.3,
+      11,
+      6,
+      2,
+      180
+    ],
+    [
+      "B12",
+      "house",
+      49.5,
+      -35.3,
+      6.2,
+      6,
+      3,
+      90
+    ],
+    [
+      "B13",
+      "brick",
+      66.5,
+      -34.4,
+      8,
+      8,
+      3,
+      270
+    ],
+    [
+      "B14",
+      "grey",
+      80,
+      -34.2,
+      10,
+      7,
+      2,
+      180
+    ],
+    [
+      "B15",
+      "brick",
+      37.5,
+      -43.8,
+      12,
+      8,
+      3,
+      0
+    ],
+    [
+      "B16",
+      "house",
+      49.5,
+      -43.8,
+      8,
+      8,
+      2,
+      0
+    ],
+    [
+      "B17",
+      "brown",
+      66,
+      -43.8,
+      10,
+      8,
+      3,
+      0
+    ],
+    [
+      "B18",
+      "grey",
+      76.8,
+      -43.8,
+      9,
+      8,
+      3,
+      0
+    ],
+    [
+      "E01",
+      "brick",
+      11,
+      -62.5,
+      11,
+      9,
+      3,
+      180
+    ],
+    [
+      "E02",
+      "grey",
+      25,
+      -63,
+      10,
+      10,
+      3,
+      180
+    ],
+    [
+      "E03",
+      "brown",
+      39.5,
+      -62.5,
+      11,
+      9,
+      2,
+      180
+    ],
+    [
+      "E04",
+      "brick",
+      53,
+      -62.5,
+      11,
+      9,
+      4,
+      180
+    ],
+    [
+      "E05",
+      "house",
+      67,
+      -62.5,
+      10,
+      9,
+      2,
+      180
+    ],
+    [
+      "E06",
+      "brown",
+      11,
+      -77,
+      10,
+      9,
+      3,
+      270
+    ],
+    [
+      "E07",
+      "house",
+      23,
+      -77,
+      9,
+      8,
+      2,
+      90
+    ],
+    [
+      "E08",
+      "grey",
+      45,
+      -77,
+      11,
+      9,
+      3,
+      0
+    ],
+    [
+      "E09",
+      "brick",
+      62,
+      -76,
+      9,
+      8,
+      3,
+      90
+    ],
+    [
+      "E10",
+      "grey",
+      10,
+      -95,
+      10,
+      8,
+      3,
+      0
+    ],
+    [
+      "E11",
+      "brick",
+      24,
+      -95,
+      10,
+      8,
+      4,
+      0
+    ],
+    [
+      "E12",
+      "house",
+      40,
+      -95,
+      11,
+      8,
+      2,
+      0
+    ],
+    [
+      "E13",
+      "brown",
+      54,
+      -95,
+      10,
+      8,
+      3,
+      0
+    ],
+    [
+      "F01",
+      "facade_arched_upper",
+      116,
+      -20,
+      10,
+      8,
+      3,
+      270
+    ],
+    [
+      "F02",
+      "facade_pilaster_grid",
+      108,
+      -36,
+      11,
+      8.5,
+      4,
+      270
+    ],
+    [
+      "F03",
+      "facade_deep_reveal",
+      99,
+      -52,
+      10,
+      9,
+      3,
+      270
+    ],
+    [
+      "F04",
+      "facade_arched_entry",
+      90,
+      -68,
+      10,
+      8,
+      2,
+      270
+    ],
+    [
+      "F05",
+      "facade_projecting_sill",
+      84,
+      -83,
+      10,
+      9,
+      3,
+      270
+    ],
+    [
+      "F06",
+      "facade_arched_shopfront",
+      79.5,
+      -94.5,
+      10,
+      8,
+      3,
+      270
+    ],
+    [
+      "G01",
+      "infill_projecting_sill",
+      109,
+      -55,
+      10,
+      8,
+      3,
+      90
+    ],
+    [
+      "G02",
+      "infill_setback",
+      109,
+      -70,
+      10,
+      8,
+      4,
+      90
+    ],
+    [
+      "G03",
+      "infill_arched_upper",
+      109,
+      -84,
+      10,
+      8,
+      3,
+      90
+    ],
+    [
+      "G04",
+      "infill_gable",
+      108,
+      -95,
+      10,
+      7,
+      2,
+      0
+    ],
+    [
+      "G05",
+      "infill_pilaster_grid",
+      94,
+      -95,
+      10,
+      7,
+      4,
+      0
+    ],
+    [
+      "G06",
+      "infill_deep_reveal",
+      95,
+      -79,
+      10,
+      7,
+      3,
+      90
+    ],
+    [
+      "H01",
+      "infill_gable",
+      10,
+      -86,
+      6.2,
+      8,
+      3,
+      270
+    ],
+    [
+      "H02",
+      "infill_arched_entry",
+      23,
+      -86,
+      6,
+      7,
+      2,
+      90
+    ]
+  ],
+  "source_basis_pixels": {
+    "origin": [
+      430,
+      367
+    ],
+    "main_direction": [
+      360,
+      -323
+    ]
+  },
+  "scale_status": "proportional prototype; no surveyed scale",
+  "rules": "Main road horizontal; building rotation restricted to 0/90/180/270 and scale 1. Map-inspired A/B prototype, not parcel-by-parcel survey.",
+  "extension_note": "South adjacent prototype block; simplified map structure, cardinal buildings, not a cadastral reconstruction.",
+  "active_asset_manifest": "Active_Asset_Manifest.json",
+  "variation_note": "Six wall colors. 35 procedural facades refined with building-specific window proportions, floor hierarchy and sparse side/rear openings; 3 original reference facades retained, instance palette matched.",
+  "generation_rules": "Generation_Rules.json"
+}

@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7989b48dae9efd478d4c76a9f0d5c9f, type: 3}
+  m_Name: MyeongjiHazardSpawnSettings
+  m_EditorClassIdentifier: Assembly-CSharp::DeliveryRider.HazardSpawnSettings
+  kinds:
+  - type: manhole
+    prefab: {fileID: 6472710267201087100, guid: f596076374953f645ae82da9c8aef1d5, type: 3}
+    role: 0
+    unlockDay: 1
+    countPerDay: 06000000080000000a0000000c000000
+    poolSize: 10
+  - type: hydrant
+    prefab: {fileID: 5070404547343383542, guid: 7d4ef1a04abf7c843beb66a684257e83, type: 3}
+    role: 0
+    unlockDay: 1
+    countPerDay: 04000000050000000600000006000000
+    poolSize: 10
+  - type: melon
+    prefab: {fileID: 6530980163086158173, guid: f76f44a5a22529a44bd073b5059e96e2, type: 3}
+    role: 0
+    unlockDay: 1
+    countPerDay: 04000000050000000600000008000000
+    poolSize: 10
+  - type: door
+    prefab: {fileID: 2258765552048652787, guid: d9aa1405f52194043a5a9a9cb9a9c575, type: 3}
+    role: 0
+    unlockDay: 1
+    countPerDay: 03000000040000000500000006000000
+    poolSize: 10
+  - type: duck
+    prefab: {fileID: 2613456982075538471, guid: 8c84d1a05a662454f881b318ef2c31fb, type: 3}
+    role: 1
+    unlockDay: 1
+    countPerDay: 
+    poolSize: 10
+  - type: chicken
+    prefab: {fileID: 1457955222934212062, guid: 1824a012844aee449927e112dda09ccd, type: 3}
+    role: 1
+    unlockDay: 1
+    countPerDay: 
+    poolSize: 10
+  - type: tire
+    prefab: {fileID: 187407185860632136, guid: 28a9fcec772ac8948bed51bf36545ddc, type: 3}
+    role: 1
+    unlockDay: 2
+    countPerDay: 
+    poolSize: 10
+  - type: theft
+    prefab: {fileID: 5341357968200033377, guid: c25a8024297b4e64fb874d7dbf50beaf, type: 3}
+    role: 1
+    unlockDay: 2
+    countPerDay: 
+    poolSize: 10
+  spacing: 8
+  sameTypeSpacing: 25
