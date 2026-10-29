@@ -71,19 +71,21 @@ namespace DeliveryRider
         private float chickenControlUntil;
         private readonly System.Collections.Generic.List<UnityEngine.Object> chickenControlSources = new System.Collections.Generic.List<UnityEngine.Object>(4);
 
-        public bool TryAttachChicken(UnityEngine.Object source, Vector3 direction, float seconds)
+        public bool TryAttachChicken(UnityEngine.Object source, Vector3 direction, float initialSeconds, float extraSeconds)
         {
             if (!isActiveAndEnabled || source == null || session == null || session.IsPaused || session.IsMapOpen || session.IsSettled
                 || ReactionState != RiderReactionState.Normal) return false;
             if (Time.time >= chickenControlUntil) ClearChickenControl();
+            bool firstAttachment = chickenControlOwner == null;
             if (!chickenControlSources.Contains(source)) chickenControlSources.Add(source);
             if (chickenControlOwner == null)
             {
                 chickenControlOwner = source;
                 chickenControlDirection = Vector3.ProjectOnPlane(direction, Vector3.up).normalized;
             }
-            // Every newly attached bird adds time to the common deadline, including other flocks.
-            chickenControlUntil = Mathf.Max(Time.time, chickenControlUntil) + Mathf.Max(0.1f, seconds);
+            // Additional birds, including other flocks, extend the shared deadline by the shorter duration.
+            float duration = firstAttachment ? initialSeconds : extraSeconds;
+            chickenControlUntil = Mathf.Max(Time.time, chickenControlUntil) + Mathf.Max(0.1f, duration);
             jumpQueued = false;
             return true;
         }

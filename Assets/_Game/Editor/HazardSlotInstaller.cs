@@ -30,7 +30,7 @@ namespace DeliveryRider.Editor
 
         private sealed class HazardPrefabs
         {
-            public GameObject manhole, hydrant, melon, door, tire, ducks, chickens, pigeon;
+            public GameObject manhole, hydrant, melon, door, tire, ducks, chickens, pigeon, muscleman;
         }
 
         private sealed class Bake
@@ -81,6 +81,7 @@ namespace DeliveryRider.Editor
             };
             foreach (var road in bake.roads) BakeRoad(bake, road);
             AssignRoutes(bake, shops, doors);
+            MusclemanInstaller.AppendCandidates(bake.spots, bake.candidates, session, components.OfType<PedestrianNetwork>().Single(), network);
 
             var asset = AssetDatabase.LoadAssetAtPath<HazardCandidates>(CandidatesPath);
             if (asset == null) { asset = ScriptableObject.CreateInstance<HazardCandidates>(); AssetDatabase.CreateAsset(asset, CandidatesPath); }
@@ -114,6 +115,7 @@ namespace DeliveryRider.Editor
                 Kind("hydrant", prefabs.hydrant, HazardRole.Object, 1, 4, 5, 6, 6),
                 Kind("melon", prefabs.melon, HazardRole.Object, 1, 4, 5, 6, 8),
                 Kind("door", prefabs.door, HazardRole.Object, 1, 3, 4, 5, 6),
+                Kind("muscleman", prefabs.muscleman, HazardRole.Object, 1, 8, 8, 8, 8),
                 Kind("duck", prefabs.ducks, HazardRole.Trigger, 1),
                 Kind("chicken", prefabs.chickens, HazardRole.Trigger, 1),
                 Kind("tire", prefabs.tire, HazardRole.Trigger, 2),
@@ -410,6 +412,7 @@ namespace DeliveryRider.Editor
             prefabs.ducks = DuckPrefab();
             prefabs.chickens = ChickenPrefab();
             prefabs.pigeon = PigeonPrefab();
+            prefabs.muscleman = MusclemanInstaller.CreatePrefab(session);
             return prefabs;
         }
 

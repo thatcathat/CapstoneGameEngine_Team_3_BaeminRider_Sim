@@ -38,6 +38,7 @@ namespace DeliveryRider
         [SerializeField] private HazardCandidate[] candidates = Array.Empty<HazardCandidate>();
 
         public IReadOnlyList<HazardCandidate> Candidates => candidates;
+        public IReadOnlyList<Spot> Spots => spots;
         public int[] Routes(int spot) => spot >= 0 && spot < spots.Length ? spots[spot].routes : Array.Empty<int>();
 
         public void Configure(Spot[] roadSpots, HazardCandidate[] places)

@@ -11,7 +11,10 @@ namespace DeliveryRider
         [Header("Test values")]
         [SerializeField, Min(0.1f)] private float triggerRadius = 7f;
         [SerializeField, Min(0.1f)] private float chaseSeconds = 6f;
+        [Tooltip("Control duration when the first chicken attaches.")]
         [SerializeField, Min(0.1f)] private float attachmentSeconds = 3f;
+        [Tooltip("Time added for each additional chicken while control is already active.")]
+        [SerializeField, Min(0.1f)] private float extraAttachmentSeconds = 1.5f;
         [SerializeField, Min(0.1f)] private float chaseSpeed = 5.2f;
         [SerializeField, Min(0f)] private float riderSpeedShare = 1.15f;
         [SerializeField, Min(0.1f)] private float maximumChaseSpeed = 20f;
@@ -186,7 +189,7 @@ namespace DeliveryRider
                         command = Quaternion.Euler(0f, Random.Range(-120f, 120f), 0f) * rider.transform.forward;
                         commandUntil = elapsed + NextTurnDelay();
                     }
-                    if (rider.TryAttachChicken(this, command, attachmentSeconds)) { attached[i] = true; controlling = true; }
+                    if (rider.TryAttachChicken(this, command, attachmentSeconds, extraAttachmentSeconds)) { attached[i] = true; controlling = true; }
                 }
             }
         }

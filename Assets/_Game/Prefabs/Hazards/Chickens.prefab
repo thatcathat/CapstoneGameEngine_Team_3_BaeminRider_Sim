@@ -57,6 +57,7 @@ MonoBehaviour:
   triggerRadius: 7
   chaseSeconds: 6
   attachmentSeconds: 3
+  extraAttachmentSeconds: 1.5
   chaseSpeed: 5.2
   riderSpeedShare: 1.15
   maximumChaseSpeed: 20
