@@ -87,6 +87,8 @@ namespace DeliveryRider
             if (block == null) return;
             foreach (var lens in lenses)
             {
+                // On scene unload OnDisable can run after the signal heads are already destroyed.
+                if (lens.renderer == null) continue;
                 bool on = lens.color == vehicleColor;
                 block.Clear();
                 block.SetColor(BaseColor, on ? Colors[lens.color] : Dark);

@@ -7,26 +7,37 @@ using UnityEngine.SceneManagement;
 
 namespace DeliveryRider.Editor
 {
+    // Muscleman hazard for a game scene: sidewalk candidates in the hazard candidates and a day-1 object kind in the
+    // spawn settings the scene's HazardPlanner uses, so it is placed at random like the other hazards. Safe to run
+    // repeatedly; run again after rebaking the sidewalks or the hazard candidates.
     public static class MusclemanInstaller
     {
         public const string PrefabPath = "Assets/_Game/Prefabs/Hazards/Muscleman.prefab";
-        private const string SettingsPath = "Assets/_Game/Settings/HazardSpawnSettings.asset";
-        private const string CandidatesPath = "Assets/_Game/Settings/HazardCandidates.asset";
+        private const string MyeongjiScene = "Assets/_Game/Scenes/FourDistrictPrototype_Myeongji.unity";
+        // Candidates stay this far from the rider's start, shops and doors, sampled this far apart along a sidewalk.
+        // The Myeongji map packs 44 shops and doors into 135 x 119 m, where 10 m around each leaves almost no sidewalk.
+        private const float KeepOut = 10f, Step = 12f, MyeongjiKeepOut = 6f, MyeongjiStep = 6f;
 
         [MenuItem("Delivery Rider/Apply Muscleman Hazard")]
         public static void Apply() => ApplyToScene(SceneManager.GetActiveScene());
 
-        // Adds only the new pattern; existing prefab settings and all other candidate positions are preserved.
+        // Adds only the new pattern; an existing prefab (and its tuning) and all other candidate positions are preserved.
         public static string ApplyToScene(Scene scene)
         {
             if (EditorApplication.isPlaying || EditorApplication.isCompiling) throw new InvalidOperationException("Use edit mode after compilation.");
-            if (scene.path != "Assets/_Game/Scenes/FourDistrictPrototype.unity") throw new InvalidOperationException("Open FourDistrictPrototype.");
+            if (scene != SceneManager.GetActiveScene()) throw new InvalidOperationException("Use the active scene.");
+            GameScenes.RequireActive();
             var components = scene.GetRootGameObjects().SelectMany(g => g.GetComponentsInChildren<Component>(true)).ToArray();
             var session = components.OfType<DeliverySession>().Single();
             var network = components.OfType<PedestrianNetwork>().Single();
-            var ground = components.OfType<RoadNetwork>().Single();
-            var prefab = CreatePrefab(session);
-            var settings = AssetDatabase.LoadAssetAtPath<HazardSpawnSettings>(SettingsPath);
+            var planner = components.OfType<HazardPlanner>().Single();
+            var plannerData = new SerializedObject(planner);
+            var ground = (RoadNetwork)plannerData.FindProperty("ground").objectReferenceValue;
+            var settings = (HazardSpawnSettings)plannerData.FindProperty("settings").objectReferenceValue;
+            var asset = (HazardCandidates)plannerData.FindProperty("candidates").objectReferenceValue;
+            if (ground == null || settings == null || asset == null) throw new InvalidOperationException("The hazard planner needs its road network, spawn settings and candidates.");
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+            if (prefab == null) prefab = CreatePrefab(session);
             var kinds = settings.Kinds.ToList();
             var kind = kinds.FirstOrDefault(k => k.type == "muscleman");
             if (kind == null)
@@ -38,16 +49,16 @@ namespace DeliveryRider.Editor
             settings.Configure(kinds.ToArray());
             EditorUtility.SetDirty(settings);
             AssetDatabase.SaveAssetIfDirty(settings);
-            var asset = AssetDatabase.LoadAssetAtPath<HazardCandidates>(CandidatesPath);
             var places = asset.Candidates.Where(c => c.type != "muscleman").ToList();
             int prefix = places.Count == 0 ? 0 : places.Max(c => c.spot) + 1;
             var spots = asset.Spots.Take(prefix).ToList();
-            int count = AppendCandidates(spots, places, session, network, ground);
+            bool myeongji = scene.path == MyeongjiScene;
+            int count = AppendCandidates(spots, places, session, network, ground, myeongji ? MyeongjiKeepOut : KeepOut, myeongji ? MyeongjiStep : Step);
             if (count == 0) throw new InvalidOperationException("No sidewalk candidates with a valid 20 m sidewalk approach and valid left/right corners.");
             asset.Configure(spots.ToArray(), places.ToArray());
             EditorUtility.SetDirty(asset);
             AssetDatabase.SaveAssetIfDirty(asset);
-            return $"Muscleman: {count} sidewalk candidates; day-1 object, daily count preserved or initialised to 8. No Play Mode test.";
+            return $"Muscleman: {count} sidewalk candidates in {asset.name}; day-1 object in {settings.name}, daily count {string.Join("/", kind.countPerDay)}. No Play Mode test.";
         }
 
         public static GameObject CreatePrefab(DeliverySession session)
@@ -90,15 +101,15 @@ namespace DeliveryRider.Editor
         }
 
         public static int AppendCandidates(List<HazardCandidates.Spot> spots, List<HazardCandidate> places,
-            DeliverySession session, PedestrianNetwork network, RoadNetwork ground)
+            DeliverySession session, PedestrianNetwork network, RoadNetwork ground, float keepOut = KeepOut, float step = Step)
         {
             var sessionData = new SerializedObject(session);
-            var keepOut = new List<Vector3> { session.Player.position };
+            var kept = new List<Vector3> { session.Player.position };
             foreach (string property in new[] { "shopPoints", "doorPoints" })
             {
                 var array = sessionData.FindProperty(property);
                 for (int i = 0; i < array.arraySize; i++)
-                    if (array.GetArrayElementAtIndex(i).objectReferenceValue is Transform t) keepOut.Add(t.position);
+                    if (array.GetArrayElementAtIndex(i).objectReferenceValue is Transform t) kept.Add(t.position);
             }
             var groundArray = new SerializedObject(ground).FindProperty("ground");
             var terrain = new HashSet<Collider>();
@@ -111,10 +122,10 @@ namespace DeliveryRider.Editor
                 if (lane.connector || p > lane.reverse || lane.length < 8f || lane.halfWidth < 0.8f) continue;
                 // Both travel directions must support a sidewalk turn; the player's heading chooses on activation.
                 if (MusclemanHazard.ChooseTurn(network, p) < 0 || MusclemanHazard.ChooseTurn(network, lane.reverse) < 0) continue;
-                for (float d = 3f; d <= lane.length - 3f; d += 12f)
+                for (float d = 3f; d <= lane.length - 3f; d += step)
                 {
                     network.Sample(p, d, out var feet, out var forward);
-                    if (keepOut.Any(v => Vector3.ProjectOnPlane(v - feet, Vector3.up).sqrMagnitude < 100f)) continue;
+                    if (kept.Any(v => Vector3.ProjectOnPlane(v - feet, Vector3.up).sqrMagnitude < keepOut * keepOut)) continue;
                     bool clear = true;
                     var approach = new List<int>();
                     foreach (int direction in new[] { p, lane.reverse })

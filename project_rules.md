@@ -77,12 +77,12 @@ Assets/
       Events/        오브젝트·트리거 사건, 고정 사건
       NPC/           주민, 받는 사람, 도둑, 교통
       Economy/       진행 상태, 생활비, 빚, 저장
-      World/         도로(Splines) 표면, 커브드월드
+      World/         도로(Splines) 표면, 커브드월드, 하늘·시간대
       DevTools/      F1 개발자 도구(실시간 수치 조정·저장)
       UI/            HUD, 지도, 정산 화면
       Data/          설정 데이터 타입
     Editor/          에디터 전용 설치기(씬 반영)와 자동 점검
-    Scenes/          TitleScene, FourDistrictPrototype(게임 씬)
+    Scenes/          TitleScene, FourDistrictPrototype_Myeongji(기준 게임 씬), FourDistrictPrototype(예전 4구역 씬, 보존)
     Prefabs/         Map(실제 동네), TrafficVan, Hazards/(문·타이어)
     Settings/        설정 자산(하루·경제·거리표)
     Art/
@@ -91,8 +91,10 @@ Assets/
       FourDistrict/  4구역 지형·사건 머티리얼(설치기가 생성)
       Props/         문·타이어·차량 머티리얼
       Roads/         도로·인도·골목·차선 머티리얼
-      Materials/     캐릭터·소품 공용 머티리얼
-      Shaders/       커브드월드 Lit 셰이더(URP Lit 기반)
+      Materials/     캐릭터·소품 공용 머티리얼, 하늘·구름·해시계 머티리얼
+      Clouds/        가까운 구름 메시(설치기가 생성, Rebuild Cloud Shapes로 다시 생성)
+      UI/            HUD 둥근 카드·그림자 스프라이트(Apply HUD Style이 생성)
+      Shaders/       커브드월드 Lit 셰이더(URP Lit 기반), UI 해시계·하늘·구름·구름 그림자 셰이더
   Settings/          URP 렌더 파이프라인(프로젝트 설정)
   TextMesh Pro/      TMP 패키지 리소스
 Docs/                기획·계획·현재 구현 안내, 기록/(끝난 작업과 제거된 시스템의 안내)

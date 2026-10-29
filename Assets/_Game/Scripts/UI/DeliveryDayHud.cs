@@ -9,10 +9,8 @@ namespace DeliveryRider
     {
         [SerializeField] private DeliverySession session;
         [SerializeField] private TMP_Text dayClock;
-        [Tooltip("Sundial arc filled by the elapsed share of the day. The day length itself is never shown as a number.")]
-        [SerializeField] private UnityEngine.UI.Image sundialFill;
-        [SerializeField] private RectTransform sundialSun;
-        [SerializeField, Min(1f)] private float sundialRadius = 46f;
+        [Tooltip("Sundial showing the elapsed share of the day. The day length itself is never shown as a number.")]
+        [SerializeField] private SundialView sundial;
         [SerializeField] private TMP_Text orderClock;
         [SerializeField] private TMP_Text cashLabel;
         [SerializeField] private GameObject settlementPanel;
@@ -28,6 +26,13 @@ namespace DeliveryRider
         [SerializeField] private TMP_Text ledger;
         [SerializeField] private UnityEngine.UI.Button buyInline;
         [SerializeField] private UnityEngine.UI.Button repay;
+        [Header("Look (the HUD style installer sets these for its light cards)")]
+        [SerializeField] private Color phaseColor = Color.white;
+        [SerializeField] private Color closingPhaseColor = new Color32(255, 195, 79, 255);
+        [SerializeField] private Color orderColor = new Color32(91, 229, 205, 255);
+        [SerializeField] private Color lateColor = new Color32(255, 137, 123, 255);
+        [Tooltip("Cash on its own line under a small day and debt line, for a wallet card.")]
+        [SerializeField] private bool twoLineCash;
         private const int ResultsPerPage = 5;
         private static readonly string[] DayPhaseNames = { "아침", "점심", "오후", "저녁 · 곧 마감", "출발 전", "영업 종료 / 마지막 배달", "오늘 영업 종료" };
         private int page;
@@ -55,8 +60,10 @@ namespace DeliveryRider
             lastDayPhase = lastOrderSeconds = -1;
             settlementPanel.SetActive(session.IsSettled);
             var run = session.Progress;
-            cashLabel.text = session.IsSettled ? $"{run.Day}일차 · 보유 {run.Cash:N0}원 · 빚 {run.Debt:N0}원"
-                : $"{run.Day}일차{(run.HasInline ? " · 인라인" : "")} · 보유 {run.Cash + session.Cash:N0}원 · 빚 {run.Debt:N0}원";
+            long cash = session.IsSettled ? run.Cash : run.Cash + session.Cash;
+            string day = $"{run.Day}일차{(!session.IsSettled && run.HasInline ? " · 인라인" : "")}";
+            cashLabel.text = twoLineCash ? $"<size=72%>{day} · 빚 {run.Debt:N0}원</size>\n{cash:N0}원"
+                : $"{day} · 보유 {cash:N0}원 · 빚 {run.Debt:N0}원";
             RefreshClocks();
             if (session.IsSettled) RefreshSettlement();
         }
@@ -64,19 +71,13 @@ namespace DeliveryRider
         private void RefreshClocks()
         {
             float progress = (float)session.DayProgress;
-            if (sundialFill != null) sundialFill.fillAmount = progress;
-            if (sundialSun != null)
-            {
-                // The sun travels from the left (morning) to the right (evening) across the upper half circle.
-                float angle = Mathf.PI * (1f - progress);
-                sundialSun.anchoredPosition = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * sundialRadius;
-            }
             int phase = session.IsSettled ? 6 : session.DayPhase == WorkDayPhase.Overtime ? 5 : !session.HasDayStarted ? 4 : Mathf.Min(3, (int)(progress * 4f));
+            // The sun travels from the left (morning) to the right (evening); after closing the dial turns to dusk.
+            if (sundial != null) sundial.Show(progress, phase >= 5, phase == 3);
             if (phase != lastDayPhase)
             {
                 dayClock.text = DayPhaseNames[phase];
-                dayClock.color = phase == 3 || phase == 5 ? new Color32(255, 195, 79, 255) : Color.white;
-                if (sundialFill != null) sundialFill.color = phase == 3 || phase == 5 ? new Color32(255, 160, 72, 255) : new Color32(255, 214, 102, 255);
+                dayClock.color = phase == 3 || phase == 5 ? closingPhaseColor : phaseColor;
                 lastDayPhase = phase;
             }
             bool late = session.IsOrderLate;
@@ -85,7 +86,7 @@ namespace DeliveryRider
             if (order != lastOrderSeconds || late != lastLate)
             {
                 orderClock.text = session.ActiveOrder == null ? "주문 대기" : waiting ? "수령 전 · 제한 " + FormatTime(order) : (late ? "지각 +" : "주문 ") + FormatTime(order);
-                orderClock.color = late ? new Color32(255, 137, 123, 255) : new Color32(91, 229, 205, 255);
+                orderClock.color = late ? lateColor : orderColor;
                 lastOrderSeconds = order; lastLate = late;
             }
         }

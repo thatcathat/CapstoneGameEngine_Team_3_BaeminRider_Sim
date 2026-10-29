@@ -58,7 +58,7 @@ namespace DeliveryRider.Editor
                     case 0:
                         Click("StartButton"); Next(1); break;
                     case 1:
-                        Check(SceneManager.GetActiveScene().name == "FourDistrictPrototype", "Title button loads the four-district game scene");
+                        Check(SceneManager.GetActiveScene().name == "FourDistrictPrototype_Myeongji", "Title button loads the Myeongji game scene");
                         session = UnityEngine.Object.FindFirstObjectByType<DeliverySession>();
                         motor = UnityEngine.Object.FindFirstObjectByType<RiderMotor>(); body = motor.GetComponent<Rigidbody>();
                         Check(session.Stage == DeliveryStage.Available && !session.IsMapOpen, "Fresh game starts without an open call screen");

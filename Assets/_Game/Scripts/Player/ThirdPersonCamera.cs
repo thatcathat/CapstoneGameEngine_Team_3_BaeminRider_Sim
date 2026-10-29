@@ -10,6 +10,9 @@ namespace DeliveryRider
         [SerializeField] private float distance = 7f;
         [SerializeField] private float sensitivity = 0.12f;
         [SerializeField] private float pitch = 26f;
+        [Tooltip("Mouse look keeps the pitch between these, in degrees (0 level, 90 straight down from above).")]
+        [SerializeField, Range(-20f, 45f)] private float minimumPitch = 12f;
+        [SerializeField, Range(30f, 89f)] private float maximumPitch = 65f;
         [SerializeField] private float targetHeight = 1f;
         [SerializeField] private LayerMask obstructionMask = 1;
         [Header("Speed and flight (test values)")]
@@ -86,7 +89,7 @@ namespace DeliveryRider
             UpdateGround(position);
             var look = motor.CameraLook;
             yaw += look.x * sensitivity;
-            pitch = Mathf.Clamp(pitch - look.y * sensitivity, 12f, 65f);
+            pitch = Mathf.Clamp(pitch - look.y * sensitivity, minimumPitch, Mathf.Max(minimumPitch, maximumPitch));
             var rotation = Quaternion.Euler(pitch, yaw, 0f);
             var desiredFocus = position + Vector3.up * targetHeight;
             focus = Vector3.SmoothDamp(focus, desiredFocus, ref focusVelocity, followSmoothTime, Mathf.Infinity, dt);

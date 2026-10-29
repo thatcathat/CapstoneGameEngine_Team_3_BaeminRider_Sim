@@ -1828,6 +1828,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ea024c122347934785bee17bc1d9c05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  gameSceneName: FourDistrictPrototype_Myeongji
 --- !u!4 &1692956280
 Transform:
   m_ObjectHideFlags: 0

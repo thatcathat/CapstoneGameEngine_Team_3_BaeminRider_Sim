@@ -2214,6 +2214,18 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
+    - target: {fileID: -6279992486475864443, guid: 2a3d86e9885e1b6469010af5e5372e29, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: c1e4d2398eb455d48978edea03c3b7b8, type: 2}
+    - target: {fileID: -6279992486475864443, guid: 2a3d86e9885e1b6469010af5e5372e29, type: 3}
+      propertyPath: 'm_Materials.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 60852ec14480913489c9c63f4cf55c6e, type: 2}
+    - target: {fileID: -6279992486475864443, guid: 2a3d86e9885e1b6469010af5e5372e29, type: 3}
+      propertyPath: 'm_Materials.Array.data[3]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 6f37af740109a8b42a6014a88b6f4d37, type: 2}
     - target: {fileID: -5881620584651551696, guid: 2a3d86e9885e1b6469010af5e5372e29, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647

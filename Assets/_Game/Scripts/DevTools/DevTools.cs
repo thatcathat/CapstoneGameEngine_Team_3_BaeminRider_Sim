@@ -17,7 +17,7 @@ namespace DeliveryRider
         public static System.Func<IReadOnlyList<DevChange>, string> Saver;
 
         private const float Margin = 12f, PanelWidth = 560f, LabelWidth = 210f, SliderWidth = 150f, FieldWidth = 72f, ButtonWidth = 52f;
-        private static readonly string[] TabNames = { "플레이어", "사건", "교통", "하루·경제", "카메라" };
+        private static readonly string[] TabNames = { "플레이어", "사건", "교통", "하루·경제", "카메라", "하늘" };
         private static readonly string[] TabNotes =
         {
             "값은 바로 반영됩니다. 이동 속도는 인라인을 적용하기 전 기본값입니다.",
@@ -25,6 +25,7 @@ namespace DeliveryRider
             "차량 수·보행자 수·배치 간격은 다시 배치할 때, 주행·보행 값은 바로 반영됩니다.",
             "보상·제한시간은 다음 콜부터, 하루 길이와 인라인 배율은 다음 날부터 반영됩니다.",
             "값은 바로 반영됩니다.",
+            "미리보기는 하늘과 빛만 바꾸고 게임 시계는 그대로 둡니다. 해 그림자를 끄고 켜며 제목 줄의 프레임 시간을 비교할 수 있습니다. 색 그라디언트와 곡선은 설정 자산 Inspector에서 조정합니다.",
         };
 
         [SerializeField] private DeliverySession session;
@@ -38,6 +39,7 @@ namespace DeliveryRider
         [SerializeField] private TrafficNetwork traffic;
         [SerializeField] private PedestrianNetwork pedestrians;
         [SerializeField] private DeliveryDaySettings daySettings;
+        [SerializeField] private DaySky daySky;
         [Tooltip("Font with Hangul for the panel; the built-in IMGUI font has none.")]
         [SerializeField] private Font font;
 
@@ -61,6 +63,7 @@ namespace DeliveryRider
         private readonly Vector2[] scroll = new Vector2[TabNames.Length];
         private int tab;
         private bool open;
+        private float frameMilliseconds = 16.7f;
         private string status = "";
         private GUISkin skin;
         private GUIStyle panel, title, foldout, changedLabel, note;
@@ -92,6 +95,8 @@ namespace DeliveryRider
         {
             var keyboard = Keyboard.current;
             if (keyboard != null && keyboard.f1Key.wasPressedThisFrame) SetOpen(!open);
+            // Smoothed frame time for the panel title.
+            frameMilliseconds = Mathf.Lerp(frameMilliseconds, Time.unscaledDeltaTime * 1000f, 0.05f);
         }
 
         // The session locks the cursor again on every state change; keep it free while the panel is open.
@@ -146,6 +151,15 @@ namespace DeliveryRider
 
             Single(tabs[4], "3인칭 카메라", followCamera);
             Single(tabs[4], "커브드월드", curvedWorld);
+
+            Single(tabs[5], "해 경로·빛", daySky != null ? daySky.Settings : null);
+            // The pipeline asset is shared by every scene; a save writes the distance project-wide.
+            if (UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline is UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset pipeline)
+            {
+                var shadows = new DevTarget("그림자 (렌더 파이프라인)", pipeline, () => new UnityEngine.Object[] { pipeline });
+                shadows.Add(new[] { DevValue.Find(pipeline, "m_ShadowDistance", "그림자 거리(m)") });
+                tabs[5].Add(shadows);
+            }
 
             int id = 0;
             foreach (var list in tabs)
@@ -357,7 +371,7 @@ namespace DeliveryRider
             float scale = Mathf.Max(1f, Screen.height / 1080f);
             GUI.matrix = Matrix4x4.Scale(new Vector3(scale, scale, 1f));
             GUILayout.BeginArea(new Rect(Margin, Margin, PanelWidth, Screen.height / scale - Margin * 2f), panel);
-            GUILayout.Label("개발자 도구 (F1로 닫기)", title);
+            GUILayout.Label($"개발자 도구 (F1로 닫기)   {frameMilliseconds:0.0}ms · {1000f / Mathf.Max(frameMilliseconds, 0.01f):0}fps", title);
             int selected = GUILayout.Toolbar(tab, TabNames);
             if (selected != tab)
             {
@@ -388,6 +402,33 @@ namespace DeliveryRider
                 if (pedestrians != null && GUILayout.Button("보행자 다시 배치")) RespawnWalkers();
                 GUILayout.EndHorizontal();
             }
+            else if (tab == 5 && daySky != null) DrawSkyPreview();
+        }
+
+        // Sky preview: another time for the sky and light only, from departure through closing to the end of the dusk;
+        // dragging the slider starts the preview.
+        private void DrawSkyPreview()
+        {
+            bool previewing = daySky.Preview.HasValue;
+            bool wanted = GUILayout.Toggle(previewing, previewing ? "하늘 시각 미리보기 중 (끄면 실제 시각으로 돌아감)" : "하늘 시각 미리보기");
+            float shown = daySky.ShownTimeline;
+            if (wanted != previewing) daySky.Preview = wanted ? shown : (float?)null;
+            GUILayout.BeginHorizontal();
+            string at = shown <= 1f ? $"하루 {Mathf.RoundToInt(shown * 100f)}%" : $"마감 후 어스름 {Mathf.RoundToInt((shown - 1f) * 100f)}%";
+            GUILayout.Label(at + " (출발 → 마감 → 어스름)", GUILayout.Width(LabelWidth));
+            float slid = GUILayout.HorizontalSlider(shown, 0f, 2f, GUILayout.Width(SliderWidth + FieldWidth + 4f));
+            if (!Mathf.Approximately(slid, shown)) daySky.Preview = slid;
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("자동 진행 (하루/초)", GUILayout.Width(LabelWidth));
+            daySky.PreviewSpeed = GUILayout.HorizontalSlider(daySky.PreviewSpeed, 0f, 0.2f, GUILayout.Width(SliderWidth));
+            GUILayout.Label(daySky.PreviewSpeed.ToString("0.00", CultureInfo.InvariantCulture), GUILayout.Width(FieldWidth));
+            GUILayout.EndHorizontal();
+            // Compare the frame time (panel title) with the sun's shadows on and off; ends with the scene.
+            if (daySky.Sun == null) return;
+            bool shadows = daySky.Sun.shadows != LightShadows.None;
+            if (GUILayout.Toggle(shadows, "해 그림자 (끄고 켜며 프레임 시간 비교)") != shadows)
+                daySky.Sun.shadows = shadows ? LightShadows.None : LightShadows.Soft;
         }
 
         private void DrawTarget(DevTarget target)

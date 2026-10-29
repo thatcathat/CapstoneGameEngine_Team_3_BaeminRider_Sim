@@ -19,8 +19,7 @@ namespace DeliveryRider.Editor
         public static void Apply()
         {
             if (EditorApplication.isPlaying || EditorApplication.isCompiling) throw new InvalidOperationException("Use edit mode after compilation.");
-            var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-            if (scene.path != "Assets/_Game/Scenes/FourDistrictPrototype.unity") throw new InvalidOperationException("Open FourDistrictPrototype.");
+            var scene = GameScenes.RequireActive();
             var curved = Shader.Find(LitShader);
             if (curved == null) throw new InvalidOperationException(LitShader + " is missing.");
             var follow = UnityEngine.Object.FindFirstObjectByType<ThirdPersonCamera>();

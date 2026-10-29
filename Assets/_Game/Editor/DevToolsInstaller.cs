@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DeliveryRider.Editor
 {
-    // Adds the F1 developer tools to FourDistrictPrototype and wires them to the scene's systems. Safe to run repeatedly.
+    // Adds the F1 developer tools to a game scene (GameScenes) and wires them to the scene's systems. Safe to run repeatedly.
     public static class DevToolsInstaller
     {
         private const string FontPath = "Assets/_Game/Art/Fonts/NotoSansKR-Regular.otf";
@@ -14,8 +14,7 @@ namespace DeliveryRider.Editor
         public static void Apply()
         {
             if (EditorApplication.isPlaying || EditorApplication.isCompiling) throw new InvalidOperationException("Use edit mode after compilation.");
-            var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-            if (scene.path != "Assets/_Game/Scenes/FourDistrictPrototype.unity") throw new InvalidOperationException("Open FourDistrictPrototype.");
+            var scene = GameScenes.RequireActive();
             var session = UnityEngine.Object.FindFirstObjectByType<DeliverySession>(FindObjectsInactive.Include);
             var rider = UnityEngine.Object.FindFirstObjectByType<RiderMotor>(FindObjectsInactive.Include);
             var follow = UnityEngine.Object.FindFirstObjectByType<ThirdPersonCamera>(FindObjectsInactive.Include);
@@ -44,6 +43,7 @@ namespace DeliveryRider.Editor
             data.FindProperty("traffic").objectReferenceValue = UnityEngine.Object.FindFirstObjectByType<TrafficNetwork>(FindObjectsInactive.Include);
             data.FindProperty("pedestrians").objectReferenceValue = UnityEngine.Object.FindFirstObjectByType<PedestrianNetwork>(FindObjectsInactive.Include);
             data.FindProperty("daySettings").objectReferenceValue = new SerializedObject(session).FindProperty("daySettings").objectReferenceValue;
+            data.FindProperty("daySky").objectReferenceValue = UnityEngine.Object.FindFirstObjectByType<DaySky>(FindObjectsInactive.Include);
             data.FindProperty("font").objectReferenceValue = font;
             data.ApplyModifiedProperties();
             EditorSceneManager.MarkSceneDirty(scene);
