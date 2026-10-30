@@ -1,0 +1,1 @@
+B west + southwest: 2m clear sidewalk, narrow alley crossing separate; 790 footprint probes; 153 paths; all declared edges continuous

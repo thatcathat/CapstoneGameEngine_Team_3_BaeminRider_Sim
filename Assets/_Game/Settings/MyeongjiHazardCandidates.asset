@@ -211,19 +211,35 @@ MonoBehaviour:
     routes: 0c0000000e000000190000001d0000001e0000002c0000002e0000004c0000004e0000006b0000006e0000008c0000008e000000ac000000ae000000cc000000ce000000ec000000ee0000000e0100002001000022010000270100002a0100002b0100002d0100002e0100004001000042010000470100004a0100004b0100004d0100004e0100006b0100006e010000
   - position: {x: 86.00001, y: -0.14, z: -28.999998}
     routes: 0c0000000e000000190000001d0000001e0000002c0000002e0000004c0000004e0000006b0000006c0000006e0000008c0000008e000000ac000000ae000000cc000000ce000000ec000000ee0000000c0100000e0100002001000022010000270100002a0100002b0100002c0100002d0100002e0100004001000042010000470100004a0100004b0100004c0100004d0100004e0100006b0100006c0100006e010000
+  - position: {x: 35.45, y: 0.02, z: -5.95}
+    routes: 
+  - position: {x: 65.45, y: 0.02, z: -5.95}
+    routes: 
+  - position: {x: 95.450005, y: 0.02, z: -5.95}
+    routes: 
+  - position: {x: 4.95, y: 0.02, z: -9.95}
+    routes: 
+  - position: {x: 4.9499993, y: 0.02, z: -39.95}
+    routes: 
+  - position: {x: 22.55, y: 0.02, z: -9.95}
+    routes: 
+  - position: {x: 22.55, y: 0.02, z: -15.95}
+    routes: 
+  - position: {x: 22.55, y: 0.02, z: -39.95}
+    routes: 
   - position: {x: 67.58406, y: 0.02, z: -81.94416}
     routes: 
   - position: {x: 65.30632, y: 0.02, z: -87.48235}
     routes: 
-  - position: {x: 119.862526, y: 0.02, z: -58.7495}
+  - position: {x: 119.85, y: 0.02, z: -58.751686}
     routes: 
-  - position: {x: 119.86277, y: 0.02, z: -64.74451}
+  - position: {x: 119.86265, y: 0.02, z: -64.747}
     routes: 
-  - position: {x: 119.85, y: 0.02, z: -76.73919}
+  - position: {x: 119.85, y: 0.02, z: -76.74169}
     routes: 
-  - position: {x: 119.86315, y: 0.02, z: -88.73702}
+  - position: {x: 119.86302, y: 0.02, z: -88.73952}
     routes: 
-  - position: {x: 119.9, y: 0.02, z: -94.73544}
+  - position: {x: 119.9, y: 0.02, z: -94.73794}
     routes: 
   - position: {x: 113.33224, y: 0.02, z: -46.919422}
     routes: 
@@ -400,7 +416,7 @@ MonoBehaviour:
     flip: 0
   - type: door
     spot: 3
-    position: {x: 48.20001, y: 0.03, z: -4.930004}
+    position: {x: 48.20001, y: 0.03, z: -7.230001}
     rotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
     halfWidth: 4
     side: 1
@@ -576,7 +592,7 @@ MonoBehaviour:
     flip: 0
   - type: door
     spot: 6
-    position: {x: 64.19999, y: 0.03, z: -4.9600053}
+    position: {x: 64.19999, y: 0.03, z: -7.060003}
     rotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
     halfWidth: 4
     side: 1
@@ -952,7 +968,7 @@ MonoBehaviour:
     flip: 0
   - type: door
     spot: 12
-    position: {x: 96.2, y: 0.03, z: -5.1600084}
+    position: {x: 95.7154, y: 0.03, z: -7.060001}
     rotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
     halfWidth: 4
     side: 1
@@ -1224,7 +1240,7 @@ MonoBehaviour:
     flip: 0
   - type: door
     spot: 17
-    position: {x: 4.76, y: 0.03, z: -11.799999}
+    position: {x: 6.1800013, y: 0.03, z: -14.499999}
     rotation: {x: 0, y: 1, z: 0, w: 0}
     halfWidth: 3
     side: -1
@@ -1368,7 +1384,7 @@ MonoBehaviour:
     flip: 0
   - type: door
     spot: 20
-    position: {x: 4.6599965, y: 0.03, z: -39.799995}
+    position: {x: 6.060001, y: 0.03, z: -39.499996}
     rotation: {x: 0, y: 1, z: 0, w: 0}
     halfWidth: 3
     side: -1
@@ -1512,7 +1528,7 @@ MonoBehaviour:
     flip: 0
   - type: door
     spot: 22
-    position: {x: 34.559998, y: 0.03, z: -7.800001}
+    position: {x: 34.559998, y: 0.03, z: -9.437448}
     rotation: {x: 0, y: 1, z: 0, w: 0}
     halfWidth: 2.5
     side: -1
@@ -1552,7 +1568,7 @@ MonoBehaviour:
     flip: 0
   - type: door
     spot: 22
-    position: {x: 22.24, y: 0.03, z: -10.200001}
+    position: {x: 21.320002, y: 0.03, z: -12.900001}
     rotation: {x: 0, y: 0, z: 0, w: 1}
     halfWidth: 2.5
     side: 1
@@ -1592,7 +1608,7 @@ MonoBehaviour:
     flip: 0
   - type: door
     spot: 23
-    position: {x: 34.559998, y: 0.03, z: -11.8}
+    position: {x: 34.559998, y: 0.03, z: -12.490947}
     rotation: {x: 0, y: 1, z: 0, w: 0}
     halfWidth: 2.5
     side: -1
@@ -1640,7 +1656,7 @@ MonoBehaviour:
     flip: 0
   - type: door
     spot: 23
-    position: {x: 22.239998, y: 0.03, z: -14.200002}
+    position: {x: 20.871578, y: 0.03, z: -14.200002}
     rotation: {x: 0, y: 0, z: 0, w: 1}
     halfWidth: 2.5
     side: 1
@@ -1752,7 +1768,7 @@ MonoBehaviour:
     flip: 0
   - type: door
     spot: 25
-    position: {x: 32.059994, y: 0.03, z: -35.8}
+    position: {x: 32.559994, y: 0.03, z: -35.8}
     rotation: {x: 0, y: 1, z: 0, w: 0}
     halfWidth: 2.5
     side: -1
@@ -1800,7 +1816,7 @@ MonoBehaviour:
     flip: 0
   - type: door
     spot: 26
-    position: {x: 31.259998, y: 0.03, z: -39.8}
+    position: {x: 32.56, y: 0.03, z: -39.799995}
     rotation: {x: 0, y: 1, z: 0, w: 0}
     halfWidth: 2.5
     side: -1
@@ -1824,7 +1840,7 @@ MonoBehaviour:
     flip: 0
   - type: door
     spot: 26
-    position: {x: 23.239998, y: 0.03, z: -42.2}
+    position: {x: 21.440002, y: 0.03, z: -41.36794}
     rotation: {x: 0, y: 0, z: 0, w: 1}
     halfWidth: 2.5
     side: 1
@@ -1856,7 +1872,7 @@ MonoBehaviour:
     flip: 0
   - type: door
     spot: 27
-    position: {x: 31.259996, y: 0.03, z: -43.8}
+    position: {x: 32.559998, y: 0.03, z: -42.499996}
     rotation: {x: 0, y: 1, z: 0, w: 0}
     halfWidth: 2.5
     side: -1
@@ -2000,7 +2016,7 @@ MonoBehaviour:
     flip: 0
   - type: door
     spot: 31
-    position: {x: 47.800003, y: 0.03, z: -48.040005}
+    position: {x: 47.800003, y: 0.03, z: -45.44}
     rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
     halfWidth: 3.5
     side: -1
@@ -2088,7 +2104,7 @@ MonoBehaviour:
     flip: 0
   - type: door
     spot: 33
-    position: {x: 75.8, y: 0.03, z: -48.04001}
+    position: {x: 75.3723, y: 0.03, z: -45.440002}
     rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
     halfWidth: 3.5
     side: -1
@@ -2776,7 +2792,7 @@ MonoBehaviour:
     flip: 0
   - type: door
     spot: 44
-    position: {x: 60.759995, y: 0.03, z: -41.800003}
+    position: {x: 60.759995, y: 0.03, z: -41.15}
     rotation: {x: 0, y: 1, z: 0, w: 0}
     halfWidth: 2
     side: 1
@@ -5856,6 +5872,70 @@ MonoBehaviour:
     flip: 1
   - type: muscleman
     spot: 99
+    position: {x: 35.45, y: 0.02, z: -5.95}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 1
+    side: 0
+    alley: 0
+    flip: 0
+  - type: muscleman
+    spot: 100
+    position: {x: 65.45, y: 0.02, z: -5.95}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 1
+    side: 0
+    alley: 0
+    flip: 0
+  - type: muscleman
+    spot: 101
+    position: {x: 95.450005, y: 0.02, z: -5.95}
+    rotation: {x: 0, y: 0.7071072, z: 0, w: 0.70710635}
+    halfWidth: 1
+    side: 0
+    alley: 0
+    flip: 0
+  - type: muscleman
+    spot: 102
+    position: {x: 4.95, y: 0.02, z: -9.95}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 1
+    side: 0
+    alley: 0
+    flip: 0
+  - type: muscleman
+    spot: 103
+    position: {x: 4.9499993, y: 0.02, z: -39.95}
+    rotation: {x: 0, y: 1, z: 0, w: -0.0000005991296}
+    halfWidth: 1
+    side: 0
+    alley: 0
+    flip: 0
+  - type: muscleman
+    spot: 104
+    position: {x: 22.55, y: 0.02, z: -9.95}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 1
+    side: 0
+    alley: 0
+    flip: 0
+  - type: muscleman
+    spot: 105
+    position: {x: 22.55, y: 0.02, z: -15.95}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 1
+    side: 0
+    alley: 0
+    flip: 0
+  - type: muscleman
+    spot: 106
+    position: {x: 22.55, y: 0.02, z: -39.95}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 1
+    side: 0
+    alley: 0
+    flip: 0
+  - type: muscleman
+    spot: 107
     position: {x: 67.58406, y: 0.02, z: -81.94416}
     rotation: {x: 0, y: 0.972072, z: 0, w: -0.23468292}
     halfWidth: 1.2
@@ -5863,7 +5943,7 @@ MonoBehaviour:
     alley: 0
     flip: 0
   - type: muscleman
-    spot: 100
+    spot: 108
     position: {x: 65.30632, y: 0.02, z: -87.48235}
     rotation: {x: 0, y: 0.9869416, z: 0, w: -0.16107886}
     halfWidth: 1.2
@@ -5871,47 +5951,47 @@ MonoBehaviour:
     alley: 0
     flip: 0
   - type: muscleman
-    spot: 101
-    position: {x: 119.862526, y: 0.02, z: -58.7495}
-    rotation: {x: 0, y: 0.999688, z: 0, w: -0.024977649}
+    spot: 109
+    position: {x: 119.85, y: 0.02, z: -58.751686}
+    rotation: {x: 0, y: 1, z: 0, w: 0.00000762922}
     halfWidth: 1.2
     side: 0
     alley: 0
     flip: 0
   - type: muscleman
-    spot: 102
-    position: {x: 119.86277, y: 0.02, z: -64.74451}
+    spot: 110
+    position: {x: 119.86265, y: 0.02, z: -64.747}
     rotation: {x: 0, y: 0.99968815, z: 0, w: -0.024972606}
     halfWidth: 1.2
     side: 0
     alley: 0
     flip: 0
   - type: muscleman
-    spot: 103
-    position: {x: 119.85, y: 0.02, z: -76.73919}
+    spot: 111
+    position: {x: 119.85, y: 0.02, z: -76.74169}
     rotation: {x: 0, y: 1, z: 0, w: -0.0000076290453}
     halfWidth: 1.2
     side: 0
     alley: 0
     flip: 0
   - type: muscleman
-    spot: 104
-    position: {x: 119.86315, y: 0.02, z: -88.73702}
+    spot: 112
+    position: {x: 119.86302, y: 0.02, z: -88.73952}
     rotation: {x: 0, y: 0.999688, z: 0, w: -0.024977934}
     halfWidth: 1.2
     side: 0
     alley: 0
     flip: 0
   - type: muscleman
-    spot: 105
-    position: {x: 119.9, y: 0.02, z: -94.73544}
+    spot: 113
+    position: {x: 119.9, y: 0.02, z: -94.73794}
     rotation: {x: 0, y: 1, z: 0, w: 0}
     halfWidth: 1.2
     side: 0
     alley: 0
     flip: 0
   - type: muscleman
-    spot: 106
+    spot: 114
     position: {x: 113.33224, y: 0.02, z: -46.919422}
     rotation: {x: 0, y: 0.9819562, z: 0, w: -0.18910882}
     halfWidth: 1.2
@@ -5919,7 +5999,7 @@ MonoBehaviour:
     alley: 0
     flip: 0
   - type: muscleman
-    spot: 107
+    spot: 115
     position: {x: 114.1, y: 0.02, z: -76.15638}
     rotation: {x: 0, y: 1, z: 0, w: -0.000007629802}
     halfWidth: 1.2

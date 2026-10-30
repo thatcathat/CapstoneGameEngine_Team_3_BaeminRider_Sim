@@ -1,0 +1,1 @@
+B rear + east: 2m clear sidewalk, two narrow alley crossings separate; 784 footprint probes; 163 paths; all declared edges continuous
