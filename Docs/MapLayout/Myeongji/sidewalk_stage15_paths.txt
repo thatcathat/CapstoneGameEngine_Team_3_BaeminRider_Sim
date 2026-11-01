@@ -1,0 +1,1 @@
+Outer perimeter: 2m clear sidewalks, southeast corner and aligned alley crossings; 2090 footprint probes; 202 paths; all declared edges continuous

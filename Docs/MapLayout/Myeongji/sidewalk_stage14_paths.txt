@@ -1,0 +1,1 @@
+G internal: 2m continuous sidewalks, branch corners and rounded dead end; 752 footprint probes; 200 paths; all declared edges continuous
