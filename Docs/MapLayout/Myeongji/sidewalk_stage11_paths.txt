@@ -1,0 +1,1 @@
+South extension internal: 2m continuous L-shaped sidewalks; redundant diagonal shortcuts removed; 1008 footprint probes; 183 paths; all declared edges continuous

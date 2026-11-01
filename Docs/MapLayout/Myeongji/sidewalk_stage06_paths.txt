@@ -1,0 +1,1 @@
+B interior north: 2m clear sidewalk linked to west/east perimeter; 578 footprint probes; 165 paths; all declared edges continuous

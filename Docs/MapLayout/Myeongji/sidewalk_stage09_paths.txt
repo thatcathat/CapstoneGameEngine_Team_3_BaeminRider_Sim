@@ -1,0 +1,1 @@
+South extension north/west: 2m sidewalks, temporary south connection .4m; 580 footprint probes; 183 paths; all declared edges continuous

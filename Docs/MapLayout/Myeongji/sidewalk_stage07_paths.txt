@@ -1,0 +1,1 @@
+B interior vertical: 2m clear sidewalks linked to rear perimeter; northern temporary alley links radius .4m; 444 footprint probes; 169 paths; all declared edges continuous

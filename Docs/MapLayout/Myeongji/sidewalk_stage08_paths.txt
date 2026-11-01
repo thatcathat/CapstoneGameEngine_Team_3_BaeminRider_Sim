@@ -1,0 +1,1 @@
+B interior south: 2m clear sidewalks and corners; alley crossing .4m; 726 footprint probes; 177 paths; all declared edges continuous

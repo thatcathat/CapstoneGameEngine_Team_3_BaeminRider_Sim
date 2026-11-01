@@ -1,0 +1,1 @@
+South extension perimeter: 2m sidewalks and corners; 924 footprint probes; 185 paths; all declared edges continuous

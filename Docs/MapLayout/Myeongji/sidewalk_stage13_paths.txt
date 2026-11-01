@@ -1,0 +1,1 @@
+F/G lower perimeter: 2m sidewalks and corners; narrow alley/external links separate; 1096 footprint probes; 194 paths; all declared edges continuous
