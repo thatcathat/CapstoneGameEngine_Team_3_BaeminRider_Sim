@@ -82,7 +82,7 @@ Assets/
       UI/            HUD, 지도, 정산 화면
       Data/          설정 데이터 타입
     Editor/          에디터 전용 설치기(씬 반영)와 자동 점검
-    Scenes/          TitleScene, FourDistrictPrototype_Myeongji(기준 게임 씬), FourDistrictPrototype(예전 4구역 씬, 보존)
+    Scenes/          TitleScene, FourDistrictPrototype_Myeongji(기준 게임 씬), FourDistrictPrototype_MyeongjiExpanded(넓은 맵 시험 씬), FourDistrictPrototype(예전 4구역 씬, 보존)
     Prefabs/         Map(실제 동네), TrafficVan, Hazards/(문·타이어)
     Settings/        설정 자산(하루·경제·거리표)
     Art/

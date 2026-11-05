@@ -11,6 +11,7 @@ namespace DeliveryRider.Editor
         {
             "Assets/_Game/Scenes/FourDistrictPrototype.unity",
             "Assets/_Game/Scenes/FourDistrictPrototype_Myeongji.unity",
+            "Assets/_Game/Scenes/FourDistrictPrototype_MyeongjiExpanded.unity",
         };
 
         public static Scene RequireActive()
