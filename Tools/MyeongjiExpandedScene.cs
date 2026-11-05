@@ -9,14 +9,15 @@ using UnityEngine;
 namespace DeliveryRider.MapTools
 {
     // Builds the test scene FourDistrictPrototype_MyeongjiExpanded: a copy of the Myeongji scene with the wider map of
-    // the html-tuning branch (buildings, lamps, ground and markings) and nothing else from that branch. Shops, doors,
-    // traffic, walkers, hazards and the map screen stay in the old area. The changes the branch made to the shared map
-    // prefab are made as overrides in this scene only, so the Myeongji scene does not change.
+    // the html-tuning branch (buildings, lamps, ground, markings and street details) and nothing else from that branch.
+    // Shops, doors, traffic, walkers, hazards and the map screen stay in the old area. The changes the branch made to the
+    // shared map prefab are made as overrides in this scene only, so the Myeongji scene does not change.
     // Run once: unity command run_script --file Tools/MyeongjiExpandedScene.cs --entry DeliveryRider.MapTools.MyeongjiExpandedScene.Build
     public static class MyeongjiExpandedScene
     {
         private const string Source = "Assets/_Game/Scenes/FourDistrictPrototype_Myeongji.unity";
         private const string Target = "Assets/_Game/Scenes/FourDistrictPrototype_MyeongjiExpanded.unity";
+        private const string Reference = "Assets/HtmlTuningReference.unity";
         private const string MapPrefab = "Assets/_Game/Prefabs/Myeongji/MyeongjiMap.prefab";
         private const string ExpansionPrefab = "Assets/_Game/Prefabs/Myeongji/MyeongjiMapExpansion.prefab";
         private const string Geometry = "Assets/_Game/Art/Myeongji/Geometry/";
@@ -64,6 +65,175 @@ namespace DeliveryRider.MapTools
                 AssetDatabase.DeleteAsset(Target);
                 throw;
             }
+        }
+
+        // Brings the branch's latest look into the existing scene: building meshes and materials, street details and
+        // evening lights across the wider map, and the old-area props where the branch keeps them. Its art is already in
+        // main, so only scene data moves; gameplay and the old buildings' colliders stay. Safe to run again.
+        // Needs the branch's scene at Reference for the run; delete it afterwards:
+        //   git show origin/html-tuning:Assets/_Game/Scenes/FourDistrictPrototype_Myeongji.unity > Assets/HtmlTuningReference.unity
+        public static string ImportDetails()
+        {
+            var active = EditorSceneManager.GetActiveScene();
+            if (active.isDirty) throw new InvalidOperationException("Save or discard the open scene first: " + active.path);
+            var scene = EditorSceneManager.OpenScene(Target, OpenSceneMode.Single);
+            var reference = EditorSceneManager.OpenScene(Reference, OpenSceneMode.Additive);
+            var report = new StringBuilder();
+            var expansion = Root(scene, "MyeongjiMapExpansion");
+            try
+            {
+                var map = Root(scene, "MyeongjiMap");
+                var theirMap = Root(reference, "MyeongjiMap");
+                var theirExpansion = Root(reference, "MyeongjiMapExpansion");
+                CopyLooks(theirExpansion, expansion, report);
+                FitColliders(expansion, report);
+                ReplaceGroup(theirExpansion, expansion, "StreetDetails", report);
+                foreach (var group in new[] { "StreetGreenery", "EntranceDetails", "EveningLighting" })
+                    MatchChildren(theirMap.transform.Find(group), map.transform.Find(group), report);
+                RebindEvening(map, expansion, theirMap, report);
+                EditorSceneManager.MarkSceneDirty(scene);
+                if (!EditorSceneManager.SaveScene(scene)) throw new InvalidOperationException("Could not save the scene.");
+            }
+            finally
+            {
+                EditorSceneManager.CloseScene(reference, true);
+            }
+            Check(expansion, report);
+            return report.ToString();
+        }
+
+        // The new buildings' colliders alone, on the saved scene.
+        public static string FitBuildingColliders()
+        {
+            var active = EditorSceneManager.GetActiveScene();
+            if (active.isDirty) throw new InvalidOperationException("Save or discard the open scene first: " + active.path);
+            var scene = EditorSceneManager.OpenScene(Target, OpenSceneMode.Single);
+            var report = new StringBuilder();
+            var expansion = Root(scene, "MyeongjiMapExpansion");
+            FitColliders(expansion, report);
+            EditorSceneManager.MarkSceneDirty(scene);
+            if (!EditorSceneManager.SaveScene(scene)) throw new InvalidOperationException("Could not save the scene.");
+            Check(expansion, report);
+            return report.ToString();
+        }
+
+        // The branch left each new building's collider in its old shape under the new look. Here they share the look's
+        // mesh, as the old buildings do, so the rider stops where the wall appears to be.
+        private static void FitColliders(GameObject expansion, StringBuilder report)
+        {
+            int changed = 0;
+            foreach (var collider in expansion.GetComponentsInChildren<MeshCollider>(true))
+            {
+                var mesh = collider.GetComponent<MeshFilter>().sharedMesh;
+                if (collider.sharedMesh == mesh) continue;
+                collider.sharedMesh = mesh;
+                PrefabUtility.RecordPrefabInstancePropertyModifications(collider);
+                changed++;
+            }
+            report.AppendLine($"colliders fitted to the look: {changed}");
+        }
+
+        private static GameObject Root(UnityEngine.SceneManagement.Scene scene, string name) =>
+            scene.GetRootGameObjects().Single(root => root.name == name);
+
+        private static string PathUnder(Transform t, Transform root) =>
+            t.parent == root ? t.name : PathUnder(t.parent, root) + "/" + t.name;
+
+        private static void CopyLooks(GameObject from, GameObject to, StringBuilder report)
+        {
+            int meshes = 0, materials = 0;
+            foreach (var theirs in from.GetComponentsInChildren<MeshRenderer>(true))
+            {
+                if (theirs.transform.parent.name == "StreetDetails") continue;
+                var mine = to.transform.Find(PathUnder(theirs.transform, from.transform)).GetComponent<MeshRenderer>();
+                var filter = mine.GetComponent<MeshFilter>();
+                var mesh = theirs.GetComponent<MeshFilter>().sharedMesh;
+                if (mesh == null || theirs.sharedMaterials.Any(material => material == null)) throw new InvalidOperationException("Art missing from main: " + theirs.name);
+                if (filter.sharedMesh != mesh)
+                {
+                    filter.sharedMesh = mesh;
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(filter);
+                    meshes++;
+                }
+                if (!mine.sharedMaterials.SequenceEqual(theirs.sharedMaterials))
+                {
+                    mine.sharedMaterials = theirs.sharedMaterials;
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(mine);
+                    materials++;
+                }
+            }
+            report.AppendLine($"looks: {meshes} meshes, {materials} material lists");
+        }
+
+        private static void ReplaceGroup(GameObject from, GameObject to, string name, StringBuilder report)
+        {
+            var old = to.transform.Find(name);
+            if (old != null) UnityEngine.Object.DestroyImmediate(old.gameObject);
+            var theirs = from.transform.Find(name);
+            if (theirs.GetComponentsInChildren<MonoBehaviour>(true).Length > 0) throw new InvalidOperationException(name + " should hold no scripts.");
+            var copy = UnityEngine.Object.Instantiate(theirs.gameObject, to.transform, false);
+            copy.name = name;
+            report.AppendLine($"{name}: {copy.transform.childCount} children");
+        }
+
+        // Matches a group's children by name, in world poses because the groups' own rotations differ between the scenes.
+        private static void MatchChildren(Transform from, Transform to, StringBuilder report)
+        {
+            int moved = 0, added = 0, removed = 0;
+            foreach (var mine in to.Cast<Transform>().ToArray())
+            {
+                if (from.Find(mine.name) != null) continue;
+                UnityEngine.Object.DestroyImmediate(mine.gameObject);
+                removed++;
+            }
+            foreach (Transform theirs in from)
+            {
+                var mine = to.Find(theirs.name);
+                if (mine == null)
+                {
+                    mine = UnityEngine.Object.Instantiate(theirs.gameObject, to).transform;
+                    mine.name = theirs.name;
+                    added++;
+                }
+                else if ((mine.position - theirs.position).sqrMagnitude > 1e-4f || Quaternion.Angle(mine.rotation, theirs.rotation) > 0.01f) moved++;
+                mine.SetPositionAndRotation(theirs.position, theirs.rotation);
+            }
+            report.AppendLine($"{to.name}: {moved} moved, {added} added, {removed} removed, {to.childCount} now");
+        }
+
+        private static void RebindEvening(GameObject map, GameObject expansion, GameObject theirMap, StringBuilder report)
+        {
+            var controller = map.GetComponentInChildren<NeighborhoodEveningLights>(true);
+            var to = new SerializedObject(controller);
+            var from = new SerializedObject(theirMap.GetComponentInChildren<NeighborhoodEveningLights>(true));
+            foreach (var (list, slotMaterial) in new[] { ("windows", "windowMaterial"), ("lamps", "lampMaterial") })
+            {
+                var theirs = from.FindProperty(list);
+                var mine = to.FindProperty(list);
+                var expected = to.FindProperty(slotMaterial).objectReferenceValue;
+                mine.arraySize = theirs.arraySize;
+                for (int i = 0; i < theirs.arraySize; i++)
+                {
+                    var source = theirs.GetArrayElementAtIndex(i);
+                    var target = mine.GetArrayElementAtIndex(i);
+                    var theirRenderer = (Renderer)source.FindPropertyRelative("renderer").objectReferenceValue;
+                    var root = theirRenderer.transform.root == theirMap.transform ? map.transform : expansion.transform;
+                    var renderer = root.Find(PathUnder(theirRenderer.transform, theirRenderer.transform.root)).GetComponent<Renderer>();
+                    int slot = source.FindPropertyRelative("slot").intValue;
+                    if (renderer.sharedMaterials[slot] != expected) throw new InvalidOperationException($"{renderer.name} slot {slot} is not {slotMaterial}.");
+                    target.FindPropertyRelative("renderer").objectReferenceValue = renderer;
+                    target.FindPropertyRelative("slot").intValue = slot;
+                    target.FindPropertyRelative("group").intValue = source.FindPropertyRelative("group").intValue;
+                }
+            }
+            var theirLights = from.FindProperty("streetLights");
+            var lights = to.FindProperty("streetLights");
+            lights.arraySize = theirLights.arraySize;
+            var host = controller.transform;
+            for (int i = 0; i < theirLights.arraySize; i++)
+                lights.GetArrayElementAtIndex(i).objectReferenceValue = host.Find(theirLights.GetArrayElementAtIndex(i).objectReferenceValue.name).GetComponent<Light>();
+            to.ApplyModifiedPropertiesWithoutUndo();
+            report.AppendLine($"evening: {to.FindProperty("windows").arraySize} windows, {to.FindProperty("lamps").arraySize} lamps, {lights.arraySize} lights");
         }
 
         // The checks alone, on the open scene.
@@ -170,8 +340,10 @@ namespace DeliveryRider.MapTools
         private static void Check(GameObject expansion, StringBuilder report)
         {
             Physics.SyncTransforms();
-            var solids = expansion.GetComponentsInChildren<Collider>(true);
-            report.AppendLine($"expansion: {solids.Length} colliders, {expansion.GetComponentsInChildren<MeshRenderer>(true).Length} renderers");
+            var map = Root(expansion.scene, "MyeongjiMap").transform;
+            var solids = expansion.GetComponentsInChildren<Collider>(true)
+                .Concat(new[] { "StreetGreenery", "EntranceDetails" }.SelectMany(group => map.Find(group).GetComponentsInChildren<Collider>(true))).ToArray();
+            report.AppendLine($"expansion and old-area props: {solids.Length} colliders, {expansion.GetComponentsInChildren<MeshRenderer>(true).Length} expansion renderers");
             var player = UnityEngine.Object.FindFirstObjectByType<RiderMotor>(FindObjectsInactive.Include);
             report.AppendLine($"rider layer {player.gameObject.layer}, ignores walls: {Physics.GetIgnoreLayerCollision(player.gameObject.layer, WallLayer)}");
 
@@ -190,6 +362,9 @@ namespace DeliveryRider.MapTools
             var cars = UnityEngine.Object.FindFirstObjectByType<TrafficNetwork>(FindObjectsInactive.Include);
             for (int i = 0; i < cars.PathCount; i++) foreach (var point in cars.Path(i).points) Test("car lane", point);
             foreach (Transform spot in GameObject.Find("MyeongjiLocations").transform) Test("location " + spot.name, spot.position);
+            var planner = UnityEngine.Object.FindFirstObjectByType<HazardPlanner>(FindObjectsInactive.Include);
+            var slots = (HazardCandidates)new SerializedObject(planner).FindProperty("candidates").objectReferenceValue;
+            foreach (var slot in slots.Candidates) Test("hazard slot " + slot.type, slot.position);
             Test("rider start", player.transform.position);
             report.AppendLine($"overlaps with old lanes and places (bounds): {hit.Count}");
             foreach (var line in hit.OrderBy(s => s).Take(30)) report.AppendLine("  " + line);
