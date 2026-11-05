@@ -1,0 +1,14 @@
+F01: existing arches/reveals/pilasters retained, 2 entry handles completed
+F02: existing arches/reveals/pilasters retained, 2 entry handles completed
+F03: existing arches/reveals/pilasters retained, 2 entry handles completed
+F04: existing arches/reveals/pilasters retained, 1 entry handles completed
+F05: existing arches/reveals/pilasters retained, 2 entry handles completed
+F06: existing arches/reveals/pilasters retained, 2 entry handles completed
+G01: existing arches/reveals/pilasters retained, 2 entry handles completed
+G03: existing arches/reveals/pilasters retained, 2 entry handles completed
+G05: existing arches/reveals/pilasters retained, 2 entry handles completed
+G06: existing arches/reveals/pilasters retained, 2 entry handles completed
+H02: existing arches/reveals/pilasters retained, 1 entry handles completed
+G02: shopfront, 1 original facade planes retained
+G04: shopfront, 1 original facade planes retained
+H01: residential entry, 1 original facade planes retained

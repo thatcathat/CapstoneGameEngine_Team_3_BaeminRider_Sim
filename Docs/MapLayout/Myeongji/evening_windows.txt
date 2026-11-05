@@ -1,0 +1,52 @@
+A01: 3 upper panes, geometry unchanged
+A02: 2 upper panes, geometry unchanged
+A03: 1 upper panes, geometry unchanged
+A04: 1 upper panes, geometry unchanged
+A05: no suitable upper pane, original retained
+A06: 1 upper panes, geometry unchanged
+A07: 1 upper panes, geometry unchanged
+B01: 2 upper panes, geometry unchanged
+B02: 1 upper panes, geometry unchanged
+B03: 3 upper panes, geometry unchanged
+B04: 2 upper panes, geometry unchanged
+B05: 1 upper panes, geometry unchanged
+B06: 2 upper panes, geometry unchanged
+B07: 1 upper panes, geometry unchanged
+B08: 3 upper panes, geometry unchanged
+B09: 2 upper panes, geometry unchanged
+B10: no suitable upper pane, original retained
+B11: 1 upper panes, geometry unchanged
+B12: 2 upper panes, geometry unchanged
+B13: 1 upper panes, geometry unchanged
+B14: 1 upper panes, geometry unchanged
+B15: 2 upper panes, geometry unchanged
+B16: no suitable upper pane, original retained
+B17: 1 upper panes, geometry unchanged
+B18: 2 upper panes, geometry unchanged
+E01: 1 upper panes, geometry unchanged
+E02: 1 upper panes, geometry unchanged
+E03: 1 upper panes, geometry unchanged
+E04: 2 upper panes, geometry unchanged
+E05: 1 upper panes, geometry unchanged
+E06: 2 upper panes, geometry unchanged
+E07: no suitable upper pane, original retained
+E08: 1 upper panes, geometry unchanged
+E09: 2 upper panes, geometry unchanged
+E10: 1 upper panes, geometry unchanged
+E11: 2 upper panes, geometry unchanged
+E12: 1 upper panes, geometry unchanged
+E13: 2 upper panes, geometry unchanged
+F01: 2 upper panes, geometry unchanged
+F02: 3 upper panes, geometry unchanged
+F03: 1 upper panes, geometry unchanged
+F04: 1 upper panes, geometry unchanged
+F05: 2 upper panes, geometry unchanged
+F06: 1 upper panes, geometry unchanged
+G01: 2 upper panes, geometry unchanged
+G02: 2 upper panes, geometry unchanged
+G03: 2 upper panes, geometry unchanged
+G04: 1 upper panes, geometry unchanged
+G05: 3 upper panes, geometry unchanged
+G06: 1 upper panes, geometry unchanged
+H01: 1 upper panes, geometry unchanged
+H02: 1 upper panes, geometry unchanged

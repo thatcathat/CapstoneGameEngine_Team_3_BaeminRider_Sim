@@ -1,0 +1,2 @@
+using System;using System.Linq;using UnityEngine;using UnityEngine.SceneManagement;using Newtonsoft.Json;
+public static class DetailPositions {public static string Read(){var map=SceneManager.GetActiveScene().GetRootGameObjects().Single(g=>g.name=="MyeongjiMap");return JsonConvert.SerializeObject(new{props=map.transform.Find("EntranceDetails").Cast<Transform>().Select(t=>new{t.name,p=t.position.ToString()}),green=map.transform.Find("StreetGreenery").Cast<Transform>().Select(t=>new{t.name,p=t.position.ToString()})});}}

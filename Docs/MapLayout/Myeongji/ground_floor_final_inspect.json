@@ -1,0 +1,1042 @@
+{
+  "scene": "Assets/_Game/Scenes/FourDistrictPrototype_Myeongji.unity",
+  "dirty": false,
+  "result": [
+    {
+      "id": "F01",
+      "rot": 270,
+      "kind": "facade_arched_upper",
+      "edge": -114.827492,
+      "min": "(114.83, 0.00, -25.12)",
+      "max": "(120.12, 9.80, -14.88)",
+      "mats": [
+        "KIT_Wall_D5C9AF",
+        "KIT_DistrictRoof_747E80",
+        "KIT_Glass_445E69",
+        "KIT_Frame_DDD9CC",
+        "KIT_Concrete_A2A6A5",
+        "KIT_FacadeTrim_7E8885",
+        "KIT_DistrictGlass_445E69",
+        "KIT_DistrictFrame_DDD9CC"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_Wall_D5C9AF",
+          "depth": -0.25,
+          "lo": -25.00001,
+          "hi": -15.0000105,
+          "bottom": 0.0,
+          "top": 7.18
+        },
+        {
+          "mat": "KIT_Wall_D5C9AF",
+          "depth": -0.57,
+          "lo": -25.00001,
+          "hi": -15.0000105,
+          "bottom": 0.0,
+          "top": 9.65
+        },
+        {
+          "mat": "KIT_Glass_445E69",
+          "depth": -0.49,
+          "lo": -24.43001,
+          "hi": -15.5700111,
+          "bottom": 0.29,
+          "top": 2.98
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.42,
+          "lo": -24.50001,
+          "hi": -15.5000105,
+          "bottom": 0.25,
+          "top": 3.05
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.39,
+          "lo": -23.21751,
+          "hi": -16.7825089,
+          "bottom": 0.34,
+          "top": 2.5325
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.2,
+          "lo": -24.50001,
+          "hi": -15.5000105,
+          "bottom": 0.12,
+          "top": 0.25
+        },
+        {
+          "mat": "KIT_Concrete_A2A6A5",
+          "depth": 0.0,
+          "lo": -24.59001,
+          "hi": -15.41001,
+          "bottom": 0.0,
+          "top": 0.12
+        }
+      ]
+    },
+    {
+      "id": "F02",
+      "rot": 270,
+      "kind": "facade_pilaster_grid",
+      "edge": -105.289024,
+      "min": "(105.29, 0.00, -38.70)",
+      "max": "(112.37, 12.85, -30.38)",
+      "mats": [
+        "KIT_Wall_B3816D",
+        "KIT_DistrictRoof_747E80",
+        "KIT_Glass_445E69",
+        "KIT_Frame_DDD9CC",
+        "KIT_Concrete_A2A6A5",
+        "KIT_DistrictWall_B3816D",
+        "KIT_DistrictGlass_445E69",
+        "KIT_DistrictFrame_DDD9CC"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_Wall_B3816D",
+          "depth": -0.31,
+          "lo": -38.61117,
+          "hi": -30.468832,
+          "bottom": 0.0,
+          "top": 4.13
+        },
+        {
+          "mat": "KIT_Wall_B3816D",
+          "depth": -0.72,
+          "lo": -38.61117,
+          "hi": -30.468832,
+          "bottom": 0.0,
+          "top": 12.7
+        },
+        {
+          "mat": "KIT_Glass_445E69",
+          "depth": -0.62,
+          "lo": -38.15224,
+          "hi": -30.9277668,
+          "bottom": 0.29,
+          "top": 2.98
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.53,
+          "lo": -38.2040558,
+          "hi": -30.8759518,
+          "bottom": 0.25,
+          "top": 3.05
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.49,
+          "lo": -37.10669,
+          "hi": -31.9733181,
+          "bottom": 0.34,
+          "top": 2.5325
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.26,
+          "lo": -38.2040558,
+          "hi": -30.8759518,
+          "bottom": 0.12,
+          "top": 0.25
+        },
+        {
+          "mat": "KIT_Concrete_A2A6A5",
+          "depth": 0.0,
+          "lo": -38.2706757,
+          "hi": -30.8093319,
+          "bottom": 0.0,
+          "top": 0.12
+        }
+      ]
+    },
+    {
+      "id": "F03",
+      "rot": 270,
+      "kind": "facade_deep_reveal",
+      "edge": -94.09999,
+      "min": "(94.10, 0.00, -57.12)",
+      "max": "(103.62, 9.80, -49.30)",
+      "mats": [
+        "KIT_Wall_8FA6B0",
+        "KIT_DistrictRoof_747E80",
+        "KIT_Glass_445E69",
+        "KIT_Frame_DDD9CC",
+        "KIT_Concrete_A2A6A5",
+        "KIT_DistrictFrame_DDD9CC",
+        "KIT_DistrictGlass_445E69"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_Wall_8FA6B0",
+          "depth": -0.4,
+          "lo": -57.0283661,
+          "hi": -49.39164,
+          "bottom": 0.0,
+          "top": 4.13
+        },
+        {
+          "mat": "KIT_Wall_8FA6B0",
+          "depth": -1.22,
+          "lo": -57.0283661,
+          "hi": -49.39164,
+          "bottom": 0.0,
+          "top": 9.65
+        },
+        {
+          "mat": "KIT_Glass_445E69",
+          "depth": -1.09,
+          "lo": -56.59307,
+          "hi": -49.82693,
+          "bottom": 0.29,
+          "top": 2.98
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.97,
+          "lo": -56.6465263,
+          "hi": -49.7734756,
+          "bottom": 0.25,
+          "top": 3.05
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.92,
+          "lo": -55.6671181,
+          "hi": -50.7528839,
+          "bottom": 0.34,
+          "top": 2.5325
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.33,
+          "lo": -56.6465263,
+          "hi": -49.7734756,
+          "bottom": 0.12,
+          "top": 0.25
+        },
+        {
+          "mat": "KIT_Concrete_A2A6A5",
+          "depth": 0.0,
+          "lo": -56.71526,
+          "hi": -49.7047424,
+          "bottom": 0.0,
+          "top": 0.12
+        }
+      ]
+    },
+    {
+      "id": "F04",
+      "rot": 270,
+      "kind": "facade_arched_entry",
+      "edge": -87.03752,
+      "min": "(87.04, 0.00, -73.12)",
+      "max": "(94.12, 6.75, -62.88)",
+      "mats": [
+        "KIT_Wall_A9B5A1",
+        "KIT_DistrictRoof_747E80",
+        "KIT_Glass_445E69",
+        "KIT_Frame_DDD9CC",
+        "KIT_FacadeTrim_7E8885",
+        "KIT_DistrictGlass_445E69",
+        "KIT_DistrictFrame_DDD9CC"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_Wall_A9B5A1",
+          "depth": -0.25,
+          "lo": -73.00001,
+          "hi": -63.0000076,
+          "bottom": 0.0,
+          "top": 4.13
+        },
+        {
+          "mat": "KIT_Wall_A9B5A1",
+          "depth": -0.69,
+          "lo": -73.00001,
+          "hi": -63.0000076,
+          "bottom": 0.0,
+          "top": 6.6
+        },
+        {
+          "mat": "KIT_Glass_445E69",
+          "depth": -0.58,
+          "lo": -72.08001,
+          "hi": -63.92001,
+          "bottom": 0.92,
+          "top": 2.53
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.48,
+          "lo": -72.15001,
+          "hi": -63.8500061,
+          "bottom": 0.85,
+          "top": 2.6
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.49,
+          "lo": -71.13251,
+          "hi": -64.86751,
+          "bottom": 0.95,
+          "top": 2.5
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.06,
+          "lo": -72.26001,
+          "hi": -63.74001,
+          "bottom": 0.725,
+          "top": 0.885
+        },
+        {
+          "mat": "KIT_FacadeTrim_7E8885",
+          "depth": -0.41,
+          "lo": -68.840004,
+          "hi": -67.16001,
+          "bottom": 0.38,
+          "top": 1.955
+        },
+        {
+          "mat": "KIT_FacadeTrim_7E8885",
+          "depth": -0.39,
+          "lo": -69.00001,
+          "hi": -67.00001,
+          "bottom": 0.22,
+          "top": 2.9
+        },
+        {
+          "mat": "KIT_DistrictGlass_445E69",
+          "depth": -0.58,
+          "lo": -68.90001,
+          "hi": -67.1000061,
+          "bottom": 0.32,
+          "top": 2.8
+        },
+        {
+          "mat": "KIT_DistrictFrame_DDD9CC",
+          "depth": 0.0,
+          "lo": -69.1000061,
+          "hi": -66.90001,
+          "bottom": 0.08,
+          "top": 0.245
+        }
+      ]
+    },
+    {
+      "id": "F05",
+      "rot": 270,
+      "kind": "facade_projecting_sill",
+      "edge": -81.15517,
+      "min": "(81.16, 0.00, -88.12)",
+      "max": "(88.62, 9.80, -77.88)",
+      "mats": [
+        "KIT_Wall_DDD8C9",
+        "KIT_DistrictRoof_747E80",
+        "KIT_Glass_445E69",
+        "KIT_Frame_DDD9CC",
+        "KIT_Concrete_A2A6A5",
+        "KIT_DistrictFrame_DDD9CC",
+        "KIT_DistrictGlass_445E69"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_Wall_DDD8C9",
+          "depth": -0.31,
+          "lo": -88.00001,
+          "hi": -78.00001,
+          "bottom": 0.0,
+          "top": 4.13
+        },
+        {
+          "mat": "KIT_Wall_DDD8C9",
+          "depth": -0.72,
+          "lo": -88.00001,
+          "hi": -78.00001,
+          "bottom": 0.0,
+          "top": 9.65
+        },
+        {
+          "mat": "KIT_Glass_445E69",
+          "depth": -0.62,
+          "lo": -87.43001,
+          "hi": -78.57001,
+          "bottom": 0.29,
+          "top": 2.98
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.53,
+          "lo": -87.50001,
+          "hi": -78.50001,
+          "bottom": 0.25,
+          "top": 3.05
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.49,
+          "lo": -86.21751,
+          "hi": -79.78251,
+          "bottom": 0.34,
+          "top": 2.5325
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.25,
+          "lo": -87.50001,
+          "hi": -78.50001,
+          "bottom": 0.12,
+          "top": 0.25
+        },
+        {
+          "mat": "KIT_Concrete_A2A6A5",
+          "depth": 0.0,
+          "lo": -87.59001,
+          "hi": -78.41001,
+          "bottom": 0.0,
+          "top": 0.12
+        }
+      ]
+    },
+    {
+      "id": "F06",
+      "rot": 270,
+      "kind": "facade_arched_shopfront",
+      "edge": -76.64536,
+      "min": "(76.65, 0.00, -96.70)",
+      "max": "(83.62, 9.80, -89.38)",
+      "mats": [
+        "KIT_Wall_A6AAA5",
+        "KIT_DistrictRoof_747E80",
+        "KIT_Glass_445E69",
+        "KIT_Frame_DDD9CC",
+        "KIT_FacadeTrim_7E8885",
+        "KIT_DistrictGlass_445E69",
+        "KIT_DistrictFrame_DDD9CC"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_Wall_A6AAA5",
+          "depth": -0.68,
+          "lo": -96.61422,
+          "hi": -89.46579,
+          "bottom": 0.0,
+          "top": 9.65
+        },
+        {
+          "mat": "KIT_Wall_A6AAA5",
+          "depth": -0.25,
+          "lo": -96.61422,
+          "hi": -89.46579,
+          "bottom": 0.0,
+          "top": 4.13
+        },
+        {
+          "mat": "KIT_FacadeTrim_7E8885",
+          "depth": -0.41,
+          "lo": -95.784996,
+          "hi": -90.29501,
+          "bottom": 0.38,
+          "top": 1.655
+        },
+        {
+          "mat": "KIT_FacadeTrim_7E8885",
+          "depth": -0.38,
+          "lo": -95.8993759,
+          "hi": -90.18063,
+          "bottom": 0.22,
+          "top": 3.15
+        },
+        {
+          "mat": "KIT_DistrictGlass_445E69",
+          "depth": -0.57,
+          "lo": -95.82789,
+          "hi": -90.25212,
+          "bottom": 0.32,
+          "top": 3.05
+        },
+        {
+          "mat": "KIT_DistrictFrame_DDD9CC",
+          "depth": 0.0,
+          "lo": -95.9708557,
+          "hi": -90.10915,
+          "bottom": 0.08,
+          "top": 0.245
+        }
+      ]
+    },
+    {
+      "id": "G01",
+      "rot": 90,
+      "kind": "infill_projecting_sill",
+      "edge": 111.7,
+      "min": "(105.80, 0.00, -58.20)",
+      "max": "(111.70, 9.80, -49.88)",
+      "mats": [
+        "KIT_DistrictWall_D5C9AF",
+        "KIT_DistrictRoof_747E80",
+        "KIT_Glass_445E69",
+        "KIT_Frame_DDD9CC",
+        "KIT_Concrete_A2A6A5",
+        "KIT_DistrictFrame_DDD9CC",
+        "KIT_DistrictGlass_445E69"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_DistrictWall_D5C9AF",
+          "depth": -0.25,
+          "lo": -58.1025,
+          "hi": -49.9775124,
+          "bottom": 0.0,
+          "top": 4.13
+        },
+        {
+          "mat": "KIT_DistrictWall_D5C9AF",
+          "depth": -0.57,
+          "lo": -58.1025,
+          "hi": -49.9775124,
+          "bottom": 0.0,
+          "top": 9.65
+        },
+        {
+          "mat": "KIT_Glass_445E69",
+          "depth": -0.49,
+          "lo": -57.6393776,
+          "hi": -50.4406357,
+          "bottom": 0.29,
+          "top": 2.98
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.42,
+          "lo": -57.69625,
+          "hi": -50.3837624,
+          "bottom": 0.25,
+          "top": 3.05
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.38,
+          "lo": -56.65422,
+          "hi": -51.4257927,
+          "bottom": 0.34,
+          "top": 2.5325
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.2,
+          "lo": -57.69625,
+          "hi": -50.3837624,
+          "bottom": 0.12,
+          "top": 0.25
+        },
+        {
+          "mat": "KIT_Concrete_A2A6A5",
+          "depth": 0.0,
+          "lo": -57.76938,
+          "hi": -50.31064,
+          "bottom": 0.0,
+          "top": 0.12
+        }
+      ]
+    },
+    {
+      "id": "G02",
+      "rot": 90,
+      "kind": "infill_setback",
+      "edge": 111.7,
+      "min": "(105.80, 0.00, -75.00)",
+      "max": "(111.70, 12.70, -67.80)",
+      "mats": [
+        "KIT_DistrictWall_A9B5A1",
+        "KIT_DistrictGlass_445E69",
+        "KIT_DistrictRoof_747E80",
+        "KIT_DistrictFrame_DDD9CC"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_DistrictWall_A9B5A1",
+          "depth": 0.0,
+          "lo": -75.00001,
+          "hi": -67.8,
+          "bottom": 0.0,
+          "top": 3.55
+        },
+        {
+          "mat": "KIT_DistrictGlass_445E69",
+          "depth": -0.18,
+          "lo": -74.340004,
+          "hi": -68.6563644,
+          "bottom": 0.24,
+          "top": 2.69
+        },
+        {
+          "mat": "KIT_DistrictFrame_DDD9CC",
+          "depth": -1.03,
+          "lo": -74.94764,
+          "hi": -67.85236,
+          "bottom": 1.148,
+          "top": 2.362
+        },
+        {
+          "mat": "KIT_DistrictFrame_DDD9CC",
+          "depth": -1.08,
+          "lo": -74.94764,
+          "hi": -67.85236,
+          "bottom": 1.148,
+          "top": 2.362
+        },
+        {
+          "mat": "KIT_DistrictFrame_DDD9CC",
+          "depth": -1.46,
+          "lo": -74.94764,
+          "hi": -67.85236,
+          "bottom": 1.233,
+          "top": 2.277
+        },
+        {
+          "mat": "KIT_DistrictFrame_DDD9CC",
+          "depth": -0.05,
+          "lo": -74.3282242,
+          "hi": -68.6681442,
+          "bottom": 0.258,
+          "top": 2.672
+        }
+      ]
+    },
+    {
+      "id": "G03",
+      "rot": 90,
+      "kind": "infill_arched_upper",
+      "edge": 111.7,
+      "min": "(105.80, 0.00, -89.12)",
+      "max": "(111.70, 9.80, -78.88)",
+      "mats": [
+        "KIT_DistrictWall_B3816D",
+        "KIT_DistrictRoof_747E80",
+        "KIT_Glass_445E69",
+        "KIT_Frame_DDD9CC",
+        "KIT_Concrete_A2A6A5",
+        "KIT_FacadeTrim_7E8885",
+        "KIT_DistrictGlass_445E69",
+        "KIT_DistrictFrame_DDD9CC"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_DistrictWall_B3816D",
+          "depth": -0.28,
+          "lo": -89.00001,
+          "hi": -79.00001,
+          "bottom": 0.0,
+          "top": 7.18
+        },
+        {
+          "mat": "KIT_DistrictWall_B3816D",
+          "depth": -0.64,
+          "lo": -89.00001,
+          "hi": -79.00001,
+          "bottom": 0.0,
+          "top": 9.65
+        },
+        {
+          "mat": "KIT_Glass_445E69",
+          "depth": -0.55,
+          "lo": -88.43001,
+          "hi": -79.57001,
+          "bottom": 0.29,
+          "top": 2.98
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.46,
+          "lo": -88.50001,
+          "hi": -79.50001,
+          "bottom": 0.25,
+          "top": 3.05
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.43,
+          "lo": -87.21751,
+          "hi": -80.78251,
+          "bottom": 0.34,
+          "top": 2.5325
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.23,
+          "lo": -88.50001,
+          "hi": -79.50001,
+          "bottom": 0.12,
+          "top": 0.25
+        },
+        {
+          "mat": "KIT_Concrete_A2A6A5",
+          "depth": 0.0,
+          "lo": -88.590004,
+          "hi": -79.41,
+          "bottom": 0.0,
+          "top": 0.12
+        }
+      ]
+    },
+    {
+      "id": "G04",
+      "rot": 0,
+      "kind": "infill_gable",
+      "edge": 96.7,
+      "min": "(105.80, 0.00, -96.70)",
+      "max": "(111.70, 8.15, -91.50)",
+      "mats": [
+        "KIT_DistrictWall_A6AAA5",
+        "KIT_DistrictGlass_445E69",
+        "KIT_DistrictRoof_747E80",
+        "KIT_DistrictFrame_DDD9CC"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_DistrictWall_A6AAA5",
+          "depth": 0.0,
+          "lo": 105.800011,
+          "hi": 111.700005,
+          "bottom": 0.0,
+          "top": 4.23
+        },
+        {
+          "mat": "KIT_DistrictGlass_445E69",
+          "depth": -0.16,
+          "lo": 106.135239,
+          "hi": 111.364769,
+          "bottom": 0.24,
+          "top": 3.02
+        },
+        {
+          "mat": "KIT_DistrictFrame_DDD9CC",
+          "depth": -0.91,
+          "lo": 105.842918,
+          "hi": 111.6571,
+          "bottom": 1.148,
+          "top": 2.362
+        },
+        {
+          "mat": "KIT_DistrictFrame_DDD9CC",
+          "depth": -0.96,
+          "lo": 105.842918,
+          "hi": 111.6571,
+          "bottom": 1.148,
+          "top": 2.362
+        },
+        {
+          "mat": "KIT_DistrictFrame_DDD9CC",
+          "depth": -1.28,
+          "lo": 105.842918,
+          "hi": 111.6571,
+          "bottom": 1.233,
+          "top": 2.277
+        },
+        {
+          "mat": "KIT_DistrictFrame_DDD9CC",
+          "depth": -0.05,
+          "lo": 106.14489,
+          "hi": 111.35511,
+          "bottom": 0.258,
+          "top": 3.002
+        }
+      ]
+    },
+    {
+      "id": "G05",
+      "rot": 0,
+      "kind": "infill_pilaster_grid",
+      "edge": 96.7,
+      "min": "(88.89, 0.00, -96.70)",
+      "max": "(96.20, 12.85, -91.40)",
+      "mats": [
+        "KIT_DistrictWall_DDD8C9",
+        "KIT_DistrictRoof_747E80",
+        "KIT_Glass_445E69",
+        "KIT_Frame_DDD9CC",
+        "KIT_Concrete_A2A6A5",
+        "KIT_DistrictGlass_445E69",
+        "KIT_DistrictFrame_DDD9CC"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_DistrictWall_DDD8C9",
+          "depth": -0.23,
+          "lo": 88.96893,
+          "hi": 96.12196,
+          "bottom": 0.0,
+          "top": 4.13
+        },
+        {
+          "mat": "KIT_DistrictWall_DDD8C9",
+          "depth": -0.54,
+          "lo": 88.96893,
+          "hi": 96.12196,
+          "bottom": 0.0,
+          "top": 12.7
+        },
+        {
+          "mat": "KIT_Glass_445E69",
+          "depth": -0.46,
+          "lo": 89.3721,
+          "hi": 95.71879,
+          "bottom": 0.29,
+          "top": 2.98
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.39,
+          "lo": 89.3265839,
+          "hi": 95.76431,
+          "bottom": 0.25,
+          "top": 3.05
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.36,
+          "lo": 90.29062,
+          "hi": 94.80028,
+          "bottom": 0.34,
+          "top": 2.5325
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.19,
+          "lo": 89.3265839,
+          "hi": 95.76431,
+          "bottom": 0.12,
+          "top": 0.25
+        },
+        {
+          "mat": "KIT_Concrete_A2A6A5",
+          "depth": 0.0,
+          "lo": 89.26806,
+          "hi": 95.82284,
+          "bottom": 0.0,
+          "top": 0.12
+        }
+      ]
+    },
+    {
+      "id": "G06",
+      "rot": 90,
+      "kind": "infill_deep_reveal",
+      "edge": 96.2,
+      "min": "(91.41, 0.00, -84.12)",
+      "max": "(96.20, 9.80, -73.88)",
+      "mats": [
+        "KIT_DistrictWall_8FA6B0",
+        "KIT_DistrictRoof_747E80",
+        "KIT_Glass_445E69",
+        "KIT_Frame_DDD9CC",
+        "KIT_Concrete_A2A6A5",
+        "KIT_DistrictFrame_DDD9CC",
+        "KIT_DistrictGlass_445E69"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_DistrictWall_8FA6B0",
+          "depth": -0.2,
+          "lo": -84.00001,
+          "hi": -74.00001,
+          "bottom": 0.0,
+          "top": 4.13
+        },
+        {
+          "mat": "KIT_DistrictWall_8FA6B0",
+          "depth": -0.61,
+          "lo": -84.00001,
+          "hi": -74.00001,
+          "bottom": 0.0,
+          "top": 9.65
+        },
+        {
+          "mat": "KIT_Glass_445E69",
+          "depth": -0.55,
+          "lo": -83.43001,
+          "hi": -74.57001,
+          "bottom": 0.29,
+          "top": 2.98
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.49,
+          "lo": -83.50001,
+          "hi": -74.50001,
+          "bottom": 0.25,
+          "top": 3.05
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.46,
+          "lo": -82.21751,
+          "hi": -75.78251,
+          "bottom": 0.34,
+          "top": 2.5325
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.16,
+          "lo": -83.50001,
+          "hi": -74.50001,
+          "bottom": 0.12,
+          "top": 0.25
+        },
+        {
+          "mat": "KIT_Concrete_A2A6A5",
+          "depth": 0.0,
+          "lo": -83.590004,
+          "hi": -74.41,
+          "bottom": 0.0,
+          "top": 0.12
+        }
+      ]
+    },
+    {
+      "id": "H01",
+      "rot": 270,
+      "kind": "infill_gable",
+      "edge": -6.3,
+      "min": "(6.30, 0.00, -89.10)",
+      "max": "(14.00, 11.20, -82.90)",
+      "mats": [
+        "KIT_DistrictWall_D5C9AF",
+        "KIT_DistrictGlass_445E69",
+        "KIT_DistrictRoof_747E80",
+        "KIT_DistrictFrame_DDD9CC"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_DistrictWall_D5C9AF",
+          "depth": 0.0,
+          "lo": -89.1,
+          "hi": -82.9,
+          "bottom": 0.0,
+          "top": 4.23
+        },
+        {
+          "mat": "KIT_DistrictGlass_445E69",
+          "depth": -0.36,
+          "lo": -88.075,
+          "hi": -83.675,
+          "bottom": 0.24,
+          "top": 2.69
+        },
+        {
+          "mat": "KIT_DistrictFrame_DDD9CC",
+          "depth": -0.1,
+          "lo": -88.057,
+          "hi": -83.693,
+          "bottom": 0.258,
+          "top": 2.672
+        }
+      ]
+    },
+    {
+      "id": "H02",
+      "rot": 90,
+      "kind": "infill_arched_entry",
+      "edge": 26.7624931,
+      "min": "(19.39, 0.00, -89.07)",
+      "max": "(26.76, 6.75, -82.93)",
+      "mats": [
+        "KIT_DistrictWall_B3816D",
+        "KIT_DistrictRoof_747E80",
+        "KIT_Glass_445E69",
+        "KIT_Frame_DDD9CC",
+        "KIT_FacadeTrim_7E8885",
+        "KIT_DistrictGlass_445E69",
+        "KIT_DistrictFrame_DDD9CC"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_DistrictWall_B3816D",
+          "depth": -0.26,
+          "lo": -89.0,
+          "hi": -83.0,
+          "bottom": 0.0,
+          "top": 4.13
+        },
+        {
+          "mat": "KIT_DistrictWall_B3816D",
+          "depth": -0.72,
+          "lo": -89.0,
+          "hi": -83.0,
+          "bottom": 0.0,
+          "top": 6.6
+        },
+        {
+          "mat": "KIT_Glass_445E69",
+          "depth": -0.6,
+          "lo": -88.448,
+          "hi": -83.552,
+          "bottom": 0.92,
+          "top": 2.53
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.5,
+          "lo": -88.49,
+          "hi": -83.51,
+          "bottom": 0.85,
+          "top": 2.6
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.51,
+          "lo": -87.8795,
+          "hi": -84.1205,
+          "bottom": 0.95,
+          "top": 2.5
+        },
+        {
+          "mat": "KIT_Frame_DDD9CC",
+          "depth": -0.06,
+          "lo": -88.556,
+          "hi": -83.444,
+          "bottom": 0.725,
+          "top": 0.885
+        },
+        {
+          "mat": "KIT_FacadeTrim_7E8885",
+          "depth": -0.43,
+          "lo": -86.504,
+          "hi": -85.496,
+          "bottom": 0.38,
+          "top": 1.955
+        },
+        {
+          "mat": "KIT_FacadeTrim_7E8885",
+          "depth": -0.4,
+          "lo": -86.6,
+          "hi": -85.4,
+          "bottom": 0.22,
+          "top": 2.9
+        },
+        {
+          "mat": "KIT_DistrictGlass_445E69",
+          "depth": -0.6,
+          "lo": -86.54,
+          "hi": -85.46,
+          "bottom": 0.32,
+          "top": 2.8
+        },
+        {
+          "mat": "KIT_DistrictFrame_DDD9CC",
+          "depth": 0.0,
+          "lo": -86.66,
+          "hi": -85.34,
+          "bottom": 0.08,
+          "top": 0.245
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "scene": "Assets/_Game/Scenes/FourDistrictPrototype_Myeongji.unity",
+  "dirty": false,
+  "result": [
+    {
+      "id": "A03",
+      "rot": 90,
+      "kind": "house",
+      "edge": 21.8000011,
+      "min": "(16.70, 0.00, -27.00)",
+      "max": "(21.80, 11.20, -19.00)",
+      "mats": [
+        "KIT_DistrictWall_A9B5A1",
+        "KIT_DistrictGlass_445E69",
+        "KIT_DistrictRoof_747E80",
+        "KIT_DistrictFrame_DDD9CC",
+        "KIT_DistrictWall_A9B5A1"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_DistrictWall_A9B5A1",
+          "depth": -0.6,
+          "lo": -27.0,
+          "hi": -19.0000019,
+          "bottom": 0,
+          "top": 3.95
+        }
+      ]
+    },
+    {
+      "id": "A04",
+      "rot": 270,
+      "kind": "brick",
+      "edge": -5.70000029,
+      "min": "(5.70, 0.00, -37.00)",
+      "max": "(14.75, 12.70, -28.20)",
+      "mats": [
+        "KIT_DistrictWall_A6AAA5",
+        "KIT_DistrictGlass_445E69",
+        "KIT_DistrictRoof_747E80",
+        "KIT_DistrictFrame_DDD9CC",
+        "KIT_DistrictWall_A9B5A1"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_DistrictWall_A6AAA5",
+          "depth": -0.6,
+          "lo": -37.0,
+          "hi": -28.1999989,
+          "bottom": 0,
+          "top": 3.55
+        }
+      ]
+    },
+    {
+      "id": "A05",
+      "rot": 90,
+      "kind": "house",
+      "edge": 21.8000031,
+      "min": "(16.70, 0.00, -36.35)",
+      "max": "(21.80, 6.60, -28.85)",
+      "mats": [
+        "KIT_DistrictWall_A6AAA5",
+        "KIT_DistrictGlass_445E69",
+        "KIT_DistrictRoof_747E80",
+        "KIT_DistrictFrame_DDD9CC",
+        "KIT_DistrictWall_A9B5A1"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_DistrictWall_A6AAA5",
+          "depth": -0.6,
+          "lo": -36.35,
+          "hi": -28.8500042,
+          "bottom": 0,
+          "top": 3.95
+        }
+      ]
+    },
+    {
+      "id": "A06",
+      "rot": 0,
+      "kind": "grey",
+      "edge": 45.8000069,
+      "min": "(6.30, 0.00, -45.80)",
+      "max": "(12.70, 9.65, -38.60)",
+      "mats": [
+        "KIT_DistrictWall_DDD8C9",
+        "KIT_DistrictGlass_445E69",
+        "KIT_DistrictRoof_747E80",
+        "KIT_DistrictFrame_DDD9CC",
+        "KIT_DistrictWall_A9B5A1"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_DistrictWall_DDD8C9",
+          "depth": -0.6,
+          "lo": 6.300001,
+          "hi": 12.6999969,
+          "bottom": 0,
+          "top": 4.23
+        }
+      ]
+    },
+    {
+      "id": "A07",
+      "rot": 0,
+      "kind": "brick",
+      "edge": 45.3199959,
+      "min": "(15.60, 0.00, -45.32)",
+      "max": "(21.20, 9.65, -38.75)",
+      "mats": [
+        "KIT_DistrictWall_D5C9AF",
+        "KIT_DistrictGlass_445E69",
+        "KIT_DistrictRoof_747E80",
+        "KIT_DistrictFrame_DDD9CC",
+        "KIT_DistrictWall_A9B5A1"
+      ],
+      "faces": [
+        {
+          "mat": "KIT_DistrictWall_D5C9AF",
+          "depth": -0.12,
+          "lo": 15.5999947,
+          "hi": 21.1999989,
+          "bottom": 0,
+          "top": 4.23
+        }
+      ]
+    }
+  ]
+}

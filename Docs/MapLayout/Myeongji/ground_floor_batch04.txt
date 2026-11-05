@@ -1,0 +1,13 @@
+E01: shopfront, 1 original facade planes retained
+E02: residential entry, 1 original facade planes retained
+E03: residential entry, 1 original facade planes retained
+E04: arched shared entrance, 1 original facade planes retained
+E05: residential entry, 1 original facade planes retained
+E06: shopfront, 1 original facade planes retained
+E07: residential entry, 1 original facade planes retained
+E08: residential entry, 2 original facade planes retained
+E09: residential entry, 1 original facade planes retained
+E10: arched shared entrance, 1 original facade planes retained
+E11: residential entry, 1 original facade planes retained
+E12: shopfront, 1 original facade planes retained
+E13: residential entry, 1 original facade planes retained
