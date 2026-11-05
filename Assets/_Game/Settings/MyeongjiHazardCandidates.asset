@@ -7722,3 +7722,939 @@ MonoBehaviour:
     side: 0
     alley: 0
     flip: 0
+  - type: boxercat
+    spot: 1
+    position: {x: 35, y: -0.14, z: 2.75}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 1
+    position: {x: 35.000004, y: -0.14, z: -2.75}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 3
+    position: {x: 47.000008, y: -0.14, z: 2.75}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 4
+    position: {x: 51, y: -0.13999999, z: 2.7499998}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 6
+    position: {x: 62.999996, y: -0.13999999, z: 2.7499998}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 7
+    position: {x: 66.99999, y: -0.14, z: 2.7500002}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 8
+    position: {x: 75, y: -0.14, z: 2.75}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 9
+    position: {x: 79, y: -0.14, z: 2.7499998}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 9
+    position: {x: 79, y: -0.14, z: -2.7500002}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 10
+    position: {x: 83.00001, y: -0.14, z: 2.7499998}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 11
+    position: {x: 90.99999, y: -0.13999999, z: 2.75}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 12
+    position: {x: 95, y: -0.14, z: 2.75}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 12
+    position: {x: 95, y: -0.14, z: -2.75}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 13
+    position: {x: 98.99999, y: -0.14000002, z: 2.7500002}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 13
+    position: {x: 98.999985, y: -0.14, z: -2.7500002}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 14
+    position: {x: 103, y: -0.14000002, z: 2.75}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 14
+    position: {x: 103.00001, y: -0.14000002, z: -2.7500002}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 15
+    position: {x: 106.99999, y: -0.14, z: 2.75}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 15
+    position: {x: 106.99999, y: -0.14, z: -2.7499998}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 4
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 16
+    position: {x: 1.7500001, y: -0.14, z: -9}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 3
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 16
+    position: {x: -1.7499999, y: -0.14, z: -9}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 3
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 17
+    position: {x: 1.7499999, y: -0.14, z: -13}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 3
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 17
+    position: {x: -1.7499999, y: -0.14, z: -13}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 3
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 20
+    position: {x: 1.75, y: -0.14, z: -41}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 3
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 20
+    position: {x: -1.75, y: -0.14, z: -41}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 3
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 21
+    position: {x: -1.7499999, y: -0.14, z: -45}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 3
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 22
+    position: {x: 28.25, y: -0.14000002, z: -9.000001}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 2.5
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 22
+    position: {x: 25.75, y: -0.14, z: -9}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 2.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 23
+    position: {x: 28.249998, y: -0.14, z: -13}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 2.5
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 23
+    position: {x: 25.749998, y: -0.14, z: -13}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 2.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 24
+    position: {x: 28.250002, y: -0.14, z: -17}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 2.5
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 26
+    position: {x: 28.25, y: -0.14, z: -41}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 2.5
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 26
+    position: {x: 25.749998, y: -0.14, z: -41.000004}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 2.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 27
+    position: {x: 28.25, y: -0.13999999, z: -45}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 2.5
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 27
+    position: {x: 25.75, y: -0.14, z: -45.000004}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 2.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 30
+    position: {x: 45.000004, y: -0.14, z: -49.750004}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3.5
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 30
+    position: {x: 45, y: -0.14000002, z: -54.25}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 31
+    position: {x: 49.000004, y: -0.14, z: -49.750004}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3.5
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 32
+    position: {x: 73, y: -0.14, z: -49.75}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3.5
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 32
+    position: {x: 73, y: -0.14, z: -54.25}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 33
+    position: {x: 77, y: -0.14, z: -49.75}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3.5
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 33
+    position: {x: 77, y: -0.14, z: -54.25}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 34
+    position: {x: 113.199356, y: -0.14000002, z: -8.844145}
+    rotation: {x: 0, y: 0.96220016, z: 0, w: -0.27234325}
+    halfWidth: 3.5
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 34
+    position: {x: 109.3669, y: -0.14, z: -6.4857063}
+    rotation: {x: 0, y: 0.96220016, z: 0, w: -0.27234325}
+    halfWidth: 3.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 35
+    position: {x: 107.27051, y: -0.13999999, z: -9.892338}
+    rotation: {x: 0, y: 0.96220016, z: 0, w: -0.27234325}
+    halfWidth: 3.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 36
+    position: {x: 103.07773, y: -0.14, z: -16.705605}
+    rotation: {x: 0, y: 0.96220016, z: 0, w: -0.27234325}
+    halfWidth: 3.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 37
+    position: {x: 104.81379, y: -0.14, z: -22.470676}
+    rotation: {x: 0, y: 0.96220016, z: 0, w: -0.27234325}
+    halfWidth: 3.5
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 37
+    position: {x: 100.98133, y: -0.14, z: -20.112236}
+    rotation: {x: 0, y: 0.96220016, z: 0, w: -0.27234325}
+    halfWidth: 3.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 38
+    position: {x: 98.88496, y: -0.14, z: -23.518871}
+    rotation: {x: 0, y: 0.96220016, z: 0, w: -0.27234325}
+    halfWidth: 3.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 40
+    position: {x: 94.33185, y: -0.14, z: -39.503845}
+    rotation: {x: 0, y: 0.96220016, z: 0, w: -0.27234325}
+    halfWidth: 3.5
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 40
+    position: {x: 90.49939, y: -0.14, z: -37.14541}
+    rotation: {x: 0, y: 0.96220016, z: 0, w: -0.27234325}
+    halfWidth: 3.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 43
+    position: {x: 48.000004, y: -0.14, z: -28.25}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 2
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 43
+    position: {x: 48, y: -0.14, z: -29.749998}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 2
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 44
+    position: {x: 56.250004, y: -0.14, z: -43.000004}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    halfWidth: 2
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 44
+    position: {x: 57.750004, y: -0.14, z: -43.000004}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    halfWidth: 2
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 45
+    position: {x: 56.249996, y: -0.13999999, z: -38.999996}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    halfWidth: 2
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 45
+    position: {x: 57.75, y: -0.14, z: -39}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    halfWidth: 2
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 46
+    position: {x: 56.25, y: -0.14, z: -35}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    halfWidth: 2
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 46
+    position: {x: 57.75, y: -0.14, z: -35}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    halfWidth: 2
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 47
+    position: {x: 1.7500004, y: -0.14, z: -61}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 3
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 47
+    position: {x: -1.7500001, y: -0.14, z: -61}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 3
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 48
+    position: {x: 1.75, y: -0.14000002, z: -65}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 3
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 48
+    position: {x: -1.75, y: -0.13999999, z: -65}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 3
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 49
+    position: {x: 1.7499999, y: -0.14, z: -68.99999}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 3
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 49
+    position: {x: -1.7500005, y: -0.14, z: -68.99999}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 3
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 52
+    position: {x: 78.61952, y: -0.13999999, z: -59.557312}
+    rotation: {x: 0, y: 0.9825918, z: 0, w: -0.18577784}
+    halfWidth: 3.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 54
+    position: {x: 75.69882, y: -0.14, z: -67.0051}
+    rotation: {x: 0, y: 0.9825918, z: 0, w: -0.18577784}
+    halfWidth: 3.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 55
+    position: {x: 78.42785, y: -0.14, z: -72.37189}
+    rotation: {x: 0, y: 0.9825918, z: 0, w: -0.18577784}
+    halfWidth: 3.5
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 55
+    position: {x: 74.23847, y: -0.14000002, z: -70.72899}
+    rotation: {x: 0, y: 0.9825918, z: 0, w: -0.18577784}
+    halfWidth: 3.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 57
+    position: {x: 69.85742, y: -0.14, z: -81.90066}
+    rotation: {x: 0, y: 0.9825918, z: 0, w: -0.18577784}
+    halfWidth: 3.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 58
+    position: {x: 68.39707, y: -0.14, z: -85.62456}
+    rotation: {x: 0, y: 0.9825918, z: 0, w: -0.18577784}
+    halfWidth: 3.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 60
+    position: {x: 65.47637, y: -0.13999999, z: -93.072334}
+    rotation: {x: 0, y: 0.9825918, z: 0, w: -0.18577784}
+    halfWidth: 3.5
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 61
+    position: {x: 17.000002, y: -0.14, z: -101.250015}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 61
+    position: {x: 17.000002, y: -0.14, z: -104.750015}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 63
+    position: {x: 33, y: -0.13999999, z: -101.24999}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 63
+    position: {x: 33, y: -0.14, z: -104.75001}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 67
+    position: {x: 32.249996, y: -0.14, z: -64.99999}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 1.5
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 67
+    position: {x: 31.749998, y: -0.14, z: -64.99999}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 1.5
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 68
+    position: {x: 32.25, y: -0.14, z: -69}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 1.5
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 68
+    position: {x: 31.75, y: -0.14, z: -69}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 1.5
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 70
+    position: {x: 37, y: -0.14, z: -85.75}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 1.5
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 70
+    position: {x: 37, y: -0.14, z: -86.25}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 1.5
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 73
+    position: {x: 98, y: -0.14, z: -43.25}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 2
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 74
+    position: {x: 102.00001, y: -0.14, z: -43.25}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 2
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 74
+    position: {x: 102.00001, y: -0.14, z: -44.75}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 2
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 75
+    position: {x: 106, y: -0.14, z: -43.25}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 2
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 75
+    position: {x: 106, y: -0.14, z: -44.75}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 2
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 76
+    position: {x: 110, y: -0.14, z: -43.25}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 2
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 76
+    position: {x: 110, y: -0.14, z: -44.75}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 2
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 78
+    position: {x: 117.74999, y: -0.14, z: -77}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 2
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 78
+    position: {x: 116.25001, y: -0.14000002, z: -77.00001}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 2
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 80
+    position: {x: 117.75, y: -0.13999999, z: -93}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 2
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 80
+    position: {x: 116.25, y: -0.13999999, z: -92.99999}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 2
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 81
+    position: {x: 117.75, y: -0.14, z: -97}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 2
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 81
+    position: {x: 116.25, y: -0.14, z: -97}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 2
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 82
+    position: {x: 73.00001, y: -0.14, z: -101.24999}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 82
+    position: {x: 73.00001, y: -0.14, z: -104.75}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 83
+    position: {x: 77, y: -0.14, z: -101.25001}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 83
+    position: {x: 77.00001, y: -0.14, z: -104.75001}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 84
+    position: {x: 80.99999, y: -0.14, z: -101.24999}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 84
+    position: {x: 80.99999, y: -0.13999999, z: -104.74999}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 85
+    position: {x: 85, y: -0.14, z: -101.25}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 85
+    position: {x: 85, y: -0.14000002, z: -104.74999}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 87
+    position: {x: 101.00001, y: -0.14, z: -101.24999}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3
+    side: -1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 87
+    position: {x: 101.000015, y: -0.14, z: -104.74999}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 3
+    side: 1
+    alley: 0
+    flip: 0
+  - type: boxercat
+    spot: 89
+    position: {x: 106.00001, y: -0.14000002, z: -62.750004}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 1.5
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 89
+    position: {x: 106.00001, y: -0.14, z: -63.25}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 1.5
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 90
+    position: {x: 110.00001, y: -0.14, z: -62.75}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 1.5
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 90
+    position: {x: 110.00001, y: -0.14, z: -63.250004}
+    rotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+    halfWidth: 1.5
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 91
+    position: {x: 101.25, y: -0.14, z: -68}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 1.5
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 91
+    position: {x: 100.75, y: -0.14, z: -68}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 1.5
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 92
+    position: {x: 101.25001, y: -0.13999999, z: -72}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 1.5
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 92
+    position: {x: 100.75001, y: -0.14, z: -72}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 1.5
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 93
+    position: {x: 101.25001, y: -0.14, z: -76}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 1.5
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 93
+    position: {x: 100.75001, y: -0.14, z: -76}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 1.5
+    side: 1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 94
+    position: {x: 101.25001, y: -0.14, z: -80}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 1.5
+    side: -1
+    alley: 1
+    flip: 0
+  - type: boxercat
+    spot: 94
+    position: {x: 100.75001, y: -0.14, z: -80}
+    rotation: {x: 0, y: 1, z: 0, w: 0}
+    halfWidth: 1.5
+    side: 1
+    alley: 1
+    flip: 0

@@ -79,5 +79,11 @@ MonoBehaviour:
     unlockDay: 2
     countPerDay: 
     poolSize: 8
+  - type: boxercat
+    prefab: {fileID: 2919589423361955184, guid: 0f8a52fe48aa5d24a8b852730d2e3560, type: 3}
+    role: 1
+    unlockDay: 1
+    countPerDay: 
+    poolSize: 3
   spacing: 8
   sameTypeSpacing: 25
