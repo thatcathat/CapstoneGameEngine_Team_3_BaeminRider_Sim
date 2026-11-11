@@ -8,6 +8,12 @@ namespace DeliveryRider
     public class TitleUI : MonoBehaviour
     {
         private const int MaxStartDay = 6;
+        private static readonly string[] GameScenes =
+        {
+            "FourDistrictPrototype",
+            "FourDistrictPrototype_Myeongji",
+            "FourDistrictPrototype_MyeongjiExpanded"
+        };
 
         [SerializeField] private Button startButton;
         [SerializeField] private Button continueButton;
@@ -16,6 +22,7 @@ namespace DeliveryRider
         [SerializeField] private TMP_Text startDayLabel;
         [SerializeField] private DeliveryEconomySettings economy;
         private int startDay = 1;
+        private Button mapButton;
 
         private void Awake()
         {
@@ -51,6 +58,38 @@ namespace DeliveryRider
             RefreshStartDay();
         }
 
+        private void Start()
+        {
+            var canvas = startButton.GetComponentInParent<Canvas>().rootCanvas;
+            mapButton = Instantiate(startButton, canvas.transform, false);
+            mapButton.name = "MapSelectButton";
+            mapButton.onClick = new Button.ButtonClickedEvent();
+
+            var rect = (RectTransform)mapButton.transform;
+            rect.anchorMin = new Vector2(0.53f, 0.04f);
+            rect.anchorMax = new Vector2(0.97f, 0.15f);
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+
+            var label = mapButton.GetComponentInChildren<TMP_Text>();
+            label.alignment = TextAlignmentOptions.Center;
+            label.enableAutoSizing = true;
+            label.fontSizeMin = 10f;
+            label.fontSizeMax = 23f;
+
+            var controller = SceneController.Instance;
+            int index = System.Array.IndexOf(GameScenes, controller.GameSceneName);
+            void RefreshMapLabel() =>
+                label.text = $"시작 맵 변경 ({index + 1}/{GameScenes.Length})\n{controller.GameSceneName}";
+
+            mapButton.onClick.AddListener(() =>
+            {
+                index = (index + 1) % GameScenes.Length;
+                controller.GameSceneName = GameScenes[index];
+                RefreshMapLabel();
+            });
+            RefreshMapLabel();
+        }
+
         private void Update()
         {
             var keyboard = Keyboard.current;
@@ -70,6 +109,7 @@ namespace DeliveryRider
 
         private void SetButtonsInteractable(bool value)
         {
+            if (mapButton != null) mapButton.interactable = value;
             if (startButton != null) startButton.interactable = value;
             if (continueButton != null) continueButton.interactable = value && RunProgress.HasSave;
         }

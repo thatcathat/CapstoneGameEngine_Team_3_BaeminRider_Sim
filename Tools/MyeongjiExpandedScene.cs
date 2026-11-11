@@ -102,6 +102,84 @@ namespace DeliveryRider.MapTools
             return report.ToString();
         }
 
+        // Adds a visual-only row outside each boundary, reusing this scene's building meshes and materials.
+        public static string PlaceBoundaryBuildings()
+        {
+            var scene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(Target);
+            bool opened = !scene.isLoaded;
+            if (opened) scene = EditorSceneManager.OpenScene(Target, OpenSceneMode.Additive);
+            try
+            {
+                if (scene.isDirty) throw new InvalidOperationException("Save the expanded scene before placing buildings.");
+                var boundary = Root(scene, "MapBoundary").transform;
+                var templates = Root(scene, "MyeongjiMapExpansion").GetComponentsInChildren<MeshRenderer>()
+                    .Where(r => r.transform.parent.name.StartsWith("Buildings_"))
+                    .OrderBy(r => r.name, StringComparer.Ordinal).ToArray();
+                if (templates.Length == 0) throw new InvalidOperationException("Missing expansion building models.");
+
+                var group = new GameObject("BoundaryBuildings");
+                UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(group, scene);
+                var report = new StringBuilder();
+                try
+                {
+                    var random = new System.Random(471);
+                    foreach (string side in new[] { "North", "South", "West", "East" })
+                    {
+                        var wall = boundary.Find(side).GetComponent<BoxCollider>().bounds;
+                        bool alongX = side == "North" || side == "South";
+                        float cursor = (alongX ? wall.min.x : wall.min.z) + 2f;
+                        float end = (alongX ? wall.max.x : wall.max.z) - 2f;
+                        int count = 0;
+                        while (cursor < end)
+                        {
+                            var model = templates[random.Next(templates.Length)];
+                            var mesh = model.GetComponent<MeshFilter>().sharedMesh;
+                            var house = new GameObject(side + "_" + model.name, typeof(MeshFilter), typeof(MeshRenderer));
+                            house.transform.SetParent(group.transform, false);
+                            house.transform.rotation = Quaternion.Euler(0f, alongX ? 0f : 90f, 0f) * model.transform.rotation;
+                            house.transform.localScale = model.transform.lossyScale;
+                            house.GetComponent<MeshFilter>().sharedMesh = mesh;
+                            house.GetComponent<MeshRenderer>().sharedMaterials = model.sharedMaterials;
+
+                            // Use real vertices so a rotated or off-centre mesh touches the outer wall face.
+                            var vertices = mesh.vertices;
+                            var bounds = new Bounds(house.transform.TransformPoint(vertices[0]), Vector3.zero);
+                            foreach (var vertex in vertices) bounds.Encapsulate(house.transform.TransformPoint(vertex));
+                            float width = alongX ? bounds.size.x : bounds.size.z;
+                            if (cursor + width > end)
+                            {
+                                UnityEngine.Object.DestroyImmediate(house);
+                                break;
+                            }
+                            float x = alongX ? cursor - bounds.min.x :
+                                side == "East" ? wall.max.x - bounds.min.x : wall.min.x - bounds.max.x;
+                            float z = !alongX ? cursor - bounds.min.z :
+                                side == "North" ? wall.max.z - bounds.min.z : wall.min.z - bounds.max.z;
+                            house.transform.position = new Vector3(x, model.bounds.min.y - bounds.min.y, z);
+                            cursor += width + random.Next(2, 6);
+                            count++;
+                        }
+                        if (count == 0) throw new InvalidOperationException("No buildings placed on " + side);
+                        report.AppendLine($"{side}: {count}");
+                    }
+                }
+                catch
+                {
+                    UnityEngine.Object.DestroyImmediate(group);
+                    throw;
+                }
+                var old = scene.GetRootGameObjects().FirstOrDefault(r => r != group && r.name == group.name);
+                if (old != null) UnityEngine.Object.DestroyImmediate(old);
+                EditorSceneManager.MarkSceneDirty(scene);
+                if (!EditorSceneManager.SaveScene(scene)) throw new InvalidOperationException("Could not save boundary buildings.");
+                return report.ToString();
+            }
+            finally
+            {
+                if (opened) EditorSceneManager.CloseScene(scene, true);
+            }
+        }
+
         // The new buildings' colliders alone, on the saved scene.
         public static string FitBuildingColliders()
         {

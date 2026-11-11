@@ -15,6 +15,11 @@ namespace DeliveryRider
     {
         // Scene copies can keep their own next-day destination. Existing scenes retain the original default.
         [SerializeField] private string gameSceneName = "FourDistrictPrototype";
+        public string GameSceneName
+        {
+            get => gameSceneName;
+            set => gameSceneName = value;
+        }
         public static SceneController Instance { get; private set; }
 
         private bool loading;
