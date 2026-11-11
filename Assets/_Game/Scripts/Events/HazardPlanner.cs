@@ -62,6 +62,7 @@ namespace DeliveryRider
                         if (count >= want) break;
                         var spot = candidates.Candidates[index];
                         if (!HasRoom(placed, spot.position, kind.type)) continue;
+                        if (kind.type == "duck" && !CrossingFlockHazard.CanPlace(ground, spot)) continue;
                         SpawnOne(kind, spot, staging.transform);
                         placed.Add((spot.position, kind.type));
                         count++;

@@ -30,7 +30,7 @@ namespace DeliveryRider.Editor
 
         private sealed class HazardPrefabs
         {
-            public GameObject manhole, hydrant, melon, door, tire, ducks, chickens, pigeon, muscleman, celebrity;
+            public GameObject manhole, hydrant, melon, door, tire, ducks, chickens, pigeon, muscleman, celebrity, monkey;
         }
 
         private sealed class Bake
@@ -80,6 +80,7 @@ namespace DeliveryRider.Editor
                 melonHalfExtent = RollingMelonHazard.PileHalfExtent(rider.GetComponent<CapsuleCollider>().height * Mathf.Abs(rider.transform.lossyScale.y) * 0.3f),
             };
             foreach (var road in bake.roads) BakeRoad(bake, road);
+            MonkeyInstaller.AppendCandidates(bake.candidates);
             AssignRoutes(bake, shops, doors);
             MusclemanInstaller.AppendCandidates(bake.spots, bake.candidates, session, components.OfType<PedestrianNetwork>().Single(), network);
             CelebrityCrowdInstaller.AppendCandidates(bake.spots, bake.candidates, session, components.OfType<PedestrianNetwork>().Single(), network);
@@ -122,6 +123,7 @@ namespace DeliveryRider.Editor
                 Kind("muscleman", prefabs.muscleman, HazardRole.Object, 1, 8, 8, 8, 8),
                 Kind("duck", prefabs.ducks, HazardRole.Trigger, 1),
                 Kind("chicken", prefabs.chickens, HazardRole.Trigger, 1),
+                Kind("monkey", prefabs.monkey, HazardRole.Object, 1, 3),
                 Kind("tire", prefabs.tire, HazardRole.Trigger, 2),
                 Kind("theft", prefabs.pigeon, HazardRole.Trigger, 2),
             };
@@ -415,6 +417,7 @@ namespace DeliveryRider.Editor
             prefabs.melon = RollingMelonInstaller.CreatePrefab(session, PrefabFolder + "MelonPile.prefab").gameObject;
             prefabs.ducks = DuckPrefab();
             prefabs.chickens = ChickenPrefab();
+            prefabs.monkey = MonkeyInstaller.CreatePrefab();
             prefabs.pigeon = PigeonPrefab();
             prefabs.muscleman = MusclemanInstaller.CreatePrefab(session);
             prefabs.celebrity = CelebrityCrowdInstaller.CreatePrefab(UnityEngine.Object.FindFirstObjectByType<PedestrianNetwork>());
@@ -483,13 +486,13 @@ namespace DeliveryRider.Editor
             return SavePrefab(obj);
         }
 
-        // Duck flock: five hidden ducks; each slot sets where they cross.
+        // Duck flock: hidden ducks; each slot sets where they cross.
         private static GameObject DuckPrefab()
         {
             var obj = new GameObject("DuckFlock");
             var yellow = Material("DuckYellow", new Color(0.98f, 0.85f, 0.25f));
             var orange = Material("BeakOrange", new Color(0.95f, 0.5f, 0.1f));
-            var birds = new Transform[5];
+            var birds = new Transform[CrossingFlockHazard.FlockSize];
             for (int i = 0; i < birds.Length; i++)
             {
                 var bird = new GameObject("Duck_" + i).transform;

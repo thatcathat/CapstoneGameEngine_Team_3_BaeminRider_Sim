@@ -9,7 +9,7 @@ namespace DeliveryRider
         private static readonly Dictionary<string, string> HazardTypes = new Dictionary<string, string>
         {
             { "manhole", "맨홀" }, { "hydrant", "소화전" }, { "melon", "수박" }, { "door", "문" }, { "duck", "오리" },
-            { "chicken", "닭" }, { "tire", "타이어" }, { "theft", "비둘기 도둑" }, { "muscleman", "근육맨" }, { "celebrity", "연예인 인파" }, { "pigeonflock", "비둘기 떼" },
+            { "chicken", "닭" }, { "monkey", "원숭이" }, { "tire", "타이어" }, { "theft", "비둘기 도둑" }, { "muscleman", "근육맨" }, { "celebrity", "연예인 인파" }, { "pigeonflock", "비둘기 떼" },
         };
 
         private static readonly Dictionary<string, string> Fields = new Dictionary<string, string>

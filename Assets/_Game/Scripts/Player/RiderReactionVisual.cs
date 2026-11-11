@@ -89,6 +89,7 @@ namespace DeliveryRider
                     pose = Quaternion.Slerp(getUpRotation, restRotation, Mathf.Clamp01((Time.time - getUpStarted) / motor.GetUpDuration));
                     break;
             }
+            if (motor.IsMonkeyCarried) pose = Quaternion.Euler(0f, 0f, 65f) * restRotation;
             visualRoot.localRotation = state == RiderReactionState.GettingUp ? pose
                 : Quaternion.Slerp(visualRoot.localRotation, pose, 1f - Mathf.Exp(-Time.deltaTime / poseSmoothTime));
             float squash = state != RiderReactionState.Normal && Time.time < hitUntil ? 0.85f : 1f;
@@ -99,6 +100,7 @@ namespace DeliveryRider
         private void AlignCapsuleWithGround(RiderReactionState state)
         {
             var position = restPosition;
+            if (motor.IsMonkeyCarried) position += Vector3.up * 0.35f;
             if (motor.IsReactionGrounded && (state == RiderReactionState.Rolling || state == RiderReactionState.GettingUp
                 || state == RiderReactionState.Sliding))
             {

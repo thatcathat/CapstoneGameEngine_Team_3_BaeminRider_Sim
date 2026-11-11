@@ -85,5 +85,11 @@ MonoBehaviour:
     unlockDay: 1
     countPerDay: 
     poolSize: 3
+  - type: monkey
+    prefab: {fileID: 694185076867745407, guid: b3ad695bd76f05140a62903bb120e187, type: 3}
+    role: 0
+    unlockDay: 1
+    countPerDay: 03000000
+    poolSize: 10
   spacing: 8
   sameTypeSpacing: 25

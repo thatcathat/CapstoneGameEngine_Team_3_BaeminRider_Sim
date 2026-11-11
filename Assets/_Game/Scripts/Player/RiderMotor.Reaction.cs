@@ -81,6 +81,7 @@ namespace DeliveryRider
 
         private void SetReactionState(RiderReactionState state)
         {
+            if (state != RiderReactionState.Normal) ClearMonkeyCarry();
             if (state != RiderReactionState.Normal) ClearChickenAttachments();
             trafficRecoveryActive = state == RiderReactionState.Airborne || state == RiderReactionState.Rolling || state == RiderReactionState.GettingUp;
             if (ReactionState == state) return;
@@ -111,6 +112,7 @@ namespace DeliveryRider
 
         private void ResetReaction()
         {
+            ClearMonkeyCarry();
             ClearChickenAttachments();
             slipOwner = null;
             airMovement = Vector2.zero;

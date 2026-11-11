@@ -165,8 +165,8 @@ MonoBehaviour:
   disappearAfterTurn: 1
   runnerHeight: 3
   runnerRadius: 0.75
-  shoveSpeed: 8
-  pedestrianLift: 1
+  shoveSpeed: 16
+  pedestrianLift: 2
   recoverySeconds: 0.6
 --- !u!1 &8370717909306833683
 GameObject:

@@ -31,6 +31,8 @@ namespace DeliveryRider
         private float nextPunchAt;
         private bool jumpQueued;
         private bool normalJumpActive;
+        private bool playerJump;
+        public event System.Action<float> Jumped;
         public event System.Action Punched;
         public event System.Action<float> ContactImpact;
         public event System.Action SafePositionRestored;
@@ -161,9 +163,9 @@ namespace DeliveryRider
         }
 
         // Distinct authored hazards may replace a contact impulse, never an owned incident.
-        public bool TryHazardCrash(UnityEngine.Object source, Vector3 impulse, float recoverySeconds)
+        public bool TryHazardCrash(UnityEngine.Object source, Vector3 impulse, float recoverySeconds, bool allowJumpRecontact = false)
         {
-            if (!AcceptHazard(source)) return false;
+            if (!AcceptHazard(source, allowJumpRecontact)) return false;
             ApplyContactCrash(impulse, recoverySeconds);
             HazardHit?.Invoke(source);
             return true;
@@ -210,12 +212,13 @@ namespace DeliveryRider
             if (ReactionState == RiderReactionState.Sliding) SetReactionState(RiderReactionState.Normal);
         }
 
-        private bool AcceptHazard(UnityEngine.Object source)
+        private bool AcceptHazard(UnityEngine.Object source, bool allowJumpRecontact = false)
         {
             if (source == null || session == null || session.IsPaused || session.IsMapOpen || session.IsSettled) return false;
             bool chain = lastHazard != null && lastHazard != source && Time.time - lastHazardHitAt <= 8;
             if (Time.time - lastHazardHitAt < 0.35f) return false;
-            if (!chain && (IsRecovering || Time.time < nextTrafficHitAt)) return false;
+            bool jumpRecontact = allowJumpRecontact && source == lastHazard && normalJumpActive && playerJump;
+            if (!chain && (IsRecovering || (Time.time < nextTrafficHitAt && !jumpRecontact))) return false;
             hazardChainCount = chain ? hazardChainCount + 1 : 1;
             lastHazard = source;
             lastHazardHitAt = Time.time;
@@ -295,12 +298,12 @@ namespace DeliveryRider
             else if (callFirst.WasPressedThisFrame()) session.HandleCallKey(0);
             else if (callSecond.WasPressedThisFrame()) session.HandleCallKey(1);
             else if (map.WasPressedThisFrame()) session.ToggleMap();
-            movement = session.CanMove ? Vector2.ClampMagnitude(move.ReadValue<Vector2>(), 1f) : Vector2.zero;
-            airMovement = CanLook ? Vector2.ClampMagnitude(move.ReadValue<Vector2>(), 1f) : Vector2.zero;
+            movement = session.CanMove && !IsMonkeyCarried ? Vector2.ClampMagnitude(move.ReadValue<Vector2>(), 1f) : Vector2.zero;
+            airMovement = CanLook && !IsMonkeyCarried ? Vector2.ClampMagnitude(move.ReadValue<Vector2>(), 1f) : Vector2.zero;
             if (CanLook && recover.WasPressedThisFrame()) RestoreSafePosition();
             if (session.CanPickup) session.TryPickup();
-            if (session.CanMove && punch.WasPressedThisFrame()) TryPunch();
-            if (session.CanMove && jump.WasPressedThisFrame()) jumpQueued = true;
+            if (session.CanMove && !IsMonkeyCarried && punch.WasPressedThisFrame()) TryPunch();
+            if (session.CanMove && !IsMonkeyCarried && jump.WasPressedThisFrame()) jumpQueued = true;
         }
 
         // Punches go where the camera looks, so a standing rider can still aim at the recipient.
@@ -328,6 +331,7 @@ namespace DeliveryRider
 
         private void FixedUpdate()
         {
+            if (monkeyOwner != null && (Time.time >= monkeyUntil || session.IsMapOpen || session.IsSettled)) ClearMonkeyCarry();
             if (chickenSources.Count > 0 && Time.time >= chickenAttachedUntil) ClearChickenAttachments();
             bool wasGrounded = groundedForHazards;
             groundedForHazards = TryGround(out var supportNormal, false) && Vector3.Dot(body.linearVelocity, supportNormal) <= 0.5f;
@@ -348,10 +352,11 @@ namespace DeliveryRider
             var forward = Vector3.ProjectOnPlane(view.forward, Vector3.up).normalized;
             var right = Vector3.ProjectOnPlane(view.right, Vector3.up).normalized;
             var direction = session.CanMove ? forward * movement.y + right * movement.x : Vector3.zero;
+            if (IsMonkeyCarried && session.CanMove) direction = monkeyDirection;
             var current = body.linearVelocity;
             bool jumping = jumpQueued && groundedForHazards && session.CanMove && !IsSlipping;
             jumpQueued = false;
-            if (IsSlipping && session.CanMove)
+            if (IsSlipping && session.CanMove && !IsMonkeyCarried)
             {
                 var drift = Vector3.ProjectOnPlane(current, Vector3.up);
                 drift += direction * (slipSteering * Time.fixedDeltaTime);
@@ -372,7 +377,7 @@ namespace DeliveryRider
             }
             var horizontal = session.CanMove ? Vector3.MoveTowards(new Vector3(current.x, 0f, current.z), direction * Speed,
                 acceleration * inlineAccelerationScale * Time.fixedDeltaTime) : Vector3.zero;
-            bool chickenHop = HasAttachedChickens && Time.time >= nextChickenHopAt && session.CanMove;
+            bool chickenHop = HasAttachedChickens && Time.time >= nextChickenHopAt && session.CanMove && !IsMonkeyCarried;
             if (chickenHop)
             {
                 nextChickenHopAt = Time.time + Mathf.Max(0.1f, chickenHopInterval);
@@ -382,9 +387,11 @@ namespace DeliveryRider
             if (jumping || chickenHop)
             {
                 normalJumpActive = true;
+                playerJump = jumping;
                 groundedForHazards = false;
                 float lift = jumping ? jumpSpeed : jumpSpeed * Mathf.Sqrt(chickenHopHeightScale);
                 body.linearVelocity = new Vector3(horizontal.x, lift, horizontal.z);
+                if (jumping) Jumped?.Invoke(lift);
             }
             else if (followSlopes && groundedForHazards && TryGround(out var normal))
             {
