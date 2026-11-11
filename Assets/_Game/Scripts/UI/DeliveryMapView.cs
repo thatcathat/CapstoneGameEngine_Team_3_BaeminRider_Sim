@@ -74,7 +74,7 @@ namespace DeliveryRider
             }
             pickupConnection.gameObject.SetActive(shown != null && session.Stage != DeliveryStage.Carrying);
             deliveryConnection.gameObject.SetActive(shown != null);
-            if (session.IsRecoveringFood)
+            if (session.IsRecoveringFood || session.Stage == DeliveryStage.FoodDropped)
             {
                 pickupConnection.gameObject.SetActive(true);
                 deliveryConnection.gameObject.SetActive(false);

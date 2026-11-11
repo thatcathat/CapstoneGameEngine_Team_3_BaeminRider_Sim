@@ -85,7 +85,10 @@ namespace DeliveryRider
             if (state != RiderReactionState.Normal) ClearChickenAttachments();
             trafficRecoveryActive = state == RiderReactionState.Airborne || state == RiderReactionState.Rolling || state == RiderReactionState.GettingUp;
             if (ReactionState == state) return;
+            bool enteringAccident = trafficRecoveryActive &&
+                (ReactionState == RiderReactionState.Normal || ReactionState == RiderReactionState.Sliding);
             ReactionState = state;
+            if (enteringAccident) session.TryDropFoodOnAccident(body.position, groundMask);
             UpdateCollisionMaterial();
             if (state == RiderReactionState.Normal) physicalTumble = false;
             stableGroundTime = 0f;

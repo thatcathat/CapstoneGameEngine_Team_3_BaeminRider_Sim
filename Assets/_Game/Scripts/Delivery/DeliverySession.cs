@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 namespace DeliveryRider
 {
-    public enum DeliveryStage { Available, Pickup, Carrying, Complete, FoodLost }
+    public enum DeliveryStage { Available, Pickup, Carrying, Complete, FoodLost, FoodDropped }
     public enum WorkDayPhase { Working, Overtime, Settlement }
 
     public sealed class DeliverySession : MonoBehaviour
@@ -15,6 +15,10 @@ namespace DeliveryRider
         [Tooltip("The day clock starts once the player walks this far from the start point. 0 starts it immediately.")]
         [SerializeField, Min(0f)] private float homeLeaveDistance = 6f;
         [SerializeField] private GameObject foodBag;
+        [SerializeField, Range(0f, 1f)] private float accidentFoodDropChance = 0.18f;
+        private BoxCollider droppedBag;
+        private CapsuleCollider riderCapsule;
+        private bool overlappingAtDrop;
         [SerializeField] private float pickupRange = 2.8f;
         [SerializeField] private DeliveryDaySettings daySettings;
         [Header("Calls")]
@@ -102,7 +106,7 @@ namespace DeliveryRider
         public bool IsRecoveringFood => Stage == DeliveryStage.FoodLost;
         public bool IsChasingFood => IsRecoveringFood && recoveryTarget != null;
         public bool CanMove => !IsPaused && !IsMapOpen && !IsSettled && (rider == null || !rider.IsRecovering);
-        public Transform Target => ActiveOrder == null ? null : IsChasingFood ? recoveryTarget :
+        public Transform Target => ActiveOrder == null ? null : Stage == DeliveryStage.FoodDropped ? droppedBag.transform : IsChasingFood ? recoveryTarget :
             Stage == DeliveryStage.Pickup || IsRecoveringFood ? ActiveOrder.PickupPoint : ActiveOrder.Recipient.transform;
         public float TargetDistance => Target == null ? 0f : Vector3.Distance(player.position, Target.position);
         public bool CanPickup => (Stage == DeliveryStage.Pickup || (IsRecoveringFood && !IsChasingFood)) && CanMove && ActiveOrder != null
@@ -111,6 +115,7 @@ namespace DeliveryRider
         private void Awake()
         {
             rider = player.GetComponent<RiderMotor>();
+            riderCapsule = player.GetComponent<CapsuleCollider>();
             var controller = SceneController.Instance;
             Progress = controller != null ? controller.Progress : null;
             if (Progress == null)
@@ -134,6 +139,56 @@ namespace DeliveryRider
             RefreshDayPhase();
             if (IsRecoveringFood && awaitingThief && (recoveryTarget == null || !recoveryTarget.gameObject.activeInHierarchy))
                 RequireReplacement(recoveryTarget);
+        }
+
+        public void TryDropFoodOnAccident(Vector3 position, LayerMask groundMask)
+        {
+            if (Stage != DeliveryStage.Carrying || ActiveOrder == null || UnityEngine.Random.value >= accidentFoodDropChance) return;
+            var hits = Physics.RaycastAll(position + Vector3.up * 0.1f, Vector3.down, Mathf.Infinity,
+                groundMask, QueryTriggerInteraction.Ignore);
+            RaycastHit ground = default;
+            foreach (var hit in hits)
+            {
+                if (hit.rigidbody != null || hit.transform.IsChildOf(player) || hit.normal.y < 0.5f) continue;
+                if (ground.collider == null || hit.distance < ground.distance) ground = hit;
+            }
+            // If there is no reachable floor below the accident, keep the carried order.
+            if (ground.collider == null) return;
+            var bag = Instantiate(foodBag);
+            bag.name = "DroppedFood";
+            bag.transform.localScale = foodBag.transform.lossyScale;
+            bag.transform.rotation = Quaternion.FromToRotation(Vector3.up, ground.normal);
+            var meshBounds = bag.GetComponent<MeshFilter>().sharedMesh.bounds;
+            var bottomCentre = meshBounds.center - Vector3.up * meshBounds.extents.y;
+            bag.transform.position = ground.point - bag.transform.TransformVector(bottomCentre);
+            droppedBag = bag.AddComponent<BoxCollider>();
+            droppedBag.center = meshBounds.center;
+            droppedBag.size = meshBounds.size;
+            droppedBag.isTrigger = true;
+            bag.layer = LayerMask.NameToLayer("Ignore Raycast");
+            overlappingAtDrop = TouchesDroppedBag();
+            Stage = DeliveryStage.FoodDropped;
+            Notify();
+        }
+
+        private bool TouchesDroppedBag() => Physics.ComputePenetration(
+            riderCapsule, riderCapsule.transform.position, riderCapsule.transform.rotation,
+            droppedBag, droppedBag.transform.position, droppedBag.transform.rotation, out _, out _);
+
+        private void FixedUpdate()
+        {
+            if (Stage != DeliveryStage.FoodDropped || IsPaused) return;
+            if (!TouchesDroppedBag())
+            {
+                overlappingAtDrop = false;
+                return;
+            }
+            // The bag starts at the rider's feet. A return contact counts even during a tumble.
+            if (overlappingAtDrop && rider.IsRecovering) return;
+            Stage = DeliveryStage.Carrying;
+            Destroy(droppedBag.gameObject);
+            droppedBag = null;
+            Notify();
         }
 
         public bool TryLoseFood(Transform thief)

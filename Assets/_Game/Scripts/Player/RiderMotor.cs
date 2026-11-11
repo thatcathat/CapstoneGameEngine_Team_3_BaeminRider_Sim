@@ -136,7 +136,6 @@ namespace DeliveryRider
         }
         public bool IsRecovering => trafficRecoveryActive;
 
-        // Traffic never changes food ownership.
         public bool TryTrafficCrash(Vector3 impulse, float recoverySeconds)
             => TryContactCrash(impulse, recoverySeconds);
 
